@@ -17,7 +17,7 @@ interface LogEntry extends FoodItem {
 }
 
 const FoodLogger = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<FoodItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -28,10 +28,6 @@ const FoodLogger = () => {
   useEffect(() => {
     if (session) fetchLogs();
   }, [session]);
-
-  if (status === "loading") {
-    return <div className="page active"><div className="page-header"><div className="page-title">Loading...</div></div></div>;
-  }
 
   if (!session) {
     return (
@@ -51,8 +47,9 @@ const FoodLogger = () => {
   const fetchLogs = async () => {
     try {
       const res = await fetch("/api/food/log");
+      if (!res.ok) return;
       const data = await res.json();
-      setLogs(data);
+      if (Array.isArray(data)) setLogs(data);
     } catch (error) {
       console.error("Fetch logs error:", error);
     }
@@ -63,8 +60,9 @@ const FoodLogger = () => {
     setLoading(true);
     try {
       const res = await fetch(`/api/food/search?q=${encodeURIComponent(query)}`);
+      if (!res.ok) return;
       const data = await res.json();
-      setResults(data);
+      if (Array.isArray(data)) setResults(data);
     } catch (error) {
       console.error("Search error:", error);
     } finally {
@@ -101,13 +99,12 @@ const FoodLogger = () => {
     }
   };
 
-  // Totals
   const totals = logs.reduce(
     (acc, log) => {
-      acc.cal += log.cal;
-      acc.prot += log.prot;
-      acc.carb += log.carb;
-      acc.fat += log.fat;
+      acc.cal += log.cal || 0;
+      acc.prot += log.prot || 0;
+      acc.carb += log.carb || 0;
+      acc.fat += log.fat || 0;
       return acc;
     },
     { cal: 0, prot: 0, carb: 0, fat: 0 }
@@ -209,9 +206,8 @@ const FoodLogger = () => {
         </div>
       </div>
 
-      {/* QTY MODAL */}
       {selectedFood && (
-        <div className="modal-overlay open" onClick={() => setSelectedFood(null)}>
+        <div className="modal-overlay open" style={{ display: "flex" }} onClick={() => setSelectedFood(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-title">{selectedFood.name}</div>
             <div className="modal-sub">
