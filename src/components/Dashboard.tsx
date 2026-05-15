@@ -6,7 +6,6 @@ import { useSession, signIn } from "next-auth/react";
 const Dashboard = () => {
   const { data: session, status } = useSession();
   
-  // These will eventually come from the database
   const [stats, setStats] = useState({
     cal: 0,
     prot: 0,
@@ -14,6 +13,24 @@ const Dashboard = () => {
     fat: 0,
     steps: 0,
   });
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch("/api/dashboard/stats", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        setStats(data);
+      }
+    } catch (error) {
+      console.error("Dashboard fetch error:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (session) {
+      fetchStats();
+    }
+  }, [session]);
 
   const targets = {
     cal: 2350,
