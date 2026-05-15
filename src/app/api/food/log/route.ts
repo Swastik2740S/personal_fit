@@ -20,20 +20,30 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { name, qty, cal, prot, carb, fat } = body;
+    console.log("POST /api/food/log - Received body:", body);
+    
+    const { name, qty, cal, prot, carb, fat, mealType } = body;
+
+    // Simple validation
+    if (!name || qty === undefined || cal === undefined) {
+      console.error("POST /api/food/log - Missing required fields:", { name, qty, cal });
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
 
     const log = await db.foodLog.create({
       data: {
         userId: user.id,
-        name,
-        qty,
-        cal,
-        prot,
-        carb,
-        fat,
+        name: String(name),
+        qty: Number(qty),
+        cal: Number(cal),
+        prot: Number(prot || 0),
+        carb: Number(carb || 0),
+        fat: Number(fat || 0),
+        mealType: String(mealType || "Snack"),
       },
     });
 
+    console.log("POST /api/food/log - Successfully created log:", log.id);
     return NextResponse.json(log);
   } catch (error) {
     console.error("Log API Error:", error);
@@ -42,7 +52,7 @@ export async function POST(req: Request) {
 }
 
 // GET /api/food/log - Get logs for today
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -55,8 +65,16 @@ export async function GET() {
 
     if (!user) return NextResponse.json([]);
 
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+    const { searchParams } = new URL(req.url);
+    const localStart = searchParams.get("localStart");
+    
+    let startOfDay: Date;
+    if (localStart) {
+      startOfDay = new Date(localStart);
+    } else {
+      startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+    }
 
     const logs = await db.foodLog.findMany({
       where: {
@@ -96,10 +114,16 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     const all = searchParams.get("all");
+    const localStart = searchParams.get("localStart");
 
     if (all === "true") {
-      const startOfDay = new Date();
-      startOfDay.setHours(0, 0, 0, 0);
+      let startOfDay: Date;
+      if (localStart) {
+        startOfDay = new Date(localStart);
+      } else {
+        startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+      }
 
       await db.foodLog.deleteMany({
         where: {
@@ -113,11 +137,17 @@ export async function DELETE(req: Request) {
     }
 
     if (id) {
+      // First verify ownership
+      const logEntry = await db.foodLog.findUnique({
+        where: { id }
+      });
+
+      if (!logEntry || logEntry.userId !== user.id) {
+        return NextResponse.json({ error: "Unauthorized or not found" }, { status: 403 });
+      }
+
       await db.foodLog.delete({
-        where: {
-          id,
-          userId: user.id, // Ensure user owns the log
-        },
+        where: { id },
       });
       return NextResponse.json({ message: "Deleted log entry" });
     }

@@ -144,6 +144,7 @@ export const FoodLogScalarFieldEnum = {
   prot: 'prot',
   carb: 'carb',
   fat: 'fat',
+  mealType: 'mealType',
   date: 'date'
 } as const
 

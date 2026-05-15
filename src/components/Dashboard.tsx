@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
 import { motion } from "framer-motion";
 import { 
@@ -90,14 +91,16 @@ const Dashboard = () => {
           <div className="page-title">Welcome back, {session?.user?.name?.split(' ')[0]} 👋</div>
           <div className="page-sub">Your performance summary for today.</div>
         </div>
-        <motion.button 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="btn" 
-          style={{ padding: '8px 16px', fontSize: 13, height: 'fit-content' }}
-        >
-          View Weekly Report <ArrowUpRight size={14} />
-        </motion.button>
+        <Link href="/report">
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="btn" 
+            style={{ padding: '8px 16px', fontSize: 13, height: 'fit-content' }}
+          >
+            View Weekly Report <ArrowUpRight size={14} />
+          </motion.button>
+        </Link>
       </motion.div>
 
       <div className="metric-grid">

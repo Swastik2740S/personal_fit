@@ -51,6 +51,7 @@ export type FoodLogMinAggregateOutputType = {
   prot: number | null
   carb: number | null
   fat: number | null
+  mealType: string | null
   date: Date | null
 }
 
@@ -63,6 +64,7 @@ export type FoodLogMaxAggregateOutputType = {
   prot: number | null
   carb: number | null
   fat: number | null
+  mealType: string | null
   date: Date | null
 }
 
@@ -75,6 +77,7 @@ export type FoodLogCountAggregateOutputType = {
   prot: number
   carb: number
   fat: number
+  mealType: number
   date: number
   _all: number
 }
@@ -105,6 +108,7 @@ export type FoodLogMinAggregateInputType = {
   prot?: true
   carb?: true
   fat?: true
+  mealType?: true
   date?: true
 }
 
@@ -117,6 +121,7 @@ export type FoodLogMaxAggregateInputType = {
   prot?: true
   carb?: true
   fat?: true
+  mealType?: true
   date?: true
 }
 
@@ -129,6 +134,7 @@ export type FoodLogCountAggregateInputType = {
   prot?: true
   carb?: true
   fat?: true
+  mealType?: true
   date?: true
   _all?: true
 }
@@ -228,6 +234,7 @@ export type FoodLogGroupByOutputType = {
   prot: number
   carb: number
   fat: number
+  mealType: string
   date: Date
   _count: FoodLogCountAggregateOutputType | null
   _avg: FoodLogAvgAggregateOutputType | null
@@ -263,6 +270,7 @@ export type FoodLogWhereInput = {
   prot?: Prisma.FloatFilter<"FoodLog"> | number
   carb?: Prisma.FloatFilter<"FoodLog"> | number
   fat?: Prisma.FloatFilter<"FoodLog"> | number
+  mealType?: Prisma.StringFilter<"FoodLog"> | string
   date?: Prisma.DateTimeFilter<"FoodLog"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -276,6 +284,7 @@ export type FoodLogOrderByWithRelationInput = {
   prot?: Prisma.SortOrder
   carb?: Prisma.SortOrder
   fat?: Prisma.SortOrder
+  mealType?: Prisma.SortOrder
   date?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
 }
@@ -292,6 +301,7 @@ export type FoodLogWhereUniqueInput = Prisma.AtLeast<{
   prot?: Prisma.FloatFilter<"FoodLog"> | number
   carb?: Prisma.FloatFilter<"FoodLog"> | number
   fat?: Prisma.FloatFilter<"FoodLog"> | number
+  mealType?: Prisma.StringFilter<"FoodLog"> | string
   date?: Prisma.DateTimeFilter<"FoodLog"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
@@ -305,6 +315,7 @@ export type FoodLogOrderByWithAggregationInput = {
   prot?: Prisma.SortOrder
   carb?: Prisma.SortOrder
   fat?: Prisma.SortOrder
+  mealType?: Prisma.SortOrder
   date?: Prisma.SortOrder
   _count?: Prisma.FoodLogCountOrderByAggregateInput
   _avg?: Prisma.FoodLogAvgOrderByAggregateInput
@@ -325,6 +336,7 @@ export type FoodLogScalarWhereWithAggregatesInput = {
   prot?: Prisma.FloatWithAggregatesFilter<"FoodLog"> | number
   carb?: Prisma.FloatWithAggregatesFilter<"FoodLog"> | number
   fat?: Prisma.FloatWithAggregatesFilter<"FoodLog"> | number
+  mealType?: Prisma.StringWithAggregatesFilter<"FoodLog"> | string
   date?: Prisma.DateTimeWithAggregatesFilter<"FoodLog"> | Date | string
 }
 
@@ -336,6 +348,7 @@ export type FoodLogCreateInput = {
   prot: number
   carb: number
   fat: number
+  mealType?: string
   date?: Date | string
   user: Prisma.UserCreateNestedOneWithoutLogsInput
 }
@@ -349,6 +362,7 @@ export type FoodLogUncheckedCreateInput = {
   prot: number
   carb: number
   fat: number
+  mealType?: string
   date?: Date | string
 }
 
@@ -360,6 +374,7 @@ export type FoodLogUpdateInput = {
   prot?: Prisma.FloatFieldUpdateOperationsInput | number
   carb?: Prisma.FloatFieldUpdateOperationsInput | number
   fat?: Prisma.FloatFieldUpdateOperationsInput | number
+  mealType?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutLogsNestedInput
 }
@@ -373,6 +388,7 @@ export type FoodLogUncheckedUpdateInput = {
   prot?: Prisma.FloatFieldUpdateOperationsInput | number
   carb?: Prisma.FloatFieldUpdateOperationsInput | number
   fat?: Prisma.FloatFieldUpdateOperationsInput | number
+  mealType?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -385,6 +401,7 @@ export type FoodLogCreateManyInput = {
   prot: number
   carb: number
   fat: number
+  mealType?: string
   date?: Date | string
 }
 
@@ -396,6 +413,7 @@ export type FoodLogUpdateManyMutationInput = {
   prot?: Prisma.FloatFieldUpdateOperationsInput | number
   carb?: Prisma.FloatFieldUpdateOperationsInput | number
   fat?: Prisma.FloatFieldUpdateOperationsInput | number
+  mealType?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -408,6 +426,7 @@ export type FoodLogUncheckedUpdateManyInput = {
   prot?: Prisma.FloatFieldUpdateOperationsInput | number
   carb?: Prisma.FloatFieldUpdateOperationsInput | number
   fat?: Prisma.FloatFieldUpdateOperationsInput | number
+  mealType?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -430,6 +449,7 @@ export type FoodLogCountOrderByAggregateInput = {
   prot?: Prisma.SortOrder
   carb?: Prisma.SortOrder
   fat?: Prisma.SortOrder
+  mealType?: Prisma.SortOrder
   date?: Prisma.SortOrder
 }
 
@@ -450,6 +470,7 @@ export type FoodLogMaxOrderByAggregateInput = {
   prot?: Prisma.SortOrder
   carb?: Prisma.SortOrder
   fat?: Prisma.SortOrder
+  mealType?: Prisma.SortOrder
   date?: Prisma.SortOrder
 }
 
@@ -462,6 +483,7 @@ export type FoodLogMinOrderByAggregateInput = {
   prot?: Prisma.SortOrder
   carb?: Prisma.SortOrder
   fat?: Prisma.SortOrder
+  mealType?: Prisma.SortOrder
   date?: Prisma.SortOrder
 }
 
@@ -531,6 +553,7 @@ export type FoodLogCreateWithoutUserInput = {
   prot: number
   carb: number
   fat: number
+  mealType?: string
   date?: Date | string
 }
 
@@ -542,6 +565,7 @@ export type FoodLogUncheckedCreateWithoutUserInput = {
   prot: number
   carb: number
   fat: number
+  mealType?: string
   date?: Date | string
 }
 
@@ -583,6 +607,7 @@ export type FoodLogScalarWhereInput = {
   prot?: Prisma.FloatFilter<"FoodLog"> | number
   carb?: Prisma.FloatFilter<"FoodLog"> | number
   fat?: Prisma.FloatFilter<"FoodLog"> | number
+  mealType?: Prisma.StringFilter<"FoodLog"> | string
   date?: Prisma.DateTimeFilter<"FoodLog"> | Date | string
 }
 
@@ -594,6 +619,7 @@ export type FoodLogCreateManyUserInput = {
   prot: number
   carb: number
   fat: number
+  mealType?: string
   date?: Date | string
 }
 
@@ -605,6 +631,7 @@ export type FoodLogUpdateWithoutUserInput = {
   prot?: Prisma.FloatFieldUpdateOperationsInput | number
   carb?: Prisma.FloatFieldUpdateOperationsInput | number
   fat?: Prisma.FloatFieldUpdateOperationsInput | number
+  mealType?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -616,6 +643,7 @@ export type FoodLogUncheckedUpdateWithoutUserInput = {
   prot?: Prisma.FloatFieldUpdateOperationsInput | number
   carb?: Prisma.FloatFieldUpdateOperationsInput | number
   fat?: Prisma.FloatFieldUpdateOperationsInput | number
+  mealType?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -627,6 +655,7 @@ export type FoodLogUncheckedUpdateManyWithoutUserInput = {
   prot?: Prisma.FloatFieldUpdateOperationsInput | number
   carb?: Prisma.FloatFieldUpdateOperationsInput | number
   fat?: Prisma.FloatFieldUpdateOperationsInput | number
+  mealType?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -641,6 +670,7 @@ export type FoodLogSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   prot?: boolean
   carb?: boolean
   fat?: boolean
+  mealType?: boolean
   date?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["foodLog"]>
@@ -654,6 +684,7 @@ export type FoodLogSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   prot?: boolean
   carb?: boolean
   fat?: boolean
+  mealType?: boolean
   date?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["foodLog"]>
@@ -667,6 +698,7 @@ export type FoodLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   prot?: boolean
   carb?: boolean
   fat?: boolean
+  mealType?: boolean
   date?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["foodLog"]>
@@ -680,10 +712,11 @@ export type FoodLogSelectScalar = {
   prot?: boolean
   carb?: boolean
   fat?: boolean
+  mealType?: boolean
   date?: boolean
 }
 
-export type FoodLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "qty" | "cal" | "prot" | "carb" | "fat" | "date", ExtArgs["result"]["foodLog"]>
+export type FoodLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "qty" | "cal" | "prot" | "carb" | "fat" | "mealType" | "date", ExtArgs["result"]["foodLog"]>
 export type FoodLogInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -708,6 +741,7 @@ export type $FoodLogPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     prot: number
     carb: number
     fat: number
+    mealType: string
     date: Date
   }, ExtArgs["result"]["foodLog"]>
   composites: {}
@@ -1141,6 +1175,7 @@ export interface FoodLogFieldRefs {
   readonly prot: Prisma.FieldRef<"FoodLog", 'Float'>
   readonly carb: Prisma.FieldRef<"FoodLog", 'Float'>
   readonly fat: Prisma.FieldRef<"FoodLog", 'Float'>
+  readonly mealType: Prisma.FieldRef<"FoodLog", 'String'>
   readonly date: Prisma.FieldRef<"FoodLog", 'DateTime'>
 }
     

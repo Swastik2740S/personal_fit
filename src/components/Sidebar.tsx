@@ -12,7 +12,8 @@ import {
   Pill, 
   Lightbulb, 
   LogOut,
-  ChevronRight
+  ChevronRight,
+  TrendingUp
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -23,6 +24,7 @@ const Sidebar = () => {
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
     { name: "Food Logger", href: "/food", icon: Utensils },
     { name: "Step Tracker", href: "/steps", icon: Footprints },
+    { name: "Weekly Report", href: "/report", icon: TrendingUp },
     { name: "Training Plan", href: "/training", icon: Dumbbell },
     { name: "Meal Plan", href: "/meals", icon: Utensils },
     { name: "Supplements", href: "/supplements", icon: Pill },
