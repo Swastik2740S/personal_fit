@@ -83,7 +83,7 @@ const StepTracker = () => {
         <div className="page-sub">Monitor your daily movement and hit your activity goals.</div>
       </motion.div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "24px", marginBottom: "24px" }}>
+      <div className="grid-2" style={{ marginBottom: "24px" }}>
         <motion.div variants={item} className="card">
           <div className="card-title">
             <Footprints size={18} color="var(--accent)" />
