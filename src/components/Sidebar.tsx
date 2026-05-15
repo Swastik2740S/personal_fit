@@ -24,6 +24,8 @@ const Sidebar = () => {
     ]}
   ];
 
+  if (!session) return null;
+
   return (
     <nav className="sidebar">
       <div className="logo">
@@ -37,46 +39,45 @@ const Sidebar = () => {
       {navItems.map((section) => (
         <div key={section.label} className="nav-section">
           <div className="nav-label">{section.label}</div>
-          {section.items.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`nav-item ${pathname === item.href ? "active" : ""}`}
-            >
-              <span className="nav-icon">{item.icon}</span>
-              <span>{item.label}</span>
-            </Link>
-          ))}
+          {section.items.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`nav-item ${isActive ? "active" : ""}`}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
         </div>
       ))}
 
       <div className="sidebar-footer">
-        {session ? (
-          <div className="stat-pill" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-            {session.user?.image && (
-              <img src={session.user.image} alt="Profile" style={{ width: "32px", height: "32px", borderRadius: "50%" }} />
-            )}
-            <div style={{ flex: 1 }}>
-              <div className="stat-pill-label" style={{ fontSize: "10px" }}>Logged in as</div>
-              <div className="stat-pill-val" style={{ fontSize: "14px" }}>{session.user?.name}</div>
+        <div className="stat-pill" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+          {session.user?.image && (
+            <img 
+              src={session.user.image} 
+              alt="Profile" 
+              style={{ width: "32px", height: "32px", borderRadius: "50%", background: "var(--bg3)" }} 
+            />
+          )}
+          <div style={{ flex: 1, overflow: "hidden" }}>
+            <div className="stat-pill-label" style={{ fontSize: "10px" }}>Logged in as</div>
+            <div className="stat-pill-val" style={{ fontSize: "14px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {session.user?.name || "User"}
             </div>
-            <button 
-              onClick={() => signOut()} 
-              style={{ background: "none", border: "none", color: "var(--red)", cursor: "pointer", fontSize: "16px" }}
-              title="Logout"
-            >
-              ✕
-            </button>
           </div>
-        ) : (
           <button 
-            className="btn" 
-            style={{ width: "100%", marginBottom: "16px" }}
-            onClick={() => signIn("github")}
+            onClick={() => signOut()} 
+            style={{ background: "none", border: "none", color: "var(--red)", cursor: "pointer", fontSize: "16px", padding: "4px" }}
+            title="Logout"
           >
-            Login with GitHub
+            ✕
           </button>
-        )}
+        </div>
 
         <div className="stat-pill">
           <div className="stat-pill-label">Daily target</div>
