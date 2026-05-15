@@ -46,7 +46,7 @@ const FoodLogger = () => {
 
   const fetchLogs = async () => {
     try {
-      const res = await fetch("/api/food/log");
+      const res = await fetch("/api/food/log", { cache: "no-store" });
       if (!res.ok) return;
       const data = await res.json();
       if (Array.isArray(data)) setLogs(data);
@@ -59,7 +59,7 @@ const FoodLogger = () => {
     if (!query.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/food/search?q=${encodeURIComponent(query)}`);
+      const res = await fetch(`/api/food/search?q=${encodeURIComponent(query)}`, { cache: "no-store" });
       if (!res.ok) return;
       const data = await res.json();
       if (Array.isArray(data)) setResults(data);
@@ -87,15 +87,45 @@ const FoodLogger = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(entry),
+        cache: "no-store",
       });
       if (res.ok) {
         setSelectedFood(null);
         setQuery("");
         setResults([]);
-        fetchLogs();
+        await fetchLogs();
       }
     } catch (error) {
       console.error("Add log error:", error);
+    }
+  };
+
+  const deleteLog = async (id: string) => {
+    try {
+      const res = await fetch(`/api/food/log?id=${id}`, {
+        method: "DELETE",
+        cache: "no-store",
+      });
+      if (res.ok) {
+        await fetchLogs();
+      }
+    } catch (error) {
+      console.error("Delete log error:", error);
+    }
+  };
+
+  const clearLogs = async () => {
+    if (!confirm("Are you sure you want to clear all logs for today?")) return;
+    try {
+      const res = await fetch("/api/food/log?all=true", {
+        method: "DELETE",
+        cache: "no-store",
+      });
+      if (res.ok) {
+        await fetchLogs();
+      }
+    } catch (error) {
+      console.error("Clear logs error:", error);
     }
   };
 

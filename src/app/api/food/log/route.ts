@@ -75,3 +75,55 @@ export async function GET() {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+// DELETE /api/food/log - Delete a specific log or clear all for today
+export async function DELETE(req: Request) {
+  try {
+    const session = await getServerSession();
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await db.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    const all = searchParams.get("all");
+
+    if (all === "true") {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+
+      await db.foodLog.deleteMany({
+        where: {
+          userId: user.id,
+          date: {
+            gte: startOfDay,
+          },
+        },
+      });
+      return NextResponse.json({ message: "Cleared all logs" });
+    }
+
+    if (id) {
+      await db.foodLog.delete({
+        where: {
+          id,
+          userId: user.id, // Ensure user owns the log
+        },
+      });
+      return NextResponse.json({ message: "Deleted log entry" });
+    }
+
+    return NextResponse.json({ error: "Missing ID or 'all' parameter" }, { status: 400 });
+  } catch (error) {
+    console.error("Log DELETE Error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}

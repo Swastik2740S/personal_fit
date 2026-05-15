@@ -1,11 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 const StepTracker = () => {
+  const { data: session } = useSession();
   const [steps, setSteps] = useState(0);
   const [inputVal, setInputVal] = useState("");
+  const [loading, setLoading] = useState(false);
   const target = 8000;
+
+  useEffect(() => {
+    if (session) fetchSteps();
+  }, [session]);
+
+  const fetchSteps = async () => {
+    try {
+      const res = await fetch("/api/steps", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        setSteps(data.count || 0);
+      }
+    } catch (error) {
+      console.error("Fetch steps error:", error);
+    }
+  };
+
+  const updateSteps = async () => {
+    if (inputVal === "" || isNaN(Number(inputVal))) return;
+    setLoading(true);
+    try {
+      const res = await fetch("/api/steps", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ count: Number(inputVal) }),
+      });
+      if (res.ok) {
+        setSteps(Number(inputVal));
+        setInputVal("");
+      }
+    } catch (error) {
+      console.error("Update steps error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const pct = Math.min(100, Math.round((steps / target) * 100));
   const circ = 427;
@@ -54,11 +93,8 @@ const StepTracker = () => {
               min="0"
               max="30000"
             />
-            <button className="btn" onClick={() => {
-              setSteps(Number(inputVal));
-              setInputVal("");
-            }}>
-              Update
+            <button className="btn" onClick={updateSteps} disabled={loading}>
+              {loading ? "Updating..." : "Update"}
             </button>
           </div>
         </div>
