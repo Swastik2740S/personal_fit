@@ -2,6 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Footprints, 
+  Target, 
+  TrendingUp, 
+  Calendar,
+  Clock,
+  Compass,
+  CheckCircle2
+} from "lucide-react";
 
 const StepTracker = () => {
   const { data: session } = useSession();
@@ -34,6 +44,7 @@ const StepTracker = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ count: Number(inputVal) }),
+        cache: "no-store",
       });
       if (res.ok) {
         setSteps(Number(inputVal));
@@ -50,93 +61,112 @@ const StepTracker = () => {
   const circ = 427;
   const offset = circ - (circ * pct) / 100;
 
-  return (
-    <div className="page active">
-      <div className="page-header">
-        <div className="page-title">Step Tracker</div>
-        <div className="page-sub">Target: 8,000 steps. Your desk job gives you ~2,000 by 5 PM — here's how to close the gap.</div>
-      </div>
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
-        <div className="card">
-          <div className="card-title">🦶 Log today's steps</div>
+  const item = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0 }
+  };
+
+  return (
+    <motion.div variants={container} initial="hidden" animate="show" className="page active">
+      <motion.div variants={item} className="page-header">
+        <div className="page-title">Step Tracker</div>
+        <div className="page-sub">Monitor your daily movement and hit your activity goals.</div>
+      </motion.div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "24px", marginBottom: "24px" }}>
+        <motion.div variants={item} className="card">
+          <div className="card-title">
+            <Footprints size={18} color="var(--accent)" />
+            Today's Progress
+          </div>
           <div className="step-display">
             <div className="step-ring-wrap">
               <div className="step-ring">
                 <svg viewBox="0 0 160 160" width="160" height="160">
                   <circle className="ring-bg" cx="80" cy="80" r="68" />
-                  <circle
+                  <motion.circle
+                    initial={{ strokeDashoffset: circ }}
+                    animate={{ strokeDashoffset: offset }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
                     className="ring-fill"
                     cx="80"
                     cy="80"
                     r="68"
                     strokeDasharray="427"
-                    strokeDashoffset={offset}
                   />
                 </svg>
                 <div className="ring-center">
                   <div className="ring-pct">{pct}%</div>
-                  <div className="ring-sub">of {target.toLocaleString()}</div>
+                  <div className="ring-sub">Daily Goal</div>
                 </div>
               </div>
             </div>
-            <div className="step-num">{steps.toLocaleString()}</div>
-            <div className="step-label">steps today</div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 800 }}>{steps.toLocaleString()}</div>
+              <div style={{ fontSize: 13, color: 'var(--text3)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Steps Walked</div>
+            </div>
           </div>
-          <div className="step-input-row">
+          <div className="step-input-row" style={{ display: 'flex', gap: 10, marginTop: 24 }}>
             <input
-              className="step-input"
+              className="search-input"
               type="number"
-              placeholder="Enter steps"
+              placeholder="Enter current steps"
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               min="0"
               max="30000"
             />
-            <button className="btn" onClick={updateSteps} disabled={loading}>
-              {loading ? "Updating..." : "Update"}
-            </button>
+            <motion.button 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="btn" 
+              onClick={updateSteps} 
+              disabled={loading}
+            >
+              {loading ? "Syncing..." : "Update"}
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="card">
-          <div className="card-title">🗓 Desk job step plan</div>
-          <div style={{ fontSize: "13px", color: "var(--text2)", marginBottom: "14px", padding: "12px", background: "var(--amber-dim)", borderRadius: "var(--r)", borderLeft: "3px solid var(--amber)" }}>
-            Since you're seated until 5 PM (~2,000 steps by then), you need 6,000 more steps after gym. Here's exactly how to hit it without trying hard.
+        <motion.div variants={item} className="card">
+          <div className="card-title">
+            <Target size={18} color="var(--neon-cyan)" />
+            Activity Strategy
+          </div>
+          <div style={{ fontSize: "14px", color: "var(--text2)", marginBottom: "20px", padding: "16px", background: "var(--accent-dim)", borderRadius: "var(--r)", borderLeft: "4px solid var(--accent)" }}>
+            Your baseline is ~2,000 steps by 5 PM. Target 6,000 more steps in the evening to optimize metabolic rate and recovery.
           </div>
           <div className="walk-tips">
-            <div className="walk-tip">
-              <div className="walk-tip-icon">🏋️</div>
-              <div>
-                <div className="walk-tip-title">Walk to/from gym (500–800 steps)</div>
-                <div className="walk-tip-text">If your gym is walkable, ditch the ride. Even a 5 min walk each way adds up.</div>
+            {[
+              { icon: <TrendingUp size={16} />, title: "Post-Dinner Momentum", text: "A 25-minute walk after 9 PM adds ~2,500 steps and stabilizes blood sugar.", color: 'var(--accent)' },
+              { icon: <Clock size={16} />, title: "Active Intervals", text: "Stand and pace for 10 mins during study or calls to add ~1,000 effortless steps.", color: 'var(--neon-cyan)' },
+              { icon: <Compass size={16} />, title: "The Gym Bonus", text: "Walk to your workout session to bank an extra 800-1,200 steps daily.", color: 'var(--neon-purple)' },
+              { icon: <CheckCircle2 size={16} />, title: "Micro-Movement", text: "Small household errands add up quickly to 1,000 steps. Stay mobile.", color: 'var(--neon-amber)' },
+            ].map((tip, i) => (
+              <div key={i} style={{ display: 'flex', gap: 14, marginBottom: 16 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--bg3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: tip.color, flexShrink: 0 }}>
+                  <div style={{ margin: 'auto' }}>{tip.icon}</div>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{tip.title}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 2 }}>{tip.text}</div>
+                </div>
               </div>
-            </div>
-            <div className="walk-tip">
-              <div className="walk-tip-icon">🌙</div>
-              <div>
-                <div className="walk-tip-title">Post-dinner walk — 25 min (2,500 steps)</div>
-                <div className="walk-tip-text">This is your biggest lever. After dinner at 9 PM, a 25-minute walk gets you 2,000–2,500 steps. Also helps digestion and sleep.</div>
-              </div>
-            </div>
-            <div className="walk-tip">
-              <div className="walk-tip-icon">☕</div>
-              <div>
-                <div className="walk-tip-title">Stand + pace during study/calls (1,000 steps)</div>
-                <div className="walk-tip-text">Pace while reading or on calls. Even walking inside your room for 10 minutes = ~1,000 steps.</div>
-              </div>
-            </div>
-            <div className="walk-tip">
-              <div className="walk-tip-icon">🏠</div>
-              <div>
-                <div className="walk-tip-title">Around the house errands (500–1,000 steps)</div>
-                <div className="walk-tip-text">Water trips, bathroom breaks, going to another room — intentionally move more at home and it adds up to 1,000 steps easily.</div>
-              </div>
-            </div>
+            ))}
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
