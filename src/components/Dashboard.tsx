@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession, signIn } from "next-auth/react";
 
 const Dashboard = () => {
+  const { data: session, status } = useSession();
+  
   // These will eventually come from the database
   const [stats, setStats] = useState({
     cal: 0,
@@ -23,6 +26,25 @@ const Dashboard = () => {
   const stepPct = Math.min(100, Math.round((stats.steps / targets.steps) * 100));
   const circ = 427;
   const offset = circ - (circ * stepPct) / 100;
+
+  if (status === "loading") {
+    return <div className="page active"><div className="page-header"><div className="page-title">Loading...</div></div></div>;
+  }
+
+  if (!session) {
+    return (
+      <div className="page active">
+        <div className="page-header">
+          <div className="page-title">Welcome to SwastikFit ⚡</div>
+          <div className="page-sub">Please login to view your personalized dashboard and track your progress.</div>
+        </div>
+        <div className="card" style={{ textAlign: "center", padding: "40px" }}>
+          <div style={{ fontSize: "48px", marginBottom: "20px" }}>🔐</div>
+          <button className="btn" onClick={() => signIn("github")}>Login with GitHub to Start</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div id="page-dashboard" className="page active">

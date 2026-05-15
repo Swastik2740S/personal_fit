@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
 import { AuthProvider } from "@/components/AuthProvider";
+import LayoutWrapper from "@/components/LayoutWrapper";
 
 export const metadata: Metadata = {
   title: "SwastikFit — Fat Loss Command Center",
@@ -23,10 +23,7 @@ export default function RootLayout({
       </head>
       <body>
         <AuthProvider>
-          <div className="shell">
-            <Sidebar />
-            <main className="main">{children}</main>
-          </div>
+          <LayoutWrapper>{children}</LayoutWrapper>
         </AuthProvider>
       </body>
     </html>
