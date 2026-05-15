@@ -1,27 +1,30 @@
 "use client";
 
-import { useSession, signIn } from "next-auth/react";
-import Sidebar from "@/components/Sidebar";
+import { useSession } from "next-auth/react";
+import Sidebar from "./Sidebar";
+import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 
-const LayoutWrapper = ({ children }: { children: React.ReactNode }) => {
-  const { data: session, status } = useSession();
-
-  if (status === "loading") {
-    return (
-      <div style={{ display: "flex", height: "100vh", alignItems: "center", justifyContent: "center", background: "var(--bg)" }}>
-        <div className="spinner"></div>
-      </div>
-    );
-  }
+export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
+  const { data: session } = useSession();
+  const pathname = usePathname();
 
   return (
     <div className="shell">
       {session && <Sidebar />}
-      <main className="main" style={!session ? { margin: 0, maxWidth: "100%" } : {}}>
-        {children}
+      <main className="main" style={!session ? { margin: 0, padding: 0, maxWidth: 'none' } : {}}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   );
-};
-
-export default LayoutWrapper;
+}

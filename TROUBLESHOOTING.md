@@ -22,5 +22,9 @@ This file tracks technical hurdles encountered during development and their resp
 - **Problem:** Data fetched via `fetch()` in Client Components appeared stale, and UI wouldn't update after POST/DELETE operations even when database changes were confirmed.
 - **Solution:** Added `{ cache: 'no-store' }` to all internal API fetch calls to ensure the browser always retrieves the latest data from the server.
 
+### 3. NextAuth session detection in API Routes
+- **Problem:** `getServerSession()` was returning `null` in API routes even when the user was logged in, causing logs to fail silently (401 Unauthorized).
+- **Solution:** Extracted `authOptions` to a shared `src/lib/auth.ts` file and passed it as an argument to every `getServerSession(authOptions)` call. This ensures the backend correctly identifies the user session.
+
 ---
 *Add new logs below as they occur.*
