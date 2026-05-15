@@ -122,7 +122,7 @@ const WeeklyReport = () => {
         </motion.div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+      <div className="report-grid">
         {/* Calories Chart */}
         <motion.div variants={item} className="card">
           <div className="card-title">

@@ -40,9 +40,7 @@ const Sidebar = () => {
     >
       <div className="logo">
         <div className="logo-mark">S</div>
-        <div>
-          <div className="logo-text">SwastikFit</div>
-        </div>
+        <div className="logo-text">SwastikFit</div>
       </div>
 
       <div className="nav-section">
@@ -86,9 +84,9 @@ const Sidebar = () => {
             <img 
               src={session.user?.image || `https://ui-avatars.com/api/?name=${session.user?.name}`} 
               alt="User" 
-              style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--border)' }}
+              style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid var(--border)', flexShrink: 0 }}
             />
-            <div style={{ overflow: 'hidden' }}>
+            <div className="logo-text" style={{ overflow: 'hidden' }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {session.user?.name}
               </div>

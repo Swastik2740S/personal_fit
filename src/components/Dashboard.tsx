@@ -86,7 +86,7 @@ const Dashboard = () => {
       id="page-dashboard" 
       className="page active"
     >
-      <motion.div variants={item} className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+      <motion.div variants={item} className="page-header">
         <div>
           <div className="page-title">Welcome back, {session?.user?.name?.split(' ')[0]} 👋</div>
           <div className="page-sub">Your performance summary for today.</div>
@@ -96,7 +96,7 @@ const Dashboard = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="btn" 
-            style={{ padding: '8px 16px', fontSize: 13, height: 'fit-content' }}
+            style={{ fontSize: 13 }}
           >
             View Weekly Report <ArrowUpRight size={14} />
           </motion.button>
@@ -153,7 +153,7 @@ const Dashboard = () => {
         </motion.div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "24px" }}>
+      <div className="dashboard-grid">
         <motion.div variants={item} className="card">
           <div className="card-title">
             <TrendingUp size={18} color="var(--accent)" />

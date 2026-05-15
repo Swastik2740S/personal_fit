@@ -112,7 +112,7 @@ const TrainingPage = () => {
       </motion.div>
 
       <motion.div variants={item} className="card" style={{ padding: '8px' }}>
-        <div className="day-tabs" style={{ marginBottom: 0, gap: 4 }}>
+        <div className="day-tabs">
           {trainingDays.map((day, i) => (
             <button
               key={day.label}
@@ -127,7 +127,7 @@ const TrainingPage = () => {
         </div>
       </motion.div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px', marginTop: '24px' }}>
+      <div className="training-grid" style={{ marginTop: '24px' }}>
         <AnimatePresence mode="wait">
           <motion.div 
             key={activeDayIdx}
@@ -139,8 +139,7 @@ const TrainingPage = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                   <span className={`badge ${d.tag === "rest" ? "badge-rest" : "badge-train"}`} 
-                         style={{ background: d.tag === "rest" ? 'var(--bg3)' : 'var(--accent-dim)', color: d.tag === "rest" ? 'var(--text3)' : 'var(--accent)', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>
+                   <span className={`badge ${d.tag === "rest" ? "badge-rest" : "badge-train"}`}>
                      {d.tag}
                    </span>
                 </div>

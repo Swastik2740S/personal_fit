@@ -248,17 +248,17 @@ const FoodLogger = () => {
           </button>
         </div>
 
-        <div className="metric-grid" style={{ gridTemplateColumns: "repeat(4,1fr)", marginBottom: "32px", display: "grid", gap: "16px" }}>
+        <div className="metric-grid">
           {[
             { label: 'Calories', val: Math.round(totals.cal), unit: 'kcal', color: 'var(--accent)' },
             { label: 'Protein', val: Math.round(totals.prot), unit: 'g', color: 'var(--neon-cyan)' },
             { label: 'Carbs', val: Math.round(totals.carb), unit: 'g', color: 'var(--neon-amber)' },
             { label: 'Fat', val: Math.round(totals.fat), unit: 'g', color: 'var(--neon-purple)' },
           ].map((stat, i) => (
-            <div key={i} className="metric-card" style={{ padding: '16px', background: 'var(--bg3)', borderRadius: 'var(--r)', border: '1px solid var(--border)' }}>
-              <div className="metric-label" style={{ fontSize: '10px', color: 'var(--text3)', textTransform: 'uppercase', fontWeight: 700, marginBottom: 4 }}>{stat.label}</div>
-              <div className="metric-val" style={{ fontSize: '20px', fontWeight: 800, color: stat.color }}>
-                {stat.val}<span className="metric-unit" style={{ fontSize: '12px', opacity: 0.5, marginLeft: 2 }}>{stat.unit}</span>
+            <div key={i} className="metric-card">
+              <div className="metric-label">{stat.label}</div>
+              <div className="metric-val" style={{ color: stat.color }}>
+                {stat.val}<span className="metric-unit">{stat.unit}</span>
               </div>
             </div>
           ))}

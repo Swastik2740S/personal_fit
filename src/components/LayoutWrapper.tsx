@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import Sidebar from "./Sidebar";
+import MobileNav from "./MobileNav";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 
@@ -25,6 +26,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
           </motion.div>
         </AnimatePresence>
       </main>
+      {session && <MobileNav />}
     </div>
   );
 }
