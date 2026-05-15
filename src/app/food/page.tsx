@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession, signIn } from "next-auth/react";
 
 interface FoodItem {
   name: string;
@@ -16,6 +17,7 @@ interface LogEntry extends FoodItem {
 }
 
 const FoodLogger = () => {
+  const { data: session, status } = useSession();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<FoodItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -24,8 +26,27 @@ const FoodLogger = () => {
   const [qty, setQty] = useState(100);
 
   useEffect(() => {
-    fetchLogs();
-  }, []);
+    if (session) fetchLogs();
+  }, [session]);
+
+  if (status === "loading") {
+    return <div className="page active"><div className="page-header"><div className="page-title">Loading...</div></div></div>;
+  }
+
+  if (!session) {
+    return (
+      <div className="page active">
+        <div className="page-header">
+          <div className="page-title">Food Logger 🍽</div>
+          <div className="page-sub">Login to track your meals and hit your protein goals.</div>
+        </div>
+        <div className="card" style={{ textAlign: "center", padding: "40px" }}>
+          <div style={{ fontSize: "48px", marginBottom: "20px" }}>🥗</div>
+          <button className="btn" onClick={() => signIn("github")}>Login with GitHub to Start</button>
+        </div>
+      </div>
+    );
+  }
 
   const fetchLogs = async () => {
     try {

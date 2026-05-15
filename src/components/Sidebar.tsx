@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const navItems = [
     { label: "Overview", items: [
@@ -49,6 +51,33 @@ const Sidebar = () => {
       ))}
 
       <div className="sidebar-footer">
+        {session ? (
+          <div className="stat-pill" style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+            {session.user?.image && (
+              <img src={session.user.image} alt="Profile" style={{ width: "32px", height: "32px", borderRadius: "50%" }} />
+            )}
+            <div style={{ flex: 1 }}>
+              <div className="stat-pill-label" style={{ fontSize: "10px" }}>Logged in as</div>
+              <div className="stat-pill-val" style={{ fontSize: "14px" }}>{session.user?.name}</div>
+            </div>
+            <button 
+              onClick={() => signOut()} 
+              style={{ background: "none", border: "none", color: "var(--red)", cursor: "pointer", fontSize: "16px" }}
+              title="Logout"
+            >
+              ✕
+            </button>
+          </div>
+        ) : (
+          <button 
+            className="btn" 
+            style={{ width: "100%", marginBottom: "16px" }}
+            onClick={() => signIn("github")}
+          >
+            Login with GitHub
+          </button>
+        )}
+
         <div className="stat-pill">
           <div className="stat-pill-label">Daily target</div>
           <div className="stat-pill-val">
