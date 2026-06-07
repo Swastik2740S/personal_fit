@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getLocalStartOfDay } from "@/lib/day";
+import { containerStagger as container, fadeUpItem as item } from "@/lib/motion";
 
 interface DailyData {
   date: string;
@@ -64,19 +65,6 @@ const WeeklyReport = () => {
   const maxCal = Math.max(...data.map(d => d.cal), 1);
   const maxProt = Math.max(...data.map(d => d.prot), 1);
   const maxSteps = Math.max(...data.map(d => d.steps), 1);
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 10 },
-    show: { opacity: 1, y: 0 }
-  };
 
   if (loading) {
     return (

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getLocalStartOfDay } from "@/lib/day";
+import { containerStagger as container, fadeUpItem as item } from "@/lib/motion";
 import { 
   Search, 
   Plus, 
@@ -154,19 +155,6 @@ const FoodLogger = () => {
     },
     { cal: 0, prot: 0, carb: 0, fat: 0 }
   );
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 10 },
-    show: { opacity: 1, y: 0 }
-  };
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="page active">

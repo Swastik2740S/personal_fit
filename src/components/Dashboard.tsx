@@ -5,11 +5,12 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import { getLocalStartOfDay } from "@/lib/day";
-import { 
-  Zap, 
-  Target, 
-  TrendingUp, 
-  Flame, 
+import { containerStagger as container, fadeUpItem as item, useCountUp } from "@/lib/motion";
+import {
+  Zap,
+  Target,
+  TrendingUp,
+  Flame,
   Footprints,
   Activity,
   ArrowUpRight
@@ -68,20 +69,11 @@ const Dashboard = () => {
   const circ = 427;
   const offset = circ - (circ * stepPct) / 100;
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
+  // Smooth count-up for headline metric numbers.
+  const calCount = Math.round(useCountUp(stats.cal));
+  const protCount = Math.round(useCountUp(stats.prot));
+  const stepCount = Math.round(useCountUp(stats.steps));
+  const remainingCount = Math.max(0, targets.cal - calCount);
 
   if (status === "loading") {
     return (
@@ -120,7 +112,7 @@ const Dashboard = () => {
         <motion.div variants={item} className="metric-card">
           <div className="metric-label">Calories</div>
           <div className="metric-val">
-            {Math.round(stats.cal)}
+            {calCount}
             <span className="metric-unit">kcal</span>
           </div>
           <div className="metric-sub">Budget: {targets.cal}</div>
@@ -132,7 +124,7 @@ const Dashboard = () => {
         <motion.div variants={item} className="metric-card">
           <div className="metric-label">Protein</div>
           <div className="metric-val">
-            {Math.round(stats.prot)}
+            {protCount}
             <span className="metric-unit">g</span>
           </div>
           <div className="metric-sub">Goal: {targets.prot}g</div>
@@ -144,7 +136,7 @@ const Dashboard = () => {
         <motion.div variants={item} className="metric-card">
           <div className="metric-label">Steps</div>
           <div className="metric-val">
-            {stats.steps.toLocaleString()}
+            {stepCount.toLocaleString()}
             <span className="metric-unit">steps</span>
           </div>
           <div className="metric-sub">Target: {targets.steps}</div>
@@ -156,7 +148,7 @@ const Dashboard = () => {
         <motion.div variants={item} className="metric-card">
           <div className="metric-label">Remaining</div>
           <div className="metric-val">
-            {Math.max(0, targets.cal - Math.round(stats.cal))}
+            {remainingCount}
             <span className="metric-unit">kcal</span>
           </div>
           <div className="metric-sub">Daily balance</div>
