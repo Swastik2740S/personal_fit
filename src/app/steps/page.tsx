@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { getLocalStartOfDay } from "@/lib/day";
 import { 
   Footprints, 
   Target, 
@@ -18,15 +19,18 @@ const StepTracker = () => {
   const [steps, setSteps] = useState(0);
   const [inputVal, setInputVal] = useState("");
   const [loading, setLoading] = useState(false);
-  const target = 8000;
+  const [target, setTarget] = useState(8000);
 
   useEffect(() => {
-    if (session) fetchSteps();
+    if (session) {
+      fetchSteps();
+      fetchGoal();
+    }
   }, [session]);
 
   const fetchSteps = async () => {
     try {
-      const res = await fetch("/api/steps", { cache: "no-store" });
+      const res = await fetch(`/api/steps?localStart=${getLocalStartOfDay()}`, { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
         setSteps(data.count || 0);
@@ -36,11 +40,23 @@ const StepTracker = () => {
     }
   };
 
+  const fetchGoal = async () => {
+    try {
+      const res = await fetch("/api/profile", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.stepGoal) setTarget(data.stepGoal);
+      }
+    } catch (error) {
+      console.error("Fetch goal error:", error);
+    }
+  };
+
   const updateSteps = async () => {
     if (inputVal === "" || isNaN(Number(inputVal))) return;
     setLoading(true);
     try {
-      const res = await fetch("/api/steps", {
+      const res = await fetch(`/api/steps?localStart=${getLocalStartOfDay()}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ count: Number(inputVal) }),

@@ -11,6 +11,7 @@ import {
   ChevronLeft
 } from "lucide-react";
 import Link from "next/link";
+import { getLocalStartOfDay } from "@/lib/day";
 
 interface DailyData {
   date: string;
@@ -26,12 +27,6 @@ const WeeklyReport = () => {
   const { data: session } = useSession();
   const [data, setData] = useState<DailyData[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const getLocalStartOfDay = () => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d.toISOString();
-  };
 
   const fetchWeeklyData = useCallback(async () => {
     try {

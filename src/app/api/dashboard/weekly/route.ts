@@ -1,33 +1,14 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { db } from "@/lib/db";
-import { authOptions } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
+import { getDayStart } from "@/lib/day";
 
 export async function GET(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { userId, error } = await requireUser();
+    if (error) return error;
 
-    const user = await db.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json([]);
-    }
-
-    const { searchParams } = new URL(req.url);
-    const localStartStr = searchParams.get("localStart");
-    
-    let localStart: Date;
-    if (localStartStr) {
-      localStart = new Date(localStartStr);
-    } else {
-      localStart = new Date();
-      localStart.setHours(0, 0, 0, 0);
-    }
+    const localStart = getDayStart(req);
 
     // Start date is 6 days before localStart (total 7 days)
     const startDate = new Date(localStart);
@@ -37,14 +18,14 @@ export async function GET(req: Request) {
     const [foodLogs, stepLogs] = await Promise.all([
       db.foodLog.findMany({
         where: {
-          userId: user.id,
+          userId,
           date: { gte: startDate },
         },
         orderBy: { date: "asc" },
       }),
       db.stepLog.findMany({
         where: {
-          userId: user.id,
+          userId,
           date: { gte: startDate },
         },
         orderBy: { date: "asc" },

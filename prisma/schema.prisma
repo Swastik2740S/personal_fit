@@ -48,6 +48,13 @@ model User {
   sessions      Session[]
   logs          FoodLog[]
   steps         StepLog[]
+
+  // Daily goals (defaults mirror the previously hardcoded targets)
+  calGoal  Int @default(2350)
+  protGoal Int @default(160)
+  carbGoal Int @default(245)
+  fatGoal  Int @default(65)
+  stepGoal Int @default(8000)
 }
 
 model VerificationToken {

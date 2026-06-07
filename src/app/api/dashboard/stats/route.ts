@@ -1,39 +1,32 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { db } from "@/lib/db";
-import { authOptions } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
+import { getDayStart } from "@/lib/day";
 
-export async function GET() {
+const GOAL_SELECT = {
+  calGoal: true,
+  protGoal: true,
+  carbGoal: true,
+  fatGoal: true,
+  stepGoal: true,
+};
+
+export async function GET(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { userId, error } = await requireUser();
+    if (error) return error;
 
-    const user = await db.user.findUnique({
-      where: { email: session.user.email },
-    });
+    const startOfDay = getDayStart(req);
 
-    if (!user) {
-      return NextResponse.json({
-        cal: 0,
-        prot: 0,
-        carb: 0,
-        fat: 0,
-        steps: 0,
-      });
-    }
-
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
-
-    // Get Food Logs
-    const foodLogs = await db.foodLog.findMany({
-      where: {
-        userId: user.id,
-        date: { gte: startOfDay },
-      },
-    });
+    const [user, foodLogs, stepLog] = await Promise.all([
+      db.user.findUnique({ where: { id: userId }, select: GOAL_SELECT }),
+      db.foodLog.findMany({
+        where: { userId, date: { gte: startOfDay } },
+      }),
+      db.stepLog.findFirst({
+        where: { userId, date: { gte: startOfDay } },
+      }),
+    ]);
 
     const totals = foodLogs.reduce(
       (acc, log) => {
@@ -46,17 +39,10 @@ export async function GET() {
       { cal: 0, prot: 0, carb: 0, fat: 0 }
     );
 
-    // Get Steps
-    const stepLog = await db.stepLog.findFirst({
-      where: {
-        userId: user.id,
-        date: { gte: startOfDay },
-      },
-    });
-
     return NextResponse.json({
       ...totals,
       steps: stepLog?.count || 0,
+      goals: user,
     });
   } catch (error) {
     console.error("Stats API Error:", error);

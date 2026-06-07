@@ -9,10 +9,10 @@ import {
   Utensils, 
   Footprints, 
   Dumbbell, 
-  Pill, 
-  Lightbulb, 
+  Pill,
+  Lightbulb,
   LogOut,
-  ChevronRight,
+  Settings,
   TrendingUp
 } from "lucide-react";
 
@@ -29,6 +29,7 @@ const Sidebar = () => {
     { name: "Meal Plan", href: "/meals", icon: Utensils },
     { name: "Supplements", href: "/supplements", icon: Pill },
     { name: "Coach Tips", href: "/tips", icon: Lightbulb },
+    { name: "Settings", href: "/settings", icon: Settings },
   ];
 
   return (

@@ -26,5 +26,18 @@ This file tracks technical hurdles encountered during development and their resp
 - **Problem:** `getServerSession()` was returning `null` in API routes even when the user was logged in, causing logs to fail silently (401 Unauthorized).
 - **Solution:** Extracted `authOptions` to a shared `src/lib/auth.ts` file and passed it as an argument to every `getServerSession(authOptions)` call. This ensures the backend correctly identifies the user session.
 
+## Data Integrity
+
+### 1. StepLog duplicate rows (one-per-day enforcement)
+- **Problem:** `StepLog` has a `@@unique([userId, date])` constraint, but `date` previously defaulted
+  to `now()` (a full timestamp), so the constraint never actually prevented multiple step entries per
+  day. The POST handler also hand-rolled find→update/create, which could race into duplicates.
+- **Solution:** Writes now normalize `date` to the start of the user's local day (`getDayStart` in
+  `src/lib/day.ts`) and use `db.stepLog.upsert` on the compound key, so there is genuinely one row
+  per user per day.
+- **One-time cleanup (if upgrading an existing DB):** rows created before this change may hold
+  arbitrary timestamps and could still collide oddly. If you see stale/duplicate step rows, clear
+  them once: `DELETE FROM "StepLog";` (single-user dev DB — low risk), then re-log today's steps.
+
 ---
 *Add new logs below as they occur.*
