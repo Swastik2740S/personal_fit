@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getLocalStartOfDay } from "@/lib/day";
 import { 
   Search, 
   Plus, 
@@ -40,18 +41,11 @@ const FoodLogger = () => {
   const [mealType, setMealType] = useState<string>("Snack");
   const [modalStep, setModalStep] = useState(1);
 
-  const getLocalStartOfDay = () => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d.toISOString();
-  };
-
   const fetchLogs = useCallback(async () => {
     try {
       const res = await fetch(`/api/food/log?localStart=${getLocalStartOfDay()}`, { cache: "no-store" });
       if (!res.ok) return;
       const data = await res.json();
-      console.log("DEBUG: Fetched logs:", data);
       if (Array.isArray(data)) setLogs(data);
     } catch (error) {
       console.error("Fetch logs error:", error);
@@ -67,7 +61,6 @@ const FoodLogger = () => {
   }, []);
 
   useEffect(() => {
-    console.log("DEBUG: FoodLogger Version 4.0 Loaded");
     setDefaultMealType();
   }, [setDefaultMealType]);
 
@@ -299,10 +292,7 @@ const FoodLogger = () => {
                         layout initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, x: 20 }}
                         key={log.id} className="log-entry"
                         style={{ borderBottom: '1px solid var(--border)', padding: '12px 0', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                        onClick={() => {
-                          console.log("DEBUG: Viewing log:", log);
-                          setViewingLog(log);
-                        }}
+                        onClick={() => setViewingLog(log)}
                       >
                         <div>
                           <div className="log-name" style={{ fontSize: 15, fontWeight: 600 }}>{log.name}</div>
@@ -349,10 +339,7 @@ const FoodLogger = () => {
                         layout initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, x: 20 }}
                         key={log.id} className="log-entry"
                         style={{ borderBottom: '1px solid var(--border)', padding: '12px 0', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-                        onClick={() => {
-                          console.log("DEBUG: Viewing log (uncategorized):", log);
-                          setViewingLog(log);
-                        }}
+                        onClick={() => setViewingLog(log)}
                       >
                         <div>
                           <div className="log-name" style={{ fontSize: 15, fontWeight: 600 }}>{log.name}</div>

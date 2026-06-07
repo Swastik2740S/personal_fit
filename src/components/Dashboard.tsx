@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSession, signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
+import { getLocalStartOfDay } from "@/lib/day";
 import { 
   Zap, 
   Target, 
@@ -25,12 +26,32 @@ const Dashboard = () => {
     steps: 0,
   });
 
+  const DEFAULT_TARGETS = {
+    cal: 2350,
+    prot: 160,
+    carb: 245,
+    fat: 65,
+    steps: 8000,
+  };
+
+  const [targets, setTargets] = useState(DEFAULT_TARGETS);
+
   const fetchStats = async () => {
     try {
-      const res = await fetch("/api/dashboard/stats", { cache: "no-store" });
+      const res = await fetch(`/api/dashboard/stats?localStart=${getLocalStartOfDay()}`, { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
-        setStats(data);
+        const { goals, ...totals } = data;
+        setStats(totals);
+        if (goals) {
+          setTargets({
+            cal: goals.calGoal,
+            prot: goals.protGoal,
+            carb: goals.carbGoal,
+            fat: goals.fatGoal,
+            steps: goals.stepGoal,
+          });
+        }
       }
     } catch (error) {
       console.error("Dashboard fetch error:", error);
@@ -42,14 +63,6 @@ const Dashboard = () => {
       fetchStats();
     }
   }, [session]);
-
-  const targets = {
-    cal: 2350,
-    prot: 160,
-    carb: 245,
-    fat: 65,
-    steps: 8000,
-  };
 
   const stepPct = Math.min(100, Math.round((stats.steps / targets.steps) * 100));
   const circ = 427;

@@ -1,76 +1,48 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { db } from "@/lib/db";
-import { authOptions } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
+import { getDayStart } from "@/lib/day";
+import { stepSchema } from "@/lib/validation";
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { userId, error } = await requireUser();
+    if (error) return error;
+
+    const parsed = stepSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Invalid input" },
+        { status: 400 }
+      );
     }
 
-    const user = await db.user.findUnique({
-      where: { email: session.user.email },
+    const { count } = parsed.data;
+    const date = getDayStart(req);
+
+    // One row per user per day, enforced by the @@unique([userId, date]) index.
+    const log = await db.stepLog.upsert({
+      where: { userId_date: { userId, date } },
+      update: { count },
+      create: { userId, count, date },
     });
 
-    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
-
-    const { count } = await req.json();
-
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
-
-    // Check if entry for today exists
-    const existing = await db.stepLog.findFirst({
-      where: {
-        userId: user.id,
-        date: { gte: startOfDay },
-      },
-    });
-
-    if (existing) {
-      const updated = await db.stepLog.update({
-        where: { id: existing.id },
-        data: { count },
-      });
-      return NextResponse.json(updated);
-    } else {
-      const created = await db.stepLog.create({
-        data: {
-          userId: user.id,
-          count,
-        },
-      });
-      return NextResponse.json(created);
-    }
+    return NextResponse.json(log);
   } catch (error) {
     console.error("Step Log POST error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { userId, error } = await requireUser();
+    if (error) return error;
 
-    const user = await db.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) return NextResponse.json({ count: 0 });
-
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+    const startOfDay = getDayStart(req);
 
     const stepLog = await db.stepLog.findFirst({
-      where: {
-        userId: user.id,
-        date: { gte: startOfDay },
-      },
+      where: { userId, date: { gte: startOfDay } },
     });
 
     return NextResponse.json(stepLog || { count: 0 });
