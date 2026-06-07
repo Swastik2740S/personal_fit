@@ -58,7 +58,7 @@ const SupplementsPage = () => {
             <div style={{ minWidth: 0 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 4 }}>
                 <div style={{ fontWeight: 800, fontSize: 17, color: "var(--text)" }}>{supp.name}</div>
-                <span style={{ fontSize: 9, fontWeight: 900, padding: "2px 6px", borderRadius: 4, background: "var(--surface-2)", color: supp.statusColor, border: `1px solid ${supp.statusColor}20`, flexShrink: 0 }}>{supp.status}</span>
+                <span style={{ fontSize: 9, fontWeight: 900, padding: "3px 10px", borderRadius: 999, background: "var(--surface-2)", color: supp.statusColor, border: `1px solid ${supp.statusColor}20`, flexShrink: 0 }}>{supp.status}</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: supp.statusColor, fontWeight: 700, marginBottom: 8 }}>
                 <Clock size={12} /> {supp.timing}
