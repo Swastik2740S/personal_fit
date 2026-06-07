@@ -19,15 +19,15 @@ const MobileNav = () => {
             <span>{item.name}</span>
             {isActive && (
               <motion.div
-                layoutId="m-active-indicator"
+                layoutId="m-active-pill"
                 style={{
                   position: "absolute",
-                  top: -1,
-                  width: 20,
-                  height: 2,
-                  background: "var(--accent)",
-                  borderRadius: 2,
+                  inset: "8px 10px",
+                  background: "var(--accent-dim)",
+                  borderRadius: "var(--r-pill)",
+                  zIndex: 0,
                 }}
+                transition={{ type: "spring", stiffness: 400, damping: 32 }}
               />
             )}
           </Link>
