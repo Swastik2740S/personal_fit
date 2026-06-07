@@ -1,18 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Dumbbell, 
-  Zap, 
-  Calendar, 
-  Info,
-  ChevronRight,
-  TrendingUp,
-  Moon,
-  Coffee,
-  Heart
-} from "lucide-react";
+import { Dumbbell, Zap, Calendar, Info, Heart } from "lucide-react";
 import { useState } from "react";
+import { containerStagger as container, fadeUpItem as item } from "@/lib/motion";
 
 const trainingDays = [
   { label: "Mon", name: "Push Focus", subtitle: "Chest, Shoulders, Triceps", tag: "train", color: "var(--accent)",
@@ -89,26 +80,13 @@ const TrainingPage = () => {
   const [activeDayIdx, setActiveDayIdx] = useState(0);
   const d = trainingDays[activeDayIdx];
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 10 },
-    show: { opacity: 1, y: 0 }
-  };
-
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="page active">
       <motion.div variants={item} className="page-header">
-        <div className="page-title">Training Protocol</div>
-        <div className="page-sub">Push/Pull/Legs high-performance split.</div>
+        <div>
+          <div className="page-title">Training Protocol</div>
+          <div className="page-sub">Push/Pull/Legs high-performance split.</div>
+        </div>
       </motion.div>
 
       <motion.div variants={item} className="card" style={{ padding: '8px' }}>
@@ -118,7 +96,6 @@ const TrainingPage = () => {
               key={day.label}
               className={`day-tab ${i === activeDayIdx ? "active" : ""} ${day.tag === "rest" ? "rest-day" : ""}`}
               onClick={() => setActiveDayIdx(i)}
-              style={{ flex: 1, padding: '12px 0', border: 'none' }}
             >
               <div style={{ fontSize: 10, opacity: 0.5, fontWeight: 700, textTransform: 'uppercase' }}>{day.label}</div>
               <div style={{ fontWeight: 800, fontSize: 13 }}>Day {i + 1}</div>
@@ -172,9 +149,9 @@ const TrainingPage = () => {
         <motion.div variants={item} className="card" style={{ height: 'fit-content' }}>
           <div className="card-title">
             <Info size={18} color="var(--neon-cyan)" />
-            Coach's Notes
+            Coach&apos;s Notes
           </div>
-          <div className="day-note" style={{ background: 'var(--bg3)', borderLeft: `4px solid ${d.color}`, marginTop: 0 }}>
+          <div className="note-box" style={{ borderLeftColor: d.color }}>
             {d.note}
           </div>
           
