@@ -44,3 +44,9 @@ next-env.d.ts
 
 backup
 githubRules.md
+
+# AI agent context files — kept local only, not pushed to GitHub
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+PROJECT_CONTEXT.md
