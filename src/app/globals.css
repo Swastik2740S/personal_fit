@@ -5,14 +5,14 @@
   --bg2: #121214;
   --bg3: #18181b;
 
-  /* Glass material — One UI frosted glass (dark, medium frost) */
-  --surface-1: rgba(22, 22, 26, 0.55);
-  --surface-2: rgba(34, 34, 40, 0.62);
-  --surface-bar: rgba(14, 14, 17, 0.72);
+  /* Glass material — One UI frosted glass (dark, deep frost) */
+  --surface-1: rgba(22, 22, 26, 0.65);
+  --surface-2: rgba(34, 34, 40, 0.68);
+  --surface-bar: rgba(14, 14, 17, 0.82);
   --glass-border: rgba(255, 255, 255, 0.12);
   --glass-border-strong: rgba(255, 255, 255, 0.18);
-  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --glass-blur: blur(28px) saturate(150%);
+  --glass-highlight: inset 0 1px 1px rgba(255, 255, 255, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --glass-blur: blur(40px) saturate(180%);
   --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.45);
 
   /* Legacy aliases (kept so existing class refs keep working) */
@@ -222,10 +222,12 @@ body {
 .mobile-nav {
   display: none;
   position: fixed;
-  bottom: 0; left: 0; right: 0;
+  bottom: 16px; left: 16px; right: 16px;
   height: 72px;
   background: var(--surface-bar);
-  border-top: 1px solid var(--glass-border);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-pill);
+  box-shadow: var(--shadow-glass);
   z-index: 1000;
   padding: 8px 10px;
   justify-content: space-around;
@@ -334,14 +336,15 @@ body {
   border-radius: var(--r2);
   padding: 24px;
   box-shadow: var(--shadow-glass), var(--glass-highlight);
-  transition: border-color 0.25s ease, background 0.25s ease;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
 }
 
 @media (max-width: 768px) {
   .card { padding: 20px; }
 }
 
-.card:hover { border-color: var(--glass-border-strong); background: var(--surface-2); }
+.card:hover { border-color: var(--glass-border-strong); background: var(--surface-2); box-shadow: var(--shadow-glass), 0 0 24px var(--accent-dim); }
+.card:active { transform: scale(0.98); }
 .card-title {
   font-family: var(--font-display); font-weight: 700; font-size: 17px;
   color: var(--text); margin-bottom: 20px;

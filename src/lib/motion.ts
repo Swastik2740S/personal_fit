@@ -27,6 +27,10 @@ export const fadeUpItem: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.25, ease: EASE } },
 };
 
+// Interaction variants (spread into motion components)
+export const tapScale = { scale: 0.97, transition: { duration: 0.1, ease: EASE } };
+export const hoverScale = { scale: 1.02, transition: { duration: 0.2, ease: EASE } };
+
 /**
  * Smoothly counts a number up to its target. Falls back to the final value
  * instantly when the user prefers reduced motion.
