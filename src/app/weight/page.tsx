@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import { getLocalStartOfDay, getLastNDays } from "@/lib/day";
 import DayPills from "@/components/DayPills";
@@ -17,7 +17,7 @@ const sameDay = (a: string, b: string) =>
   new Date(a).toDateString() === new Date(b).toDateString();
 
 const WeightLogger = () => {
-  const { data: session } = useSession();
+  const { isSignedIn } = useAuth();
   const [history, setHistory] = useState<WeightEntry[]>([]);
   const [range, setRange] = useState(30);
   const [selectedDate, setSelectedDate] = useState(getLocalStartOfDay());
@@ -60,12 +60,12 @@ const WeightLogger = () => {
   }, []);
 
   useEffect(() => {
-    if (session) fetchHistory();
-  }, [session, fetchHistory]);
+    if (isSignedIn) fetchHistory();
+  }, [isSignedIn, fetchHistory]);
 
   useEffect(() => {
-    if (session) fetchGoal();
-  }, [session, fetchGoal]);
+    if (isSignedIn) fetchGoal();
+  }, [isSignedIn, fetchGoal]);
 
   // Prefill the input with the selected day's logged weight (if any).
   useEffect(() => {

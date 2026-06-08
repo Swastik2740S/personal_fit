@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import { getLocalStartOfDay, getLastNDays } from "@/lib/day";
 import DayPills from "@/components/DayPills";
@@ -34,7 +34,7 @@ interface LogEntry extends FoodItem {
 const mealTypes = ["Breakfast", "Lunch", "Snack", "Dinner"];
 
 const FoodLogger = () => {
-  const { data: session } = useSession();
+  const { isSignedIn } = useAuth();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<FoodItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -130,15 +130,15 @@ const FoodLogger = () => {
   }, [selectedFood, modalStep]);
 
   useEffect(() => {
-    if (session) fetchLogs();
-  }, [session, fetchLogs]);
+    if (isSignedIn) fetchLogs();
+  }, [isSignedIn, fetchLogs]);
 
   useEffect(() => {
-    if (session) {
+    if (isSignedIn) {
       fetchFavorites();
       fetchRecent();
     }
-  }, [session, fetchFavorites, fetchRecent]);
+  }, [isSignedIn, fetchFavorites, fetchRecent]);
 
   const searchFood = async () => {
     if (!query.trim()) return;

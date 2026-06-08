@@ -1,13 +1,13 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useAuth } from "@clerk/nextjs";
 import Dashboard from "@/components/Dashboard";
 import LandingPage from "@/components/LandingPage";
 
 export default function Home() {
-  const { data: session, status } = useSession();
+  const { isLoaded, isSignedIn } = useAuth();
 
-  if (status === "loading") {
+  if (!isLoaded) {
     return (
       <div style={{ display: "flex", height: "80vh", alignItems: "center", justifyContent: "center" }}>
         <div className="spinner"></div>
@@ -15,7 +15,7 @@ export default function Home() {
     );
   }
 
-  if (session) {
+  if (isSignedIn) {
     return <Dashboard />;
   }
 

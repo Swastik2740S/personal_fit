@@ -10,6 +10,17 @@ const GOAL_SELECT = {
   fatGoal: true,
   stepGoal: true,
   weightGoal: true,
+  // onboarding profile fields (read-only in settings, edited via /onboarding)
+  onboardingComplete: true,
+  heightCm: true,
+  startingWeightKg: true,
+  age: true,
+  sex: true,
+  activityLevel: true,
+  primaryGoal: true,
+  fitnessExperience: true,
+  dietaryPreference: true,
+  equipment: true,
 };
 
 // GET /api/profile - current user's goals

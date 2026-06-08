@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import { LogOut, Eye, EyeOff } from "lucide-react";
 import { ALL_NAV } from "@/lib/nav";
@@ -10,7 +10,8 @@ import { usePrivacy } from "./providers/PrivacyContext";
 
 const Sidebar = () => {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { user } = useUser();
+  const { signOut } = useClerk();
   const { isPrivate, togglePrivacy } = usePrivacy();
 
   return (
@@ -60,25 +61,25 @@ const Sidebar = () => {
         </nav>
       </div>
 
-      {session && (
+      {user && (
         <div className="sidebar-footer" style={{ marginTop: "auto", paddingTop: 20, borderTop: "1px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20, padding: "0 8px" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={session.user?.image || `https://ui-avatars.com/api/?name=${session.user?.name}`}
+              src={user.imageUrl || `https://ui-avatars.com/api/?name=${user.fullName}`}
               alt="User"
               style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid var(--glass-border)", flexShrink: 0 }}
             />
             <div className="logo-text" style={{ overflow: "hidden" }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {session.user?.name}
+                {user.fullName}
               </div>
               <div style={{ fontSize: 11, color: "var(--text3)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 Pro Member
               </div>
             </div>
           </div>
-          
+
           <button
             className="nav-item"
             onClick={() => togglePrivacy()}
@@ -91,7 +92,7 @@ const Sidebar = () => {
 
           <button
             className="nav-item"
-            onClick={() => signOut()}
+            onClick={() => signOut({ redirectUrl: "/" })}
             style={{ width: "100%", border: "none", background: "none" }}
             title="Logout"
           >

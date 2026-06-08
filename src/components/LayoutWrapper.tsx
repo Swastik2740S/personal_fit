@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useAuth } from "@clerk/nextjs";
 import Sidebar from "./Sidebar";
 import MobileNav from "./MobileNav";
 import MobileHeader from "./MobileHeader";
@@ -12,7 +12,7 @@ import { TimeProvider } from "./providers/TimeContext";
 import { PrivacyProvider } from "./providers/PrivacyContext";
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
-  const { data: session } = useSession();
+  const { isSignedIn } = useAuth();
   const pathname = usePathname();
 
   return (
@@ -21,16 +21,16 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
         <MotionConfig reducedMotion="user">
           <DynamicMesh />
           <div className="shell">
-            {session && <Sidebar />}
-            {session && <MobileHeader />}
-            <main className="main" style={!session ? { margin: 0, padding: 0, maxWidth: "none" } : {}}>
+            {isSignedIn && <Sidebar />}
+            {isSignedIn && <MobileHeader />}
+            <main className="main" style={!isSignedIn ? { margin: 0, padding: 0, maxWidth: "none" } : {}}>
               <AnimatePresence mode="wait">
                 <motion.div key={pathname} variants={pageVariants} initial="hidden" animate="show" exit="exit">
                   {children}
                 </motion.div>
               </AnimatePresence>
             </main>
-            {session && <MobileNav />}
+            {isSignedIn && <MobileNav />}
           </div>
         </MotionConfig>
       </PrivacyProvider>
