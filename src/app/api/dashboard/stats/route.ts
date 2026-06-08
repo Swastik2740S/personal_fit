@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { getDayStart } from "@/lib/day";
+import { getDayRange } from "@/lib/day";
 
 const GOAL_SELECT = {
   calGoal: true,
@@ -16,15 +16,15 @@ export async function GET(req: Request) {
     const { userId, error } = await requireUser();
     if (error) return error;
 
-    const startOfDay = getDayStart(req);
+    const { start, end } = getDayRange(req);
 
     const [user, foodLogs, stepLog] = await Promise.all([
       db.user.findUnique({ where: { id: userId }, select: GOAL_SELECT }),
       db.foodLog.findMany({
-        where: { userId, date: { gte: startOfDay } },
+        where: { userId, date: { gte: start, lt: end } },
       }),
       db.stepLog.findFirst({
-        where: { userId, date: { gte: startOfDay } },
+        where: { userId, date: { gte: start, lt: end } },
       }),
     ]);
 
