@@ -19,39 +19,41 @@ const onboardingSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const { userId, error } = await requireUser();
-  if (error) return error;
-
-  const parsed = onboardingSchema.safeParse(await req.json());
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid data", details: parsed.error.flatten() }, { status: 400 });
-  }
-
-  const data = parsed.data;
-  const tdee = calculateTDEE({ ...data, weightKg: data.weightKg });
-
-  // Ensure the User row exists — the Clerk webhook may not have fired yet
-  const clerkUser = await currentUser();
-  const email = clerkUser?.emailAddresses[0]?.emailAddress ?? "";
-  const name = clerkUser?.fullName ?? null;
-  const image = clerkUser?.imageUrl ?? null;
-  await db.user.upsert({
-    where: { id: userId },
-    update: {},
-    create: { id: userId, email, name, image },
-  });
-
-  let plan;
   try {
-    plan = await generatePlan({ ...data, ...tdee });
-  } catch (e) {
-    console.error("Plan generation failed:", e);
-    return NextResponse.json({ error: "Failed to generate plan. Please try again." }, { status: 500 });
-  }
+    const { userId, error } = await requireUser();
+    if (error) return error;
 
-  // Save everything atomically
-  await db.$transaction([
-    db.user.update({
+    const parsed = onboardingSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid data", details: parsed.error.flatten() }, { status: 400 });
+    }
+
+    const data = parsed.data;
+    const tdee = calculateTDEE({ ...data, weightKg: data.weightKg });
+
+    // Ensure the User row exists — Clerk webhook may not have fired yet
+    let email = "";
+    let name: string | null = null;
+    let image: string | null = null;
+    try {
+      const clerkUser = await currentUser();
+      email = clerkUser?.emailAddresses[0]?.emailAddress ?? "";
+      name  = clerkUser?.fullName ?? null;
+      image = clerkUser?.imageUrl ?? null;
+    } catch {
+      // non-fatal — user row may already exist from webhook
+    }
+
+    await db.user.upsert({
+      where:  { id: userId },
+      update: {},
+      create: { id: userId, email, name, image },
+    });
+
+    const plan = generatePlan({ ...data, ...tdee });
+
+    // Sequential writes — no $transaction (not supported with pg driver adapter)
+    await db.user.update({
       where: { id: userId },
       data: {
         heightCm:           data.heightCm,
@@ -69,9 +71,10 @@ export async function POST(req: Request) {
         fatGoal:            tdee.fatGoal,
         onboardingComplete: true,
       },
-    }),
-    db.userPlan.upsert({
-      where: { userId },
+    });
+
+    await db.userPlan.upsert({
+      where:  { userId },
       update: {
         mealPlan:    JSON.stringify(plan.mealPlan),
         workoutPlan: JSON.stringify(plan.workoutPlan),
@@ -83,8 +86,12 @@ export async function POST(req: Request) {
         workoutPlan: JSON.stringify(plan.workoutPlan),
         summary:     plan.summary,
       },
-    }),
-  ]);
+    });
 
-  return NextResponse.json({ success: true, tdee });
+    return NextResponse.json({ success: true, tdee });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    console.error("[onboarding] POST failed:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
