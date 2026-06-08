@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { currentUser } from "@clerk/nextjs/server";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { calculateTDEE } from "@/lib/tdee";
@@ -28,6 +29,17 @@ export async function POST(req: Request) {
 
   const data = parsed.data;
   const tdee = calculateTDEE({ ...data, weightKg: data.weightKg });
+
+  // Ensure the User row exists — the Clerk webhook may not have fired yet
+  const clerkUser = await currentUser();
+  const email = clerkUser?.emailAddresses[0]?.emailAddress ?? "";
+  const name = clerkUser?.fullName ?? null;
+  const image = clerkUser?.imageUrl ?? null;
+  await db.user.upsert({
+    where: { id: userId },
+    update: {},
+    create: { id: userId, email, name, image },
+  });
 
   let plan;
   try {
