@@ -22,7 +22,7 @@ const MobileNav = () => {
                 layoutId="m-active-pill"
                 style={{
                   position: "absolute",
-                  inset: "8px 10px",
+                  inset: "0px",
                   background: "var(--accent-dim)",
                   borderRadius: "var(--r-pill)",
                   zIndex: 0,
