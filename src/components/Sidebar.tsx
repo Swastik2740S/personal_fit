@@ -4,12 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { motion } from "framer-motion";
-import { LogOut } from "lucide-react";
+import { LogOut, Eye, EyeOff } from "lucide-react";
 import { ALL_NAV } from "@/lib/nav";
+import { usePrivacy } from "./providers/PrivacyContext";
 
 const Sidebar = () => {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { isPrivate, togglePrivacy } = usePrivacy();
 
   return (
     <motion.aside
@@ -76,6 +78,17 @@ const Sidebar = () => {
               </div>
             </div>
           </div>
+          
+          <button
+            className="nav-item"
+            onClick={() => togglePrivacy()}
+            style={{ width: "100%", border: "none", background: "none" }}
+            title={isPrivate ? "Disable Privacy Mode" : "Enable Privacy Mode"}
+          >
+            {isPrivate ? <Eye size={18} className="nav-icon" /> : <EyeOff size={18} className="nav-icon" />}
+            <span>{isPrivate ? "Show Data" : "Hide Data"}</span>
+          </button>
+
           <button
             className="nav-item"
             onClick={() => signOut()}

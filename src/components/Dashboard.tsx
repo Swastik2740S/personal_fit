@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { getLocalStartOfDay } from "@/lib/day";
 import { containerStagger as container, fadeUpItem as item, useCountUp } from "@/lib/motion";
+import { useTimePhase } from "./providers/TimeContext";
+import { usePrivacy } from "./providers/PrivacyContext";
 import {
   Zap,
   Target,
@@ -14,7 +16,8 @@ import {
   Footprints,
   Activity,
   ArrowUpRight,
-  Award
+  Award,
+  X
 } from "lucide-react";
 
 interface Insights {
@@ -28,6 +31,9 @@ interface Insights {
 
 const Dashboard = () => {
   const { data: session, status } = useSession();
+  const { phase } = useTimePhase();
+  const { isPrivate } = usePrivacy();
+  const [selectedCard, setSelectedCard] = useState<string | null>(null);
   
   const [stats, setStats] = useState({
     cal: 0,
@@ -104,6 +110,22 @@ const Dashboard = () => {
     );
   }
 
+  const pBlur = isPrivate ? "privacy-blur" : "";
+
+  // TEMPORAL LAYOUT PROJECTION
+  // In morning: generic/recovery (Steps, Remaining) come first.
+  // In evening: caloric expenditure (Calories, Protein) come first.
+  const metricCards = [
+    { id: "cal", label: "Calories", count: calCount, unit: "kcal", sub: `Budget: ${targets.cal}`, Icon: Flame, color: "var(--accent)" },
+    { id: "prot", label: "Protein", count: protCount, unit: "g", sub: `Goal: ${targets.prot}g`, Icon: Activity, color: "var(--neon-cyan)" },
+    { id: "steps", label: "Steps", count: stepCount.toLocaleString(), unit: "steps", sub: `Target: ${targets.steps}`, Icon: Footprints, color: "var(--neon-purple)" },
+    { id: "rem", label: "Remaining", count: remainingCount, unit: "kcal", sub: "Daily balance", Icon: Target, color: "var(--neon-amber)" },
+  ];
+
+  const orderedCards = phase === "morning" 
+    ? [...metricCards].reverse() // Steps/Rem first
+    : metricCards; // Cal/Prot first
+
   return (
     <motion.div 
       variants={container}
@@ -115,7 +137,7 @@ const Dashboard = () => {
       <motion.div variants={item} className="page-header">
         <div>
           <div className="page-title">Welcome back, {session?.user?.name?.split(' ')[0]} 👋</div>
-          <div className="page-sub">Your performance summary for today.</div>
+          <div className="page-sub">Your performance summary for today. ({phase} phase active)</div>
         </div>
         <Link href="/report">
           <motion.button 
@@ -129,55 +151,54 @@ const Dashboard = () => {
         </Link>
       </motion.div>
 
-      <div className="metric-grid">
-        <motion.div variants={item} className="metric-card">
-          <div className="metric-label">Calories</div>
-          <div className="metric-val">
-            {calCount}
-            <span className="metric-unit">kcal</span>
-          </div>
-          <div className="metric-sub">Budget: {targets.cal}</div>
-          <div style={{ position: 'absolute', right: 20, bottom: 20, opacity: 0.1 }}>
-            <Flame size={48} color="var(--accent)" />
-          </div>
-        </motion.div>
-
-        <motion.div variants={item} className="metric-card">
-          <div className="metric-label">Protein</div>
-          <div className="metric-val">
-            {protCount}
-            <span className="metric-unit">g</span>
-          </div>
-          <div className="metric-sub">Goal: {targets.prot}g</div>
-          <div style={{ position: 'absolute', right: 20, bottom: 20, opacity: 0.1 }}>
-            <Activity size={48} color="var(--neon-cyan)" />
-          </div>
-        </motion.div>
-
-        <motion.div variants={item} className="metric-card">
-          <div className="metric-label">Steps</div>
-          <div className="metric-val">
-            {stepCount.toLocaleString()}
-            <span className="metric-unit">steps</span>
-          </div>
-          <div className="metric-sub">Target: {targets.steps}</div>
-          <div style={{ position: 'absolute', right: 20, bottom: 20, opacity: 0.1 }}>
-            <Footprints size={48} color="var(--neon-purple)" />
-          </div>
-        </motion.div>
-
-        <motion.div variants={item} className="metric-card">
-          <div className="metric-label">Remaining</div>
-          <div className="metric-val">
-            {remainingCount}
-            <span className="metric-unit">kcal</span>
-          </div>
-          <div className="metric-sub">Daily balance</div>
-          <div style={{ position: 'absolute', right: 20, bottom: 20, opacity: 0.1 }}>
-            <Target size={48} color="var(--neon-amber)" />
-          </div>
-        </motion.div>
-      </div>
+      {/* PROGRESSIVE DISCLOSURE GRID */}
+      <AnimatePresence>
+        {selectedCard ? (
+           <motion.div
+            layoutId={`card-${selectedCard}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, width: "100%", height: "400px" }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="card"
+            style={{ marginBottom: 32, position: 'relative', cursor: 'default' }}
+          >
+            <button onClick={() => setSelectedCard(null)} className="btn-ghost" style={{ position: 'absolute', top: 20, right: 20 }}>
+               <X size={20} />
+            </button>
+            <div className="card-title">Expanded Metric View</div>
+            <div style={{ fontSize: 48, fontWeight: 800, marginTop: 40 }} className={pBlur}>
+              {orderedCards.find(c => c.id === selectedCard)?.count}
+            </div>
+            <div style={{ fontSize: 24, color: 'var(--text2)' }}>
+              {orderedCards.find(c => c.id === selectedCard)?.label} Detail View
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div className="metric-grid" exit={{ opacity: 0, scale: 0.95 }}>
+            {orderedCards.map((c) => (
+              <motion.div 
+                layoutId={`card-${c.id}`}
+                key={c.id} 
+                className="metric-card"
+                onClick={() => setSelectedCard(c.id)}
+                style={{ cursor: "pointer" }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="metric-label">{c.label}</div>
+                <div className={`metric-val ${pBlur}`}>
+                  {c.count}
+                  <span className="metric-unit">{c.unit}</span>
+                </div>
+                <div className={`metric-sub ${pBlur}`}>{c.sub}</div>
+                <div style={{ position: 'absolute', right: 20, bottom: 20, opacity: 0.1 }}>
+                  <c.Icon size={48} color={c.color} />
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {insights && (
         <motion.div variants={item} className="card" style={{ marginTop: 24 }}>
@@ -215,116 +236,118 @@ const Dashboard = () => {
         </motion.div>
       )}
 
-      <div className="dashboard-grid" style={{ marginTop: 24 }}>
-        <motion.div variants={item} className="card">
-          <div className="card-title">
-            <TrendingUp size={18} color="var(--accent)" />
-            Macro Distribution
-          </div>
-          <div>
-            <div className="prog-wrap prog-green">
-              <div className="prog-label">
-                <span className="prog-name">Calories</span>
-                <span className="prog-nums">
-                  {Math.round(stats.cal)} / {targets.cal}
-                </span>
-              </div>
-              <div className="prog-track">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${Math.min(100, (stats.cal / targets.cal) * 100)}%` }}
-                  className="prog-fill" 
-                />
-              </div>
+      <div className="dashboard-grid" style={{ marginTop: 24, display: "flex", flexDirection: phase === "morning" ? "column-reverse" : "column" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 24 }} className="dashboard-grid">
+          <motion.div variants={item} className="card">
+            <div className="card-title">
+              <TrendingUp size={18} color="var(--accent)" />
+              Macro Distribution
             </div>
-            
-            <div className="prog-wrap prog-cyan" style={{ marginTop: "20px" }}>
-              <div className="prog-label">
-                <span className="prog-name">Protein</span>
-                <span className="prog-nums">
-                  {Math.round(stats.prot)} / {targets.prot}g
-                </span>
+            <div>
+              <div className="prog-wrap prog-green">
+                <div className="prog-label">
+                  <span className="prog-name">Calories</span>
+                  <span className={`prog-nums ${pBlur}`}>
+                    {Math.round(stats.cal)} / {targets.cal}
+                  </span>
+                </div>
+                <div className="prog-track">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min(100, (stats.cal / targets.cal) * 100)}%` }}
+                    className="prog-fill" 
+                  />
+                </div>
               </div>
-              <div className="prog-track">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${Math.min(100, (stats.prot / targets.prot) * 100)}%` }}
-                  className="prog-fill" 
-                />
+              
+              <div className="prog-wrap prog-cyan" style={{ marginTop: "20px" }}>
+                <div className="prog-label">
+                  <span className="prog-name">Protein</span>
+                  <span className={`prog-nums ${pBlur}`}>
+                    {Math.round(stats.prot)} / {targets.prot}g
+                  </span>
+                </div>
+                <div className="prog-track">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min(100, (stats.prot / targets.prot) * 100)}%` }}
+                    className="prog-fill" 
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="prog-wrap prog-amber" style={{ marginTop: "20px" }}>
-              <div className="prog-label">
-                <span className="prog-name">Carbs</span>
-                <span className="prog-nums">
-                  {Math.round(stats.carb)} / {targets.carb}g
-                </span>
+              <div className="prog-wrap prog-amber" style={{ marginTop: "20px" }}>
+                <div className="prog-label">
+                  <span className="prog-name">Carbs</span>
+                  <span className={`prog-nums ${pBlur}`}>
+                    {Math.round(stats.carb)} / {targets.carb}g
+                  </span>
+                </div>
+                <div className="prog-track">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min(100, (stats.carb / targets.carb) * 100)}%` }}
+                    className="prog-fill" 
+                  />
+                </div>
               </div>
-              <div className="prog-track">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${Math.min(100, (stats.carb / targets.carb) * 100)}%` }}
-                  className="prog-fill" 
-                />
-              </div>
-            </div>
 
-            <div className="prog-wrap prog-purple" style={{ marginTop: "20px" }}>
-              <div className="prog-label">
-                <span className="prog-name">Fat</span>
-                <span className="prog-nums">
-                  {Math.round(stats.fat)} / {targets.fat}g
-                </span>
-              </div>
-              <div className="prog-track">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${Math.min(100, (stats.fat / targets.fat) * 100)}%` }}
-                  className="prog-fill" 
-                />
+              <div className="prog-wrap prog-purple" style={{ marginTop: "20px" }}>
+                <div className="prog-label">
+                  <span className="prog-name">Fat</span>
+                  <span className={`prog-nums ${pBlur}`}>
+                    {Math.round(stats.fat)} / {targets.fat}g
+                  </span>
+                </div>
+                <div className="prog-track">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min(100, (stats.fat / targets.fat) * 100)}%` }}
+                    className="prog-fill" 
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
 
-        <motion.div variants={item} className="card">
-          <div className="card-title">
-            <Zap size={18} color="var(--accent)" />
-            Step Progress
-          </div>
-          <div className="step-ring-wrap">
-            <div className="step-ring">
-              <svg viewBox="0 0 160 160" width="160" height="160">
-                <circle className="ring-bg" cx="80" cy="80" r="68" />
-                <motion.circle
-                  initial={{ strokeDashoffset: circ }}
-                  animate={{ strokeDashoffset: offset }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
-                  className="ring-fill"
-                  cx="80"
-                  cy="80"
-                  r="68"
-                  strokeDasharray="427"
-                />
-              </svg>
-              <div className="ring-center">
-                <div className="ring-pct">{stepPct}%</div>
-                <div className="ring-sub">Goal Reached</div>
+          <motion.div variants={item} className="card">
+            <div className="card-title">
+              <Zap size={18} color="var(--accent)" />
+              Step Progress
+            </div>
+            <div className="step-ring-wrap">
+              <div className="step-ring">
+                <svg viewBox="0 0 160 160" width="160" height="160">
+                  <circle className="ring-bg" cx="80" cy="80" r="68" />
+                  <motion.circle
+                    initial={{ strokeDashoffset: circ }}
+                    animate={{ strokeDashoffset: offset }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
+                    className="ring-fill"
+                    cx="80"
+                    cy="80"
+                    r="68"
+                    strokeDasharray="427"
+                  />
+                </svg>
+                <div className="ring-center">
+                  <div className={`ring-pct ${pBlur}`}>{stepPct}%</div>
+                  <div className="ring-sub">Goal Reached</div>
+                </div>
               </div>
             </div>
-          </div>
-          <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
-            <div style={{ textAlign: "center", background: "var(--bg3)", borderRadius: "var(--r)", padding: "12px", flex: 1 }}>
-              <div style={{ fontSize: "11px", color: "var(--text3)", textTransform: 'uppercase', marginBottom: 4 }}>Paced</div>
-              <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--text2)" }}>~2,000</div>
+            <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+              <div style={{ textAlign: "center", background: "var(--bg3)", borderRadius: "var(--r)", padding: "12px", flex: 1 }}>
+                <div style={{ fontSize: "11px", color: "var(--text3)", textTransform: 'uppercase', marginBottom: 4 }}>Paced</div>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--text2)" }} className={pBlur}>~2,000</div>
+              </div>
+              <div style={{ textAlign: "center", background: "var(--accent-dim)", borderRadius: "var(--r)", padding: "12px", flex: 1, border: '1px solid rgba(200, 245, 66, 0.1)' }}>
+                <div style={{ fontSize: "11px", color: "var(--accent)", textTransform: 'uppercase', marginBottom: 4 }}>Required</div>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--accent)" }} className={pBlur}>~{Math.max(0, targets.steps - stats.steps).toLocaleString()}</div>
+              </div>
             </div>
-            <div style={{ textAlign: "center", background: "var(--accent-dim)", borderRadius: "var(--r)", padding: "12px", flex: 1, border: '1px solid rgba(200, 245, 66, 0.1)' }}>
-              <div style={{ fontSize: "11px", color: "var(--accent)", textTransform: 'uppercase', marginBottom: 4 }}>Required</div>
-              <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--accent)" }}>~{Math.max(0, targets.steps - stats.steps).toLocaleString()}</div>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </motion.div>
   );

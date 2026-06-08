@@ -75,10 +75,6 @@
 html { scroll-behavior: smooth; }
 body {
   background: var(--bg);
-  background-image:
-    radial-gradient(circle at 50% -20%, rgba(200, 245, 66, 0.06), transparent 42%),
-    radial-gradient(circle at 100% 0%, rgba(168, 85, 247, 0.04), transparent 34%),
-    radial-gradient(circle at 0% 30%, rgba(34, 211, 238, 0.04), transparent 32%);
   background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-body);
@@ -415,6 +411,8 @@ body {
 .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
 .btn-ghost {
+  min-width: 60px; min-height: 60px;
+  display: flex; align-items: center; justify-content: center;
   background: var(--surface-1); border: 1px solid var(--glass-border);
   color: var(--text2); padding: 11px 20px; border-radius: var(--r-pill);
   cursor: pointer; font-size: 13px; font-weight: 600;
@@ -522,7 +520,7 @@ body {
   width: 100%; max-width: 440px;
   background: var(--surface-bar);
   border-radius: var(--r3);
-  padding: 32px;
+  padding: 48px;
   box-shadow: var(--shadow-glass), var(--glass-highlight);
   max-height: 90vh;
   overflow-y: auto;
@@ -684,4 +682,16 @@ body {
     -webkit-backdrop-filter: none;
     background: var(--bg2);
   }
+}
+
+/* PRIVACY MASKING */
+.privacy-blur {
+  filter: blur(8px);
+  opacity: 0.6;
+  user-select: none;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+.privacy-blur:hover {
+  filter: blur(0px);
+  opacity: 1;
 }
