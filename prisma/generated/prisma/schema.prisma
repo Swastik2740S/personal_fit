@@ -39,15 +39,17 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?        @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   logs          FoodLog[]
   steps         StepLog[]
+  favorites     FavoriteFood[]
+  weights       WeightLog[]
 
   // Daily goals (defaults mirror the previously hardcoded targets)
   calGoal  Int @default(2350)
@@ -55,6 +57,9 @@ model User {
   carbGoal Int @default(245)
   fatGoal  Int @default(65)
   stepGoal Int @default(8000)
+
+  // Optional target bodyweight in kg (no sensible default).
+  weightGoal Float?
 }
 
 model VerificationToken {
@@ -92,6 +97,33 @@ model StepLog {
   id     String   @id @default(cuid())
   userId String
   count  Int
+  date   DateTime @default(now())
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}
+
+// Saved "quick add" foods. Macros are stored per 100g (same basis as search
+// results) so a favorite flows straight into the qty modal like any food.
+model FavoriteFood {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  cal       Float
+  prot      Float
+  carb      Float
+  fat       Float
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
+}
+
+// Bodyweight in kg — one row per user per day (upsert), like StepLog.
+model WeightLog {
+  id     String   @id @default(cuid())
+  userId String
+  weight Float
   date   DateTime @default(now())
   user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
