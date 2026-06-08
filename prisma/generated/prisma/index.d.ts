@@ -53,6 +53,11 @@ export type StepLog = $Result.DefaultSelection<Prisma.$StepLogPayload>
  * 
  */
 export type FavoriteFood = $Result.DefaultSelection<Prisma.$FavoriteFoodPayload>
+/**
+ * Model WeightLog
+ * 
+ */
+export type WeightLog = $Result.DefaultSelection<Prisma.$WeightLogPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -254,6 +259,16 @@ export class PrismaClient<
     * ```
     */
   get favoriteFood(): Prisma.FavoriteFoodDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.weightLog`: Exposes CRUD operations for the **WeightLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WeightLogs
+    * const weightLogs = await prisma.weightLog.findMany()
+    * ```
+    */
+  get weightLog(): Prisma.WeightLogDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -695,7 +710,8 @@ export namespace Prisma {
     FoodCache: 'FoodCache',
     FoodLog: 'FoodLog',
     StepLog: 'StepLog',
-    FavoriteFood: 'FavoriteFood'
+    FavoriteFood: 'FavoriteFood',
+    WeightLog: 'WeightLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -711,7 +727,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "account" | "session" | "user" | "verificationToken" | "foodCache" | "foodLog" | "stepLog" | "favoriteFood"
+      modelProps: "account" | "session" | "user" | "verificationToken" | "foodCache" | "foodLog" | "stepLog" | "favoriteFood" | "weightLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1307,6 +1323,80 @@ export namespace Prisma {
           }
         }
       }
+      WeightLog: {
+        payload: Prisma.$WeightLogPayload<ExtArgs>
+        fields: Prisma.WeightLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WeightLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WeightLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WeightLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WeightLogPayload>
+          }
+          findFirst: {
+            args: Prisma.WeightLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WeightLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WeightLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WeightLogPayload>
+          }
+          findMany: {
+            args: Prisma.WeightLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WeightLogPayload>[]
+          }
+          create: {
+            args: Prisma.WeightLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WeightLogPayload>
+          }
+          createMany: {
+            args: Prisma.WeightLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WeightLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WeightLogPayload>[]
+          }
+          delete: {
+            args: Prisma.WeightLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WeightLogPayload>
+          }
+          update: {
+            args: Prisma.WeightLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WeightLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.WeightLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WeightLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.WeightLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WeightLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.WeightLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WeightLogPayload>
+          }
+          aggregate: {
+            args: Prisma.WeightLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWeightLog>
+          }
+          groupBy: {
+            args: Prisma.WeightLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WeightLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WeightLogCountArgs<ExtArgs>
+            result: $Utils.Optional<WeightLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1423,6 +1513,7 @@ export namespace Prisma {
     foodLog?: FoodLogOmit
     stepLog?: StepLogOmit
     favoriteFood?: FavoriteFoodOmit
+    weightLog?: WeightLogOmit
   }
 
   /* Types for Logging */
@@ -1508,6 +1599,7 @@ export namespace Prisma {
     logs: number
     steps: number
     favorites: number
+    weights: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1516,6 +1608,7 @@ export namespace Prisma {
     logs?: boolean | UserCountOutputTypeCountLogsArgs
     steps?: boolean | UserCountOutputTypeCountStepsArgs
     favorites?: boolean | UserCountOutputTypeCountFavoritesArgs
+    weights?: boolean | UserCountOutputTypeCountWeightsArgs
   }
 
   // Custom InputTypes
@@ -1562,6 +1655,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountFavoritesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FavoriteFoodWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountWeightsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WeightLogWhereInput
   }
 
 
@@ -3825,6 +3925,7 @@ export namespace Prisma {
     carbGoal: number | null
     fatGoal: number | null
     stepGoal: number | null
+    weightGoal: number | null
   }
 
   export type UserSumAggregateOutputType = {
@@ -3833,6 +3934,7 @@ export namespace Prisma {
     carbGoal: number | null
     fatGoal: number | null
     stepGoal: number | null
+    weightGoal: number | null
   }
 
   export type UserMinAggregateOutputType = {
@@ -3846,6 +3948,7 @@ export namespace Prisma {
     carbGoal: number | null
     fatGoal: number | null
     stepGoal: number | null
+    weightGoal: number | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -3859,6 +3962,7 @@ export namespace Prisma {
     carbGoal: number | null
     fatGoal: number | null
     stepGoal: number | null
+    weightGoal: number | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -3872,6 +3976,7 @@ export namespace Prisma {
     carbGoal: number
     fatGoal: number
     stepGoal: number
+    weightGoal: number
     _all: number
   }
 
@@ -3882,6 +3987,7 @@ export namespace Prisma {
     carbGoal?: true
     fatGoal?: true
     stepGoal?: true
+    weightGoal?: true
   }
 
   export type UserSumAggregateInputType = {
@@ -3890,6 +3996,7 @@ export namespace Prisma {
     carbGoal?: true
     fatGoal?: true
     stepGoal?: true
+    weightGoal?: true
   }
 
   export type UserMinAggregateInputType = {
@@ -3903,6 +4010,7 @@ export namespace Prisma {
     carbGoal?: true
     fatGoal?: true
     stepGoal?: true
+    weightGoal?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -3916,6 +4024,7 @@ export namespace Prisma {
     carbGoal?: true
     fatGoal?: true
     stepGoal?: true
+    weightGoal?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -3929,6 +4038,7 @@ export namespace Prisma {
     carbGoal?: true
     fatGoal?: true
     stepGoal?: true
+    weightGoal?: true
     _all?: true
   }
 
@@ -4029,6 +4139,7 @@ export namespace Prisma {
     carbGoal: number
     fatGoal: number
     stepGoal: number
+    weightGoal: number | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -4061,11 +4172,13 @@ export namespace Prisma {
     carbGoal?: boolean
     fatGoal?: boolean
     stepGoal?: boolean
+    weightGoal?: boolean
     accounts?: boolean | User$accountsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     logs?: boolean | User$logsArgs<ExtArgs>
     steps?: boolean | User$stepsArgs<ExtArgs>
     favorites?: boolean | User$favoritesArgs<ExtArgs>
+    weights?: boolean | User$weightsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4080,6 +4193,7 @@ export namespace Prisma {
     carbGoal?: boolean
     fatGoal?: boolean
     stepGoal?: boolean
+    weightGoal?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4093,6 +4207,7 @@ export namespace Prisma {
     carbGoal?: boolean
     fatGoal?: boolean
     stepGoal?: boolean
+    weightGoal?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -4106,15 +4221,17 @@ export namespace Prisma {
     carbGoal?: boolean
     fatGoal?: boolean
     stepGoal?: boolean
+    weightGoal?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "calGoal" | "protGoal" | "carbGoal" | "fatGoal" | "stepGoal", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "calGoal" | "protGoal" | "carbGoal" | "fatGoal" | "stepGoal" | "weightGoal", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     accounts?: boolean | User$accountsArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     logs?: boolean | User$logsArgs<ExtArgs>
     steps?: boolean | User$stepsArgs<ExtArgs>
     favorites?: boolean | User$favoritesArgs<ExtArgs>
+    weights?: boolean | User$weightsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4128,6 +4245,7 @@ export namespace Prisma {
       logs: Prisma.$FoodLogPayload<ExtArgs>[]
       steps: Prisma.$StepLogPayload<ExtArgs>[]
       favorites: Prisma.$FavoriteFoodPayload<ExtArgs>[]
+      weights: Prisma.$WeightLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4140,6 +4258,7 @@ export namespace Prisma {
       carbGoal: number
       fatGoal: number
       stepGoal: number
+      weightGoal: number | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -4539,6 +4658,7 @@ export namespace Prisma {
     logs<T extends User$logsArgs<ExtArgs> = {}>(args?: Subset<T, User$logsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FoodLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     steps<T extends User$stepsArgs<ExtArgs> = {}>(args?: Subset<T, User$stepsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StepLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     favorites<T extends User$favoritesArgs<ExtArgs> = {}>(args?: Subset<T, User$favoritesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FavoriteFoodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    weights<T extends User$weightsArgs<ExtArgs> = {}>(args?: Subset<T, User$weightsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WeightLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4578,6 +4698,7 @@ export namespace Prisma {
     readonly carbGoal: FieldRef<"User", 'Int'>
     readonly fatGoal: FieldRef<"User", 'Int'>
     readonly stepGoal: FieldRef<"User", 'Int'>
+    readonly weightGoal: FieldRef<"User", 'Float'>
   }
     
 
@@ -5088,6 +5209,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: FavoriteFoodScalarFieldEnum | FavoriteFoodScalarFieldEnum[]
+  }
+
+  /**
+   * User.weights
+   */
+  export type User$weightsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WeightLog
+     */
+    select?: WeightLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WeightLog
+     */
+    omit?: WeightLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WeightLogInclude<ExtArgs> | null
+    where?: WeightLogWhereInput
+    orderBy?: WeightLogOrderByWithRelationInput | WeightLogOrderByWithRelationInput[]
+    cursor?: WeightLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: WeightLogScalarFieldEnum | WeightLogScalarFieldEnum[]
   }
 
   /**
@@ -10494,6 +10639,1090 @@ export namespace Prisma {
 
 
   /**
+   * Model WeightLog
+   */
+
+  export type AggregateWeightLog = {
+    _count: WeightLogCountAggregateOutputType | null
+    _avg: WeightLogAvgAggregateOutputType | null
+    _sum: WeightLogSumAggregateOutputType | null
+    _min: WeightLogMinAggregateOutputType | null
+    _max: WeightLogMaxAggregateOutputType | null
+  }
+
+  export type WeightLogAvgAggregateOutputType = {
+    weight: number | null
+  }
+
+  export type WeightLogSumAggregateOutputType = {
+    weight: number | null
+  }
+
+  export type WeightLogMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    weight: number | null
+    date: Date | null
+  }
+
+  export type WeightLogMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    weight: number | null
+    date: Date | null
+  }
+
+  export type WeightLogCountAggregateOutputType = {
+    id: number
+    userId: number
+    weight: number
+    date: number
+    _all: number
+  }
+
+
+  export type WeightLogAvgAggregateInputType = {
+    weight?: true
+  }
+
+  export type WeightLogSumAggregateInputType = {
+    weight?: true
+  }
+
+  export type WeightLogMinAggregateInputType = {
+    id?: true
+    userId?: true
+    weight?: true
+    date?: true
+  }
+
+  export type WeightLogMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    weight?: true
+    date?: true
+  }
+
+  export type WeightLogCountAggregateInputType = {
+    id?: true
+    userId?: true
+    weight?: true
+    date?: true
+    _all?: true
+  }
+
+  export type WeightLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WeightLog to aggregate.
+     */
+    where?: WeightLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WeightLogs to fetch.
+     */
+    orderBy?: WeightLogOrderByWithRelationInput | WeightLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WeightLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WeightLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WeightLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WeightLogs
+    **/
+    _count?: true | WeightLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: WeightLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: WeightLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WeightLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WeightLogMaxAggregateInputType
+  }
+
+  export type GetWeightLogAggregateType<T extends WeightLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateWeightLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWeightLog[P]>
+      : GetScalarType<T[P], AggregateWeightLog[P]>
+  }
+
+
+
+
+  export type WeightLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WeightLogWhereInput
+    orderBy?: WeightLogOrderByWithAggregationInput | WeightLogOrderByWithAggregationInput[]
+    by: WeightLogScalarFieldEnum[] | WeightLogScalarFieldEnum
+    having?: WeightLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WeightLogCountAggregateInputType | true
+    _avg?: WeightLogAvgAggregateInputType
+    _sum?: WeightLogSumAggregateInputType
+    _min?: WeightLogMinAggregateInputType
+    _max?: WeightLogMaxAggregateInputType
+  }
+
+  export type WeightLogGroupByOutputType = {
+    id: string
+    userId: string
+    weight: number
+    date: Date
+    _count: WeightLogCountAggregateOutputType | null
+    _avg: WeightLogAvgAggregateOutputType | null
+    _sum: WeightLogSumAggregateOutputType | null
+    _min: WeightLogMinAggregateOutputType | null
+    _max: WeightLogMaxAggregateOutputType | null
+  }
+
+  type GetWeightLogGroupByPayload<T extends WeightLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WeightLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WeightLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WeightLogGroupByOutputType[P]>
+            : GetScalarType<T[P], WeightLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WeightLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    weight?: boolean
+    date?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["weightLog"]>
+
+  export type WeightLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    weight?: boolean
+    date?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["weightLog"]>
+
+  export type WeightLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    weight?: boolean
+    date?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["weightLog"]>
+
+  export type WeightLogSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    weight?: boolean
+    date?: boolean
+  }
+
+  export type WeightLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "weight" | "date", ExtArgs["result"]["weightLog"]>
+  export type WeightLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type WeightLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type WeightLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $WeightLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "WeightLog"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      weight: number
+      date: Date
+    }, ExtArgs["result"]["weightLog"]>
+    composites: {}
+  }
+
+  type WeightLogGetPayload<S extends boolean | null | undefined | WeightLogDefaultArgs> = $Result.GetResult<Prisma.$WeightLogPayload, S>
+
+  type WeightLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<WeightLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: WeightLogCountAggregateInputType | true
+    }
+
+  export interface WeightLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['WeightLog'], meta: { name: 'WeightLog' } }
+    /**
+     * Find zero or one WeightLog that matches the filter.
+     * @param {WeightLogFindUniqueArgs} args - Arguments to find a WeightLog
+     * @example
+     * // Get one WeightLog
+     * const weightLog = await prisma.weightLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WeightLogFindUniqueArgs>(args: SelectSubset<T, WeightLogFindUniqueArgs<ExtArgs>>): Prisma__WeightLogClient<$Result.GetResult<Prisma.$WeightLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one WeightLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {WeightLogFindUniqueOrThrowArgs} args - Arguments to find a WeightLog
+     * @example
+     * // Get one WeightLog
+     * const weightLog = await prisma.weightLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WeightLogFindUniqueOrThrowArgs>(args: SelectSubset<T, WeightLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WeightLogClient<$Result.GetResult<Prisma.$WeightLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WeightLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeightLogFindFirstArgs} args - Arguments to find a WeightLog
+     * @example
+     * // Get one WeightLog
+     * const weightLog = await prisma.weightLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WeightLogFindFirstArgs>(args?: SelectSubset<T, WeightLogFindFirstArgs<ExtArgs>>): Prisma__WeightLogClient<$Result.GetResult<Prisma.$WeightLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WeightLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeightLogFindFirstOrThrowArgs} args - Arguments to find a WeightLog
+     * @example
+     * // Get one WeightLog
+     * const weightLog = await prisma.weightLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WeightLogFindFirstOrThrowArgs>(args?: SelectSubset<T, WeightLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__WeightLogClient<$Result.GetResult<Prisma.$WeightLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more WeightLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeightLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WeightLogs
+     * const weightLogs = await prisma.weightLog.findMany()
+     * 
+     * // Get first 10 WeightLogs
+     * const weightLogs = await prisma.weightLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const weightLogWithIdOnly = await prisma.weightLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends WeightLogFindManyArgs>(args?: SelectSubset<T, WeightLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WeightLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a WeightLog.
+     * @param {WeightLogCreateArgs} args - Arguments to create a WeightLog.
+     * @example
+     * // Create one WeightLog
+     * const WeightLog = await prisma.weightLog.create({
+     *   data: {
+     *     // ... data to create a WeightLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends WeightLogCreateArgs>(args: SelectSubset<T, WeightLogCreateArgs<ExtArgs>>): Prisma__WeightLogClient<$Result.GetResult<Prisma.$WeightLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many WeightLogs.
+     * @param {WeightLogCreateManyArgs} args - Arguments to create many WeightLogs.
+     * @example
+     * // Create many WeightLogs
+     * const weightLog = await prisma.weightLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WeightLogCreateManyArgs>(args?: SelectSubset<T, WeightLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many WeightLogs and returns the data saved in the database.
+     * @param {WeightLogCreateManyAndReturnArgs} args - Arguments to create many WeightLogs.
+     * @example
+     * // Create many WeightLogs
+     * const weightLog = await prisma.weightLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many WeightLogs and only return the `id`
+     * const weightLogWithIdOnly = await prisma.weightLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WeightLogCreateManyAndReturnArgs>(args?: SelectSubset<T, WeightLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WeightLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a WeightLog.
+     * @param {WeightLogDeleteArgs} args - Arguments to delete one WeightLog.
+     * @example
+     * // Delete one WeightLog
+     * const WeightLog = await prisma.weightLog.delete({
+     *   where: {
+     *     // ... filter to delete one WeightLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WeightLogDeleteArgs>(args: SelectSubset<T, WeightLogDeleteArgs<ExtArgs>>): Prisma__WeightLogClient<$Result.GetResult<Prisma.$WeightLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one WeightLog.
+     * @param {WeightLogUpdateArgs} args - Arguments to update one WeightLog.
+     * @example
+     * // Update one WeightLog
+     * const weightLog = await prisma.weightLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WeightLogUpdateArgs>(args: SelectSubset<T, WeightLogUpdateArgs<ExtArgs>>): Prisma__WeightLogClient<$Result.GetResult<Prisma.$WeightLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more WeightLogs.
+     * @param {WeightLogDeleteManyArgs} args - Arguments to filter WeightLogs to delete.
+     * @example
+     * // Delete a few WeightLogs
+     * const { count } = await prisma.weightLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WeightLogDeleteManyArgs>(args?: SelectSubset<T, WeightLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WeightLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeightLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WeightLogs
+     * const weightLog = await prisma.weightLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WeightLogUpdateManyArgs>(args: SelectSubset<T, WeightLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WeightLogs and returns the data updated in the database.
+     * @param {WeightLogUpdateManyAndReturnArgs} args - Arguments to update many WeightLogs.
+     * @example
+     * // Update many WeightLogs
+     * const weightLog = await prisma.weightLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more WeightLogs and only return the `id`
+     * const weightLogWithIdOnly = await prisma.weightLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends WeightLogUpdateManyAndReturnArgs>(args: SelectSubset<T, WeightLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WeightLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one WeightLog.
+     * @param {WeightLogUpsertArgs} args - Arguments to update or create a WeightLog.
+     * @example
+     * // Update or create a WeightLog
+     * const weightLog = await prisma.weightLog.upsert({
+     *   create: {
+     *     // ... data to create a WeightLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WeightLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WeightLogUpsertArgs>(args: SelectSubset<T, WeightLogUpsertArgs<ExtArgs>>): Prisma__WeightLogClient<$Result.GetResult<Prisma.$WeightLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of WeightLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeightLogCountArgs} args - Arguments to filter WeightLogs to count.
+     * @example
+     * // Count the number of WeightLogs
+     * const count = await prisma.weightLog.count({
+     *   where: {
+     *     // ... the filter for the WeightLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends WeightLogCountArgs>(
+      args?: Subset<T, WeightLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WeightLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WeightLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeightLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WeightLogAggregateArgs>(args: Subset<T, WeightLogAggregateArgs>): Prisma.PrismaPromise<GetWeightLogAggregateType<T>>
+
+    /**
+     * Group by WeightLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WeightLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WeightLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WeightLogGroupByArgs['orderBy'] }
+        : { orderBy?: WeightLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WeightLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWeightLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the WeightLog model
+   */
+  readonly fields: WeightLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WeightLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WeightLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the WeightLog model
+   */
+  interface WeightLogFieldRefs {
+    readonly id: FieldRef<"WeightLog", 'String'>
+    readonly userId: FieldRef<"WeightLog", 'String'>
+    readonly weight: FieldRef<"WeightLog", 'Float'>
+    readonly date: FieldRef<"WeightLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * WeightLog findUnique
+   */
+  export type WeightLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WeightLog
+     */
+    select?: WeightLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WeightLog
+     */
+    omit?: WeightLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WeightLogInclude<ExtArgs> | null
+    /**
+     * Filter, which WeightLog to fetch.
+     */
+    where: WeightLogWhereUniqueInput
+  }
+
+  /**
+   * WeightLog findUniqueOrThrow
+   */
+  export type WeightLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WeightLog
+     */
+    select?: WeightLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WeightLog
+     */
+    omit?: WeightLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WeightLogInclude<ExtArgs> | null
+    /**
+     * Filter, which WeightLog to fetch.
+     */
+    where: WeightLogWhereUniqueInput
+  }
+
+  /**
+   * WeightLog findFirst
+   */
+  export type WeightLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WeightLog
+     */
+    select?: WeightLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WeightLog
+     */
+    omit?: WeightLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WeightLogInclude<ExtArgs> | null
+    /**
+     * Filter, which WeightLog to fetch.
+     */
+    where?: WeightLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WeightLogs to fetch.
+     */
+    orderBy?: WeightLogOrderByWithRelationInput | WeightLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WeightLogs.
+     */
+    cursor?: WeightLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WeightLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WeightLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WeightLogs.
+     */
+    distinct?: WeightLogScalarFieldEnum | WeightLogScalarFieldEnum[]
+  }
+
+  /**
+   * WeightLog findFirstOrThrow
+   */
+  export type WeightLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WeightLog
+     */
+    select?: WeightLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WeightLog
+     */
+    omit?: WeightLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WeightLogInclude<ExtArgs> | null
+    /**
+     * Filter, which WeightLog to fetch.
+     */
+    where?: WeightLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WeightLogs to fetch.
+     */
+    orderBy?: WeightLogOrderByWithRelationInput | WeightLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WeightLogs.
+     */
+    cursor?: WeightLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WeightLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WeightLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WeightLogs.
+     */
+    distinct?: WeightLogScalarFieldEnum | WeightLogScalarFieldEnum[]
+  }
+
+  /**
+   * WeightLog findMany
+   */
+  export type WeightLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WeightLog
+     */
+    select?: WeightLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WeightLog
+     */
+    omit?: WeightLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WeightLogInclude<ExtArgs> | null
+    /**
+     * Filter, which WeightLogs to fetch.
+     */
+    where?: WeightLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WeightLogs to fetch.
+     */
+    orderBy?: WeightLogOrderByWithRelationInput | WeightLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing WeightLogs.
+     */
+    cursor?: WeightLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WeightLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WeightLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WeightLogs.
+     */
+    distinct?: WeightLogScalarFieldEnum | WeightLogScalarFieldEnum[]
+  }
+
+  /**
+   * WeightLog create
+   */
+  export type WeightLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WeightLog
+     */
+    select?: WeightLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WeightLog
+     */
+    omit?: WeightLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WeightLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a WeightLog.
+     */
+    data: XOR<WeightLogCreateInput, WeightLogUncheckedCreateInput>
+  }
+
+  /**
+   * WeightLog createMany
+   */
+  export type WeightLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many WeightLogs.
+     */
+    data: WeightLogCreateManyInput | WeightLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * WeightLog createManyAndReturn
+   */
+  export type WeightLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WeightLog
+     */
+    select?: WeightLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WeightLog
+     */
+    omit?: WeightLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many WeightLogs.
+     */
+    data: WeightLogCreateManyInput | WeightLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WeightLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WeightLog update
+   */
+  export type WeightLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WeightLog
+     */
+    select?: WeightLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WeightLog
+     */
+    omit?: WeightLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WeightLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a WeightLog.
+     */
+    data: XOR<WeightLogUpdateInput, WeightLogUncheckedUpdateInput>
+    /**
+     * Choose, which WeightLog to update.
+     */
+    where: WeightLogWhereUniqueInput
+  }
+
+  /**
+   * WeightLog updateMany
+   */
+  export type WeightLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update WeightLogs.
+     */
+    data: XOR<WeightLogUpdateManyMutationInput, WeightLogUncheckedUpdateManyInput>
+    /**
+     * Filter which WeightLogs to update
+     */
+    where?: WeightLogWhereInput
+    /**
+     * Limit how many WeightLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * WeightLog updateManyAndReturn
+   */
+  export type WeightLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WeightLog
+     */
+    select?: WeightLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WeightLog
+     */
+    omit?: WeightLogOmit<ExtArgs> | null
+    /**
+     * The data used to update WeightLogs.
+     */
+    data: XOR<WeightLogUpdateManyMutationInput, WeightLogUncheckedUpdateManyInput>
+    /**
+     * Filter which WeightLogs to update
+     */
+    where?: WeightLogWhereInput
+    /**
+     * Limit how many WeightLogs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WeightLogIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * WeightLog upsert
+   */
+  export type WeightLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WeightLog
+     */
+    select?: WeightLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WeightLog
+     */
+    omit?: WeightLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WeightLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the WeightLog to update in case it exists.
+     */
+    where: WeightLogWhereUniqueInput
+    /**
+     * In case the WeightLog found by the `where` argument doesn't exist, create a new WeightLog with this data.
+     */
+    create: XOR<WeightLogCreateInput, WeightLogUncheckedCreateInput>
+    /**
+     * In case the WeightLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WeightLogUpdateInput, WeightLogUncheckedUpdateInput>
+  }
+
+  /**
+   * WeightLog delete
+   */
+  export type WeightLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WeightLog
+     */
+    select?: WeightLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WeightLog
+     */
+    omit?: WeightLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WeightLogInclude<ExtArgs> | null
+    /**
+     * Filter which WeightLog to delete.
+     */
+    where: WeightLogWhereUniqueInput
+  }
+
+  /**
+   * WeightLog deleteMany
+   */
+  export type WeightLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WeightLogs to delete
+     */
+    where?: WeightLogWhereInput
+    /**
+     * Limit how many WeightLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * WeightLog without action
+   */
+  export type WeightLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WeightLog
+     */
+    select?: WeightLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WeightLog
+     */
+    omit?: WeightLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WeightLogInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -10545,7 +11774,8 @@ export namespace Prisma {
     protGoal: 'protGoal',
     carbGoal: 'carbGoal',
     fatGoal: 'fatGoal',
-    stepGoal: 'stepGoal'
+    stepGoal: 'stepGoal',
+    weightGoal: 'weightGoal'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -10609,6 +11839,16 @@ export namespace Prisma {
   };
 
   export type FavoriteFoodScalarFieldEnum = (typeof FavoriteFoodScalarFieldEnum)[keyof typeof FavoriteFoodScalarFieldEnum]
+
+
+  export const WeightLogScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    weight: 'weight',
+    date: 'date'
+  };
+
+  export type WeightLogScalarFieldEnum = (typeof WeightLogScalarFieldEnum)[keyof typeof WeightLogScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -10856,11 +12096,13 @@ export namespace Prisma {
     carbGoal?: IntFilter<"User"> | number
     fatGoal?: IntFilter<"User"> | number
     stepGoal?: IntFilter<"User"> | number
+    weightGoal?: FloatNullableFilter<"User"> | number | null
     accounts?: AccountListRelationFilter
     sessions?: SessionListRelationFilter
     logs?: FoodLogListRelationFilter
     steps?: StepLogListRelationFilter
     favorites?: FavoriteFoodListRelationFilter
+    weights?: WeightLogListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -10874,11 +12116,13 @@ export namespace Prisma {
     carbGoal?: SortOrder
     fatGoal?: SortOrder
     stepGoal?: SortOrder
+    weightGoal?: SortOrderInput | SortOrder
     accounts?: AccountOrderByRelationAggregateInput
     sessions?: SessionOrderByRelationAggregateInput
     logs?: FoodLogOrderByRelationAggregateInput
     steps?: StepLogOrderByRelationAggregateInput
     favorites?: FavoriteFoodOrderByRelationAggregateInput
+    weights?: WeightLogOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -10895,11 +12139,13 @@ export namespace Prisma {
     carbGoal?: IntFilter<"User"> | number
     fatGoal?: IntFilter<"User"> | number
     stepGoal?: IntFilter<"User"> | number
+    weightGoal?: FloatNullableFilter<"User"> | number | null
     accounts?: AccountListRelationFilter
     sessions?: SessionListRelationFilter
     logs?: FoodLogListRelationFilter
     steps?: StepLogListRelationFilter
     favorites?: FavoriteFoodListRelationFilter
+    weights?: WeightLogListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -10913,6 +12159,7 @@ export namespace Prisma {
     carbGoal?: SortOrder
     fatGoal?: SortOrder
     stepGoal?: SortOrder
+    weightGoal?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -10934,6 +12181,7 @@ export namespace Prisma {
     carbGoal?: IntWithAggregatesFilter<"User"> | number
     fatGoal?: IntWithAggregatesFilter<"User"> | number
     stepGoal?: IntWithAggregatesFilter<"User"> | number
+    weightGoal?: FloatNullableWithAggregatesFilter<"User"> | number | null
   }
 
   export type VerificationTokenWhereInput = {
@@ -11239,6 +12487,59 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"FavoriteFood"> | Date | string
   }
 
+  export type WeightLogWhereInput = {
+    AND?: WeightLogWhereInput | WeightLogWhereInput[]
+    OR?: WeightLogWhereInput[]
+    NOT?: WeightLogWhereInput | WeightLogWhereInput[]
+    id?: StringFilter<"WeightLog"> | string
+    userId?: StringFilter<"WeightLog"> | string
+    weight?: FloatFilter<"WeightLog"> | number
+    date?: DateTimeFilter<"WeightLog"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type WeightLogOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    weight?: SortOrder
+    date?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type WeightLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_date?: WeightLogUserIdDateCompoundUniqueInput
+    AND?: WeightLogWhereInput | WeightLogWhereInput[]
+    OR?: WeightLogWhereInput[]
+    NOT?: WeightLogWhereInput | WeightLogWhereInput[]
+    userId?: StringFilter<"WeightLog"> | string
+    weight?: FloatFilter<"WeightLog"> | number
+    date?: DateTimeFilter<"WeightLog"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId_date">
+
+  export type WeightLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    weight?: SortOrder
+    date?: SortOrder
+    _count?: WeightLogCountOrderByAggregateInput
+    _avg?: WeightLogAvgOrderByAggregateInput
+    _max?: WeightLogMaxOrderByAggregateInput
+    _min?: WeightLogMinOrderByAggregateInput
+    _sum?: WeightLogSumOrderByAggregateInput
+  }
+
+  export type WeightLogScalarWhereWithAggregatesInput = {
+    AND?: WeightLogScalarWhereWithAggregatesInput | WeightLogScalarWhereWithAggregatesInput[]
+    OR?: WeightLogScalarWhereWithAggregatesInput[]
+    NOT?: WeightLogScalarWhereWithAggregatesInput | WeightLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"WeightLog"> | string
+    userId?: StringWithAggregatesFilter<"WeightLog"> | string
+    weight?: FloatWithAggregatesFilter<"WeightLog"> | number
+    date?: DateTimeWithAggregatesFilter<"WeightLog"> | Date | string
+  }
+
   export type AccountCreateInput = {
     id?: string
     type: string
@@ -11402,11 +12703,13 @@ export namespace Prisma {
     carbGoal?: number
     fatGoal?: number
     stepGoal?: number
+    weightGoal?: number | null
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     logs?: FoodLogCreateNestedManyWithoutUserInput
     steps?: StepLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
+    weights?: WeightLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -11420,11 +12723,13 @@ export namespace Prisma {
     carbGoal?: number
     fatGoal?: number
     stepGoal?: number
+    weightGoal?: number | null
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
+    weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -11438,11 +12743,13 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     logs?: FoodLogUpdateManyWithoutUserNestedInput
     steps?: StepLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -11456,11 +12763,13 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -11474,6 +12783,7 @@ export namespace Prisma {
     carbGoal?: number
     fatGoal?: number
     stepGoal?: number
+    weightGoal?: number | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -11487,6 +12797,7 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -11500,6 +12811,7 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
   export type VerificationTokenCreateInput = {
@@ -11814,6 +13126,54 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type WeightLogCreateInput = {
+    id?: string
+    weight: number
+    date?: Date | string
+    user: UserCreateNestedOneWithoutWeightsInput
+  }
+
+  export type WeightLogUncheckedCreateInput = {
+    id?: string
+    userId: string
+    weight: number
+    date?: Date | string
+  }
+
+  export type WeightLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weight?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutWeightsNestedInput
+  }
+
+  export type WeightLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    weight?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeightLogCreateManyInput = {
+    id?: string
+    userId: string
+    weight: number
+    date?: Date | string
+  }
+
+  export type WeightLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weight?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeightLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    weight?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -12043,6 +13403,17 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type AccountListRelationFilter = {
     every?: AccountWhereInput
     some?: AccountWhereInput
@@ -12073,6 +13444,12 @@ export namespace Prisma {
     none?: FavoriteFoodWhereInput
   }
 
+  export type WeightLogListRelationFilter = {
+    every?: WeightLogWhereInput
+    some?: WeightLogWhereInput
+    none?: WeightLogWhereInput
+  }
+
   export type AccountOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -12093,6 +13470,10 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type WeightLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -12104,6 +13485,7 @@ export namespace Prisma {
     carbGoal?: SortOrder
     fatGoal?: SortOrder
     stepGoal?: SortOrder
+    weightGoal?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -12112,6 +13494,7 @@ export namespace Prisma {
     carbGoal?: SortOrder
     fatGoal?: SortOrder
     stepGoal?: SortOrder
+    weightGoal?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -12125,6 +13508,7 @@ export namespace Prisma {
     carbGoal?: SortOrder
     fatGoal?: SortOrder
     stepGoal?: SortOrder
+    weightGoal?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -12138,6 +13522,7 @@ export namespace Prisma {
     carbGoal?: SortOrder
     fatGoal?: SortOrder
     stepGoal?: SortOrder
+    weightGoal?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -12146,6 +13531,7 @@ export namespace Prisma {
     carbGoal?: SortOrder
     fatGoal?: SortOrder
     stepGoal?: SortOrder
+    weightGoal?: SortOrder
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -12176,6 +13562,22 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type VerificationTokenIdentifierTokenCompoundUniqueInput = {
@@ -12393,6 +13795,40 @@ export namespace Prisma {
     fat?: SortOrder
   }
 
+  export type WeightLogUserIdDateCompoundUniqueInput = {
+    userId: string
+    date: Date | string
+  }
+
+  export type WeightLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    weight?: SortOrder
+    date?: SortOrder
+  }
+
+  export type WeightLogAvgOrderByAggregateInput = {
+    weight?: SortOrder
+  }
+
+  export type WeightLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    weight?: SortOrder
+    date?: SortOrder
+  }
+
+  export type WeightLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    weight?: SortOrder
+    date?: SortOrder
+  }
+
+  export type WeightLogSumOrderByAggregateInput = {
+    weight?: SortOrder
+  }
+
   export type UserCreateNestedOneWithoutAccountsInput = {
     create?: XOR<UserCreateWithoutAccountsInput, UserUncheckedCreateWithoutAccountsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAccountsInput
@@ -12476,6 +13912,13 @@ export namespace Prisma {
     connect?: FavoriteFoodWhereUniqueInput | FavoriteFoodWhereUniqueInput[]
   }
 
+  export type WeightLogCreateNestedManyWithoutUserInput = {
+    create?: XOR<WeightLogCreateWithoutUserInput, WeightLogUncheckedCreateWithoutUserInput> | WeightLogCreateWithoutUserInput[] | WeightLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: WeightLogCreateOrConnectWithoutUserInput | WeightLogCreateOrConnectWithoutUserInput[]
+    createMany?: WeightLogCreateManyUserInputEnvelope
+    connect?: WeightLogWhereUniqueInput | WeightLogWhereUniqueInput[]
+  }
+
   export type AccountUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -12511,12 +13954,27 @@ export namespace Prisma {
     connect?: FavoriteFoodWhereUniqueInput | FavoriteFoodWhereUniqueInput[]
   }
 
+  export type WeightLogUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<WeightLogCreateWithoutUserInput, WeightLogUncheckedCreateWithoutUserInput> | WeightLogCreateWithoutUserInput[] | WeightLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: WeightLogCreateOrConnectWithoutUserInput | WeightLogCreateOrConnectWithoutUserInput[]
+    createMany?: WeightLogCreateManyUserInputEnvelope
+    connect?: WeightLogWhereUniqueInput | WeightLogWhereUniqueInput[]
+  }
+
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
   }
 
   export type IntFieldUpdateOperationsInput = {
     set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
     increment?: number
     decrement?: number
     multiply?: number
@@ -12593,6 +14051,20 @@ export namespace Prisma {
     deleteMany?: FavoriteFoodScalarWhereInput | FavoriteFoodScalarWhereInput[]
   }
 
+  export type WeightLogUpdateManyWithoutUserNestedInput = {
+    create?: XOR<WeightLogCreateWithoutUserInput, WeightLogUncheckedCreateWithoutUserInput> | WeightLogCreateWithoutUserInput[] | WeightLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: WeightLogCreateOrConnectWithoutUserInput | WeightLogCreateOrConnectWithoutUserInput[]
+    upsert?: WeightLogUpsertWithWhereUniqueWithoutUserInput | WeightLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: WeightLogCreateManyUserInputEnvelope
+    set?: WeightLogWhereUniqueInput | WeightLogWhereUniqueInput[]
+    disconnect?: WeightLogWhereUniqueInput | WeightLogWhereUniqueInput[]
+    delete?: WeightLogWhereUniqueInput | WeightLogWhereUniqueInput[]
+    connect?: WeightLogWhereUniqueInput | WeightLogWhereUniqueInput[]
+    update?: WeightLogUpdateWithWhereUniqueWithoutUserInput | WeightLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: WeightLogUpdateManyWithWhereWithoutUserInput | WeightLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: WeightLogScalarWhereInput | WeightLogScalarWhereInput[]
+  }
+
   export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -12663,6 +14135,20 @@ export namespace Prisma {
     deleteMany?: FavoriteFoodScalarWhereInput | FavoriteFoodScalarWhereInput[]
   }
 
+  export type WeightLogUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<WeightLogCreateWithoutUserInput, WeightLogUncheckedCreateWithoutUserInput> | WeightLogCreateWithoutUserInput[] | WeightLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: WeightLogCreateOrConnectWithoutUserInput | WeightLogCreateOrConnectWithoutUserInput[]
+    upsert?: WeightLogUpsertWithWhereUniqueWithoutUserInput | WeightLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: WeightLogCreateManyUserInputEnvelope
+    set?: WeightLogWhereUniqueInput | WeightLogWhereUniqueInput[]
+    disconnect?: WeightLogWhereUniqueInput | WeightLogWhereUniqueInput[]
+    delete?: WeightLogWhereUniqueInput | WeightLogWhereUniqueInput[]
+    connect?: WeightLogWhereUniqueInput | WeightLogWhereUniqueInput[]
+    update?: WeightLogUpdateWithWhereUniqueWithoutUserInput | WeightLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: WeightLogUpdateManyWithWhereWithoutUserInput | WeightLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: WeightLogScalarWhereInput | WeightLogScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutLogsInput = {
     create?: XOR<UserCreateWithoutLogsInput, UserUncheckedCreateWithoutLogsInput>
     connectOrCreate?: UserCreateOrConnectWithoutLogsInput
@@ -12711,6 +14197,20 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutFavoritesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFavoritesInput, UserUpdateWithoutFavoritesInput>, UserUncheckedUpdateWithoutFavoritesInput>
+  }
+
+  export type UserCreateNestedOneWithoutWeightsInput = {
+    create?: XOR<UserCreateWithoutWeightsInput, UserUncheckedCreateWithoutWeightsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutWeightsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutWeightsNestedInput = {
+    create?: XOR<UserCreateWithoutWeightsInput, UserUncheckedCreateWithoutWeightsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutWeightsInput
+    upsert?: UserUpsertWithoutWeightsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutWeightsInput, UserUpdateWithoutWeightsInput>, UserUncheckedUpdateWithoutWeightsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -12901,6 +14401,22 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
     in?: number[] | ListFloatFieldRefInput<$PrismaModel>
@@ -12928,10 +14444,12 @@ export namespace Prisma {
     carbGoal?: number
     fatGoal?: number
     stepGoal?: number
+    weightGoal?: number | null
     sessions?: SessionCreateNestedManyWithoutUserInput
     logs?: FoodLogCreateNestedManyWithoutUserInput
     steps?: StepLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
+    weights?: WeightLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -12945,10 +14463,12 @@ export namespace Prisma {
     carbGoal?: number
     fatGoal?: number
     stepGoal?: number
+    weightGoal?: number | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
+    weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -12978,10 +14498,12 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
     sessions?: SessionUpdateManyWithoutUserNestedInput
     logs?: FoodLogUpdateManyWithoutUserNestedInput
     steps?: StepLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -12995,10 +14517,12 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -13012,10 +14536,12 @@ export namespace Prisma {
     carbGoal?: number
     fatGoal?: number
     stepGoal?: number
+    weightGoal?: number | null
     accounts?: AccountCreateNestedManyWithoutUserInput
     logs?: FoodLogCreateNestedManyWithoutUserInput
     steps?: StepLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
+    weights?: WeightLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -13029,10 +14555,12 @@ export namespace Prisma {
     carbGoal?: number
     fatGoal?: number
     stepGoal?: number
+    weightGoal?: number | null
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
+    weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -13062,10 +14590,12 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
     accounts?: AccountUpdateManyWithoutUserNestedInput
     logs?: FoodLogUpdateManyWithoutUserNestedInput
     steps?: StepLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -13079,10 +14609,12 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AccountCreateWithoutUserInput = {
@@ -13228,6 +14760,28 @@ export namespace Prisma {
 
   export type FavoriteFoodCreateManyUserInputEnvelope = {
     data: FavoriteFoodCreateManyUserInput | FavoriteFoodCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type WeightLogCreateWithoutUserInput = {
+    id?: string
+    weight: number
+    date?: Date | string
+  }
+
+  export type WeightLogUncheckedCreateWithoutUserInput = {
+    id?: string
+    weight: number
+    date?: Date | string
+  }
+
+  export type WeightLogCreateOrConnectWithoutUserInput = {
+    where: WeightLogWhereUniqueInput
+    create: XOR<WeightLogCreateWithoutUserInput, WeightLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type WeightLogCreateManyUserInputEnvelope = {
+    data: WeightLogCreateManyUserInput | WeightLogCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -13379,6 +14933,32 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"FavoriteFood"> | Date | string
   }
 
+  export type WeightLogUpsertWithWhereUniqueWithoutUserInput = {
+    where: WeightLogWhereUniqueInput
+    update: XOR<WeightLogUpdateWithoutUserInput, WeightLogUncheckedUpdateWithoutUserInput>
+    create: XOR<WeightLogCreateWithoutUserInput, WeightLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type WeightLogUpdateWithWhereUniqueWithoutUserInput = {
+    where: WeightLogWhereUniqueInput
+    data: XOR<WeightLogUpdateWithoutUserInput, WeightLogUncheckedUpdateWithoutUserInput>
+  }
+
+  export type WeightLogUpdateManyWithWhereWithoutUserInput = {
+    where: WeightLogScalarWhereInput
+    data: XOR<WeightLogUpdateManyMutationInput, WeightLogUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type WeightLogScalarWhereInput = {
+    AND?: WeightLogScalarWhereInput | WeightLogScalarWhereInput[]
+    OR?: WeightLogScalarWhereInput[]
+    NOT?: WeightLogScalarWhereInput | WeightLogScalarWhereInput[]
+    id?: StringFilter<"WeightLog"> | string
+    userId?: StringFilter<"WeightLog"> | string
+    weight?: FloatFilter<"WeightLog"> | number
+    date?: DateTimeFilter<"WeightLog"> | Date | string
+  }
+
   export type UserCreateWithoutLogsInput = {
     id?: string
     name?: string | null
@@ -13390,10 +14970,12 @@ export namespace Prisma {
     carbGoal?: number
     fatGoal?: number
     stepGoal?: number
+    weightGoal?: number | null
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     steps?: StepLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
+    weights?: WeightLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLogsInput = {
@@ -13407,10 +14989,12 @@ export namespace Prisma {
     carbGoal?: number
     fatGoal?: number
     stepGoal?: number
+    weightGoal?: number | null
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
+    weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLogsInput = {
@@ -13440,10 +15024,12 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     steps?: StepLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLogsInput = {
@@ -13457,10 +15043,12 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutStepsInput = {
@@ -13474,10 +15062,12 @@ export namespace Prisma {
     carbGoal?: number
     fatGoal?: number
     stepGoal?: number
+    weightGoal?: number | null
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     logs?: FoodLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
+    weights?: WeightLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutStepsInput = {
@@ -13491,10 +15081,12 @@ export namespace Prisma {
     carbGoal?: number
     fatGoal?: number
     stepGoal?: number
+    weightGoal?: number | null
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
+    weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutStepsInput = {
@@ -13524,10 +15116,12 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     logs?: FoodLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStepsInput = {
@@ -13541,10 +15135,12 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutFavoritesInput = {
@@ -13558,10 +15154,12 @@ export namespace Prisma {
     carbGoal?: number
     fatGoal?: number
     stepGoal?: number
+    weightGoal?: number | null
     accounts?: AccountCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     logs?: FoodLogCreateNestedManyWithoutUserInput
     steps?: StepLogCreateNestedManyWithoutUserInput
+    weights?: WeightLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFavoritesInput = {
@@ -13575,10 +15173,12 @@ export namespace Prisma {
     carbGoal?: number
     fatGoal?: number
     stepGoal?: number
+    weightGoal?: number | null
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
+    weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFavoritesInput = {
@@ -13608,10 +15208,12 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
     accounts?: AccountUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     logs?: FoodLogUpdateManyWithoutUserNestedInput
     steps?: StepLogUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFavoritesInput = {
@@ -13625,10 +15227,104 @@ export namespace Prisma {
     carbGoal?: IntFieldUpdateOperationsInput | number
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutWeightsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    calGoal?: number
+    protGoal?: number
+    carbGoal?: number
+    fatGoal?: number
+    stepGoal?: number
+    weightGoal?: number | null
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    logs?: FoodLogCreateNestedManyWithoutUserInput
+    steps?: StepLogCreateNestedManyWithoutUserInput
+    favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutWeightsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    image?: string | null
+    calGoal?: number
+    protGoal?: number
+    carbGoal?: number
+    fatGoal?: number
+    stepGoal?: number
+    weightGoal?: number | null
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
+    steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
+    favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutWeightsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutWeightsInput, UserUncheckedCreateWithoutWeightsInput>
+  }
+
+  export type UserUpsertWithoutWeightsInput = {
+    update: XOR<UserUpdateWithoutWeightsInput, UserUncheckedUpdateWithoutWeightsInput>
+    create: XOR<UserCreateWithoutWeightsInput, UserUncheckedCreateWithoutWeightsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutWeightsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutWeightsInput, UserUncheckedUpdateWithoutWeightsInput>
+  }
+
+  export type UserUpdateWithoutWeightsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    calGoal?: IntFieldUpdateOperationsInput | number
+    protGoal?: IntFieldUpdateOperationsInput | number
+    carbGoal?: IntFieldUpdateOperationsInput | number
+    fatGoal?: IntFieldUpdateOperationsInput | number
+    stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    logs?: FoodLogUpdateManyWithoutUserNestedInput
+    steps?: StepLogUpdateManyWithoutUserNestedInput
+    favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutWeightsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    calGoal?: IntFieldUpdateOperationsInput | number
+    protGoal?: IntFieldUpdateOperationsInput | number
+    carbGoal?: IntFieldUpdateOperationsInput | number
+    fatGoal?: IntFieldUpdateOperationsInput | number
+    stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
+    steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
+    favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AccountCreateManyUserInput = {
@@ -13677,6 +15373,12 @@ export namespace Prisma {
     carb: number
     fat: number
     createdAt?: Date | string
+  }
+
+  export type WeightLogCreateManyUserInput = {
+    id?: string
+    weight: number
+    date?: Date | string
   }
 
   export type AccountUpdateWithoutUserInput = {
@@ -13821,6 +15523,24 @@ export namespace Prisma {
     carb?: FloatFieldUpdateOperationsInput | number
     fat?: FloatFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeightLogUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weight?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeightLogUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weight?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WeightLogUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    weight?: FloatFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

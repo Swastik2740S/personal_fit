@@ -9,6 +9,7 @@ const GOAL_SELECT = {
   carbGoal: true,
   fatGoal: true,
   stepGoal: true,
+  weightGoal: true,
 };
 
 // GET /api/profile - current user's goals

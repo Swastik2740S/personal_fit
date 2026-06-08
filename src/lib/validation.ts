@@ -36,8 +36,14 @@ export const goalsSchema = z
     carbGoal: goalField,
     fatGoal: goalField,
     stepGoal: goalField,
+    weightGoal: z.number().finite().positive().max(1000),
   })
   .partial();
+
+// Bodyweight in kg.
+export const weightSchema = z.object({
+  weight: z.number().finite().positive().max(1000),
+});
 
 export type FoodLogInput = z.infer<typeof foodLogSchema>;
 export type GoalsInput = z.infer<typeof goalsSchema>;

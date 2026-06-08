@@ -152,7 +152,8 @@ exports.Prisma.UserScalarFieldEnum = {
   protGoal: 'protGoal',
   carbGoal: 'carbGoal',
   fatGoal: 'fatGoal',
-  stepGoal: 'stepGoal'
+  stepGoal: 'stepGoal',
+  weightGoal: 'weightGoal'
 };
 
 exports.Prisma.VerificationTokenScalarFieldEnum = {
@@ -200,6 +201,13 @@ exports.Prisma.FavoriteFoodScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.WeightLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  weight: 'weight',
+  date: 'date'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -224,7 +232,8 @@ exports.Prisma.ModelName = {
   FoodCache: 'FoodCache',
   FoodLog: 'FoodLog',
   StepLog: 'StepLog',
-  FavoriteFood: 'FavoriteFood'
+  FavoriteFood: 'FavoriteFood',
+  WeightLog: 'WeightLog'
 };
 
 /**
