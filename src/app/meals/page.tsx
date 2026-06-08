@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import { Coffee, Sun, Zap, Moon, Info, TrendingUp } from "lucide-react";
 import { containerStagger as container, fadeUpItem as item } from "@/lib/motion";
@@ -57,20 +59,53 @@ const meals = [
   },
 ];
 
-const targets = [
-  { label: "Calories", val: "2350", unit: "kcal", color: "var(--accent)" },
-  { label: "Protein", val: "160", unit: "g", color: "var(--neon-cyan)" },
-  { label: "Carbs", val: "245", unit: "g", color: "var(--neon-amber)" },
-  { label: "Fats", val: "65", unit: "g", color: "var(--neon-purple)" },
-];
+// Fallback targets (mirror the User goal-column defaults) used until the user's
+// real goals load, or if they're signed out / the fetch fails.
+const DEFAULT_GOALS = { calGoal: 2350, protGoal: 160, carbGoal: 245, fatGoal: 65 };
+
+type Goals = typeof DEFAULT_GOALS;
 
 const MealPlanPage = () => {
+  const { data: session } = useSession();
+  const [goals, setGoals] = useState<Goals>(DEFAULT_GOALS);
+
+  useEffect(() => {
+    if (!session) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/profile", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled) return;
+        setGoals({
+          calGoal: data.calGoal ?? DEFAULT_GOALS.calGoal,
+          protGoal: data.protGoal ?? DEFAULT_GOALS.protGoal,
+          carbGoal: data.carbGoal ?? DEFAULT_GOALS.carbGoal,
+          fatGoal: data.fatGoal ?? DEFAULT_GOALS.fatGoal,
+        });
+      } catch (error) {
+        console.error("Fetch goals error:", error);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [session]);
+
+  const targets = [
+    { label: "Calories", val: goals.calGoal, unit: "kcal", color: "var(--accent)" },
+    { label: "Protein", val: goals.protGoal, unit: "g", color: "var(--neon-cyan)" },
+    { label: "Carbs", val: goals.carbGoal, unit: "g", color: "var(--neon-amber)" },
+    { label: "Fats", val: goals.fatGoal, unit: "g", color: "var(--neon-purple)" },
+  ];
+
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="page active">
       <motion.div variants={item} className="page-header">
         <div>
           <div className="page-title">Nutrition Blueprint</div>
-          <div className="page-sub">Vegetarian + Eggs focus · 2,350 kcal Daily.</div>
+          <div className="page-sub">Vegetarian + Eggs focus · {goals.calGoal.toLocaleString()} kcal Daily.</div>
         </div>
       </motion.div>
 

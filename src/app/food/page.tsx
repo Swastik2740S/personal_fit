@@ -47,6 +47,8 @@ const FoodLogger = () => {
   const [selectedDate, setSelectedDate] = useState(getLocalStartOfDay());
   const [favorites, setFavorites] = useState<FoodItem[]>([]);
   const [recent, setRecent] = useState<FoodItem[]>([]);
+  const [addError, setAddError] = useState<string | null>(null);
+  const [confirmingClear, setConfirmingClear] = useState(false);
 
   const favNames = new Set(favorites.map((f) => f.name));
   const todayIso = getLastNDays().at(-1)?.iso ?? getLocalStartOfDay();
@@ -121,6 +123,12 @@ const FoodLogger = () => {
     setDefaultMealType();
   }, [setDefaultMealType]);
 
+  // Clear any stale add-error whenever the quantity modal opens/closes or the
+  // selected food changes, so errors don't carry over between entries.
+  useEffect(() => {
+    setAddError(null);
+  }, [selectedFood, modalStep]);
+
   useEffect(() => {
     if (session) fetchLogs();
   }, [session, fetchLogs]);
@@ -149,6 +157,7 @@ const FoodLogger = () => {
 
   const addToLog = async () => {
     if (!selectedFood) return;
+    setAddError(null);
     const factor = qty / 100;
     const entry = {
       name: selectedFood.name,
@@ -176,11 +185,12 @@ const FoodLogger = () => {
         await fetchLogs();
         fetchRecent();
       } else {
-        const err = await res.json();
-        alert(`Error adding food: ${err.error || 'Unknown error'}`);
+        const err = await res.json().catch(() => ({}));
+        setAddError(err.error || "Couldn't add that food. Please try again.");
       }
     } catch (error) {
       console.error("Add log error:", error);
+      setAddError("Network error. Please try again.");
     }
   };
 
@@ -197,7 +207,6 @@ const FoodLogger = () => {
   };
 
   const clearLogs = async () => {
-    if (!confirm(`Are you sure you want to clear all logs for ${dayLabel.toLowerCase()}?`)) return;
     try {
       const res = await fetch(`/api/food/log?all=true&localStart=${selectedDate}`, {
         method: "DELETE",
@@ -206,6 +215,8 @@ const FoodLogger = () => {
       if (res.ok) await fetchLogs();
     } catch (error) {
       console.error("Clear logs error:", error);
+    } finally {
+      setConfirmingClear(false);
     }
   };
 
@@ -355,7 +366,7 @@ const FoodLogger = () => {
             <History size={18} color="var(--neon-cyan)" />
             {isToday ? "Today's Log" : `${dayLabel} Log`}
           </div>
-          <button className="btn-ghost" onClick={clearLogs} style={{ fontSize: 11, padding: '4px 10px' }}>
+          <button className="btn-ghost" onClick={() => setConfirmingClear(true)} disabled={logs.length === 0} style={{ fontSize: 11, padding: '4px 10px' }}>
             <Trash2 size={12} style={{ marginRight: 4 }} /> Clear
           </button>
         </div>
@@ -541,6 +552,12 @@ const FoodLogger = () => {
                     </div>
                   </div>
 
+                  {addError && (
+                    <div role="alert" style={{ background: 'rgba(255,90,90,0.12)', border: '1px solid rgba(255,90,90,0.35)', color: '#ff9a9a', fontSize: 13, fontWeight: 600, padding: '10px 14px', borderRadius: 'var(--r-pill)', marginBottom: 12 }}>
+                      {addError}
+                    </div>
+                  )}
+
                   <div className="modal-actions" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <button className="btn" style={{ width: '100%' }} onClick={addToLog}>Add to {mealType}</button>
                     <div style={{ display: 'flex', gap: 10 }}>
@@ -597,6 +614,23 @@ const FoodLogger = () => {
 
               <div className="modal-actions">
                 <button className="btn" style={{ width: '100%', background: 'var(--bg3)', color: 'var(--text)', border: '1px solid var(--card-border)' }} onClick={() => setViewingLog(null)}>Close Window</button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {confirmingClear && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="modal-overlay" onClick={() => setConfirmingClear(false)}>
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-title">Clear {isToday ? "today's" : `${dayLabel}'s`} log?</div>
+              <div className="modal-sub">This permanently removes all {logs.length} food {logs.length === 1 ? "entry" : "entries"} for this day. This can&apos;t be undone.</div>
+              <div className="modal-actions" style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+                <button className="btn-ghost" style={{ flex: 1 }} onClick={() => setConfirmingClear(false)}>Cancel</button>
+                <button className="btn" style={{ flex: 1, background: 'rgba(255,90,90,0.9)', color: '#fff' }} onClick={clearLogs}>
+                  <Trash2 size={14} style={{ marginRight: 6 }} /> Clear
+                </button>
               </div>
             </motion.div>
           </motion.div>

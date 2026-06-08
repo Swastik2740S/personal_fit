@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireUser } from "@/lib/auth";
 
 const EDAMAM_APP_ID = process.env.EDAMAM_APP_ID;
 const EDAMAM_APP_KEY = process.env.EDAMAM_APP_KEY;
@@ -8,6 +9,12 @@ const EDAMAM_APP_KEY = process.env.EDAMAM_APP_KEY;
 const CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 export async function GET(req: Request) {
+  // Auth-gated: the only caller is the authed food page. Keeping it private
+  // prevents the route being abused as an open Edamam proxy (quota burn) or to
+  // pollute / grow the FoodCache table with arbitrary queries.
+  const { error } = await requireUser();
+  if (error) return error;
+
   const { searchParams } = new URL(req.url);
   const query = searchParams.get("q")?.trim().toLowerCase();
 
@@ -30,9 +37,12 @@ export async function GET(req: Request) {
 
     const data = await res.json();
 
-    // Map to our internal format
-    const foods = data.hints
-      .map((item: { food: { label: string; nutrients: Record<string, number> } }) => ({
+    // Map to our internal format. Edamam can return an error body or a payload
+    // without `hints`, so default to an empty list rather than throwing.
+    const hints: { food: { label: string; nutrients: Record<string, number> } }[] =
+      Array.isArray(data?.hints) ? data.hints : [];
+    const foods = hints
+      .map((item) => ({
         name: item.food.label,
         cal: item.food.nutrients.ENERC_KCAL || 0,
         prot: item.food.nutrients.PROCNT || 0,

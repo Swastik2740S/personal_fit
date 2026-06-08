@@ -53,8 +53,11 @@ export async function GET(req: Request) {
       for (let i = startIdx; i < LOOKBACK && days[i].active; i++) streak++;
     }
 
-    // Adherence over the last 7 days (calories count only on logged days).
-    const week = days.slice(0, WEEK);
+    // Adherence over the last 7 *complete* days (yesterday back 7 days). Today is
+    // excluded because it's still in progress — otherwise a partially-logged day
+    // counts as a calorie "hit" (cal still under goal) but a protein/step "miss"
+    // (totals not reached yet), which is inconsistent and misleading.
+    const week = days.slice(1, WEEK + 1);
     const calGoal = user?.calGoal ?? 0;
     const protGoal = user?.protGoal ?? 0;
     const stepGoal = user?.stepGoal ?? 0;
