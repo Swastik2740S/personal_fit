@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import { getLocalStartOfDay, getLastNDays } from "@/lib/day";
 import DayPills from "@/components/DayPills";
@@ -9,7 +9,7 @@ import { containerStagger as container, fadeUpItem as item, useCountUp } from "@
 import { Footprints, Target, TrendingUp, Clock, Compass, CheckCircle2 } from "lucide-react";
 
 const StepTracker = () => {
-  const { data: session } = useSession();
+  const { isSignedIn } = useAuth();
   const [steps, setSteps] = useState(0);
   const [inputVal, setInputVal] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,11 +35,11 @@ const StepTracker = () => {
   }, [selectedDate]);
 
   useEffect(() => {
-    if (session) {
+    if (isSignedIn) {
       fetchSteps();
       fetchGoal();
     }
-  }, [session, fetchSteps]);
+  }, [isSignedIn, fetchSteps]);
 
   const fetchGoal = async () => {
     try {

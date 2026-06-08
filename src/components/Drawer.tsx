@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogOut, X } from "lucide-react";
 import { useEffect } from "react";
@@ -11,9 +11,9 @@ import { EASE } from "@/lib/motion";
 
 export default function Drawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { user } = useUser();
+  const { signOut } = useClerk();
 
-  // Lock body scroll and close on Escape while open.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -74,25 +74,25 @@ export default function Drawer({ open, onClose }: { open: boolean; onClose: () =
               })}
             </nav>
 
-            {session && (
+            {user && (
               <div className="drawer-footer">
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, padding: "0 8px" }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={session.user?.image || `https://ui-avatars.com/api/?name=${session.user?.name}`}
+                    src={user.imageUrl || `https://ui-avatars.com/api/?name=${user.fullName}`}
                     alt=""
                     style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid var(--glass-border)", flexShrink: 0 }}
                   />
                   <div style={{ overflow: "hidden" }}>
                     <div style={{ fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {session.user?.name}
+                      {user.fullName}
                     </div>
                     <div style={{ fontSize: 11, color: "var(--text3)" }}>Pro Member</div>
                   </div>
                 </div>
                 <button
                   className="nav-item"
-                  onClick={() => signOut()}
+                  onClick={() => signOut({ redirectUrl: "/" })}
                   style={{ width: "100%", border: "none", background: "none" }}
                 >
                   <LogOut size={18} className="nav-icon" />

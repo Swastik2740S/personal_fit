@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
   output   = "./generated/prisma"
@@ -10,71 +7,59 @@ datasource db {
   provider = "postgresql"
 }
 
-// NextAuth Models
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
 model User {
-  id            String         @id @default(cuid())
-  name          String?
-  email         String?        @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  logs          FoodLog[]
-  steps         StepLog[]
-  favorites     FavoriteFood[]
-  weights       WeightLog[]
+  id        String   @id // Clerk user ID (e.g. "user_2abc...")
+  email     String   @unique
+  name      String?
+  image     String?
+  createdAt DateTime @default(now())
 
-  // Daily goals (defaults mirror the previously hardcoded targets)
-  calGoal  Int @default(2350)
-  protGoal Int @default(160)
-  carbGoal Int @default(245)
-  fatGoal  Int @default(65)
-  stepGoal Int @default(8000)
+  // Onboarding profile
+  onboardingComplete Boolean @default(false)
+  heightCm           Float?
+  startingWeightKg   Float?
+  age                Int?
+  sex                String? // "male" | "female"
+  activityLevel      String? // "sedentary" | "lightly" | "moderately" | "very" | "extremely"
+  primaryGoal        String? // "fat_loss" | "muscle_gain" | "recomposition" | "maintain"
+  fitnessExperience  String? // "beginner" | "intermediate" | "advanced"
+  dietaryPreference  String? // "none" | "vegetarian" | "vegan" | "high_protein" | "low_carb"
+  equipment          String? // "none" | "home_gym" | "full_gym"
 
-  // Optional target bodyweight in kg (no sensible default).
+  // Daily goals (auto-set by TDEE on onboarding, overridable in settings)
+  calGoal    Int    @default(2350)
+  protGoal   Int    @default(160)
+  carbGoal   Int    @default(245)
+  fatGoal    Int    @default(65)
+  stepGoal   Int    @default(8000)
   weightGoal Float?
+
+  // Relations
+  logs      FoodLog[]
+  steps     StepLog[]
+  favorites FavoriteFood[]
+  weights   WeightLog[]
+  plan      UserPlan?
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
+// AI-generated personalized plan — one per user, regeneratable
+model UserPlan {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealPlan    String // JSON: MealPlanItem[]
+  workoutPlan String // JSON: WorkoutDay[]
+  summary     String // personalized coaching narrative
+  generatedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-// App Specific Models
+// App-specific models (unchanged)
+
 model FoodCache {
   id        String   @id @default(cuid())
   query     String   @unique
-  data      String // JSON string of the Edamam results
+  data      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -88,7 +73,7 @@ model FoodLog {
   prot     Float
   carb     Float
   fat      Float
-  mealType String   @default("Snack") // Breakfast, Lunch, Snack, Dinner
+  mealType String   @default("Snack")
   date     DateTime @default(now())
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -103,8 +88,6 @@ model StepLog {
   @@unique([userId, date])
 }
 
-// Saved "quick add" foods. Macros are stored per 100g (same basis as search
-// results) so a favorite flows straight into the qty modal like any food.
 model FavoriteFood {
   id        String   @id @default(cuid())
   userId    String
@@ -119,7 +102,6 @@ model FavoriteFood {
   @@unique([userId, name])
 }
 
-// Bodyweight in kg — one row per user per day (upsert), like StepLog.
 model WeightLog {
   id     String   @id @default(cuid())
   userId String

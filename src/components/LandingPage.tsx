@@ -1,11 +1,12 @@
 "use client";
 
-import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { LogIn, Rocket, Target, Activity } from "lucide-react";
 
 const LandingPage = () => {
   const reduce = useReducedMotion();
+  const router = useRouter();
 
   const scrollToFeatures = () => {
     document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
@@ -25,7 +26,6 @@ const LandingPage = () => {
         padding: "20px",
       }}
     >
-      {/* Animated background glows (disabled under reduced motion) */}
       <motion.div
         animate={reduce ? undefined : { scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1], rotate: [0, 90, 0] }}
         transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
@@ -53,7 +53,7 @@ const LandingPage = () => {
       >
         <div style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "8px 16px", background: "var(--surface-1)", backdropFilter: "var(--glass-blur)", WebkitBackdropFilter: "var(--glass-blur)", borderRadius: "99px", border: "1px solid var(--glass-border)", marginBottom: "32px" }}>
           <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--accent)", boxShadow: "0 0 10px var(--accent)" }}></span>
-          <span style={{ fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text2)" }}>Now in Private Beta</span>
+          <span style={{ fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text2)" }}>AI-Powered Fitness Platform</span>
         </div>
 
         <h1 style={{
@@ -77,7 +77,7 @@ const LandingPage = () => {
           maxWidth: "600px",
           marginInline: "auto",
         }}>
-          The ultimate high-performance fitness tracker designed for the modern elite. Precision logging, smart nutrition, and professional protocols.
+          Precision macro tracking, AI-generated meal &amp; workout plans, and professional protocols — all personalized to your body and goals.
         </p>
 
         <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
@@ -85,10 +85,10 @@ const LandingPage = () => {
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
             className="btn"
-            onClick={() => signIn("github")}
+            onClick={() => router.push("/sign-up")}
             style={{ fontSize: "16px", padding: "16px 32px" }}
           >
-            <LogIn size={20} /> Get Started with GitHub
+            <LogIn size={20} /> Get Started Free
           </motion.button>
 
           <motion.button
@@ -105,7 +105,7 @@ const LandingPage = () => {
         <div id="features" className="feature-grid" style={{ marginTop: "84px", scrollMarginTop: "80px" }}>
           {[
             { icon: <Target />, title: "Precision Tracking", desc: "Every gram and step accounted for." },
-            { icon: <Rocket />, title: "Elite Protocols", desc: "Built on professional science." },
+            { icon: <Rocket />, title: "AI-Personalized Plans", desc: "Meal + workout plans built for your body." },
             { icon: <Activity />, title: "Real-time Stats", desc: "Live dashboard of your progress." },
           ].map((feature, i) => (
             <div key={i} style={{ textAlign: "center" }}>

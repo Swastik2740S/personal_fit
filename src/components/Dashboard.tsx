@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useUser } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import { getLocalStartOfDay } from "@/lib/day";
 import { containerStagger as container, fadeUpItem as item, useCountUp } from "@/lib/motion";
@@ -30,7 +30,7 @@ interface Insights {
 }
 
 const Dashboard = () => {
-  const { data: session, status } = useSession();
+  const { user, isLoaded } = useUser();
   const { phase } = useTimePhase();
   const { isPrivate } = usePrivacy();
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
@@ -86,11 +86,11 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    if (session) {
+    if (user) {
       fetchStats();
       fetchInsights();
     }
-  }, [session]);
+  }, [user]);
 
   const stepPct = Math.min(100, Math.round((stats.steps / targets.steps) * 100));
   const circ = 427;
@@ -102,7 +102,7 @@ const Dashboard = () => {
   const stepCount = Math.round(useCountUp(stats.steps));
   const remainingCount = Math.max(0, targets.cal - calCount);
 
-  if (status === "loading") {
+  if (!isLoaded) {
     return (
       <div style={{ display: 'flex', height: '80vh', alignItems: 'center', justifyContent: 'center' }}>
         <div className="spinner"></div>
@@ -136,7 +136,7 @@ const Dashboard = () => {
     >
       <motion.div variants={item} className="page-header">
         <div>
-          <div className="page-title">Welcome back, {session?.user?.name?.split(' ')[0]} 👋</div>
+          <div className="page-title">Welcome back, {user?.firstName ?? user?.fullName?.split(' ')[0]} 👋</div>
           <div className="page-sub">Your performance summary for today. ({phase} phase active)</div>
         </div>
         <Link href="/report">

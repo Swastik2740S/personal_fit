@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import { 
   Flame, 
@@ -25,7 +25,7 @@ interface DailyData {
 }
 
 const WeeklyReport = () => {
-  const { data: session } = useSession();
+  const { isSignedIn } = useAuth();
   const [data, setData] = useState<DailyData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,8 +44,8 @@ const WeeklyReport = () => {
   }, []);
 
   useEffect(() => {
-    if (session) fetchWeeklyData();
-  }, [session, fetchWeeklyData]);
+    if (isSignedIn) fetchWeeklyData();
+  }, [isSignedIn, fetchWeeklyData]);
 
   const averages = data.reduce(
     (acc, day) => {
