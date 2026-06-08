@@ -6,13 +6,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getLocalStartOfDay, getLastNDays } from "@/lib/day";
 import DayPills from "@/components/DayPills";
 import { containerStagger as container, fadeUpItem as item } from "@/lib/motion";
-import { 
-  Search, 
-  Plus, 
-  X, 
-  Trash2, 
-  Utensils, 
-  History 
+import {
+  Search,
+  Plus,
+  X,
+  Trash2,
+  Utensils,
+  History,
+  Star,
+  Zap
 } from "lucide-react";
 
 interface FoodItem {
@@ -43,7 +45,10 @@ const FoodLogger = () => {
   const [mealType, setMealType] = useState<string>("Snack");
   const [modalStep, setModalStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState(getLocalStartOfDay());
+  const [favorites, setFavorites] = useState<FoodItem[]>([]);
+  const [recent, setRecent] = useState<FoodItem[]>([]);
 
+  const favNames = new Set(favorites.map((f) => f.name));
   const todayIso = getLastNDays().at(-1)?.iso ?? getLocalStartOfDay();
   const isToday = selectedDate === todayIso;
   const dayLabel = isToday
@@ -61,6 +66,49 @@ const FoodLogger = () => {
     }
   }, [selectedDate]);
 
+  const fetchFavorites = useCallback(async () => {
+    try {
+      const res = await fetch("/api/food/favorites", { cache: "no-store" });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (Array.isArray(data)) setFavorites(data);
+    } catch (error) {
+      console.error("Fetch favorites error:", error);
+    }
+  }, []);
+
+  const fetchRecent = useCallback(async () => {
+    try {
+      const res = await fetch("/api/food/recent", { cache: "no-store" });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (Array.isArray(data)) setRecent(data);
+    } catch (error) {
+      console.error("Fetch recent error:", error);
+    }
+  }, []);
+
+  // Toggle a food (per-100g macros) in/out of favorites, then refresh the list.
+  const toggleFavorite = async (food: FoodItem) => {
+    const starred = favNames.has(food.name);
+    try {
+      const res = starred
+        ? await fetch(`/api/food/favorites?name=${encodeURIComponent(food.name)}`, {
+            method: "DELETE",
+            cache: "no-store",
+          })
+        : await fetch("/api/food/favorites", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(food),
+            cache: "no-store",
+          });
+      if (res.ok) await fetchFavorites();
+    } catch (error) {
+      console.error("Toggle favorite error:", error);
+    }
+  };
+
   const setDefaultMealType = useCallback(() => {
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 11) setMealType("Breakfast");
@@ -76,6 +124,13 @@ const FoodLogger = () => {
   useEffect(() => {
     if (session) fetchLogs();
   }, [session, fetchLogs]);
+
+  useEffect(() => {
+    if (session) {
+      fetchFavorites();
+      fetchRecent();
+    }
+  }, [session, fetchFavorites, fetchRecent]);
 
   const searchFood = async () => {
     if (!query.trim()) return;
@@ -119,6 +174,7 @@ const FoodLogger = () => {
         setQuery("");
         setResults([]);
         await fetchLogs();
+        fetchRecent();
       } else {
         const err = await res.json();
         alert(`Error adding food: ${err.error || 'Unknown error'}`);
@@ -164,6 +220,37 @@ const FoodLogger = () => {
     { cal: 0, prot: 0, carb: 0, fat: 0 }
   );
 
+  const recentToShow = recent.filter((r) => !favNames.has(r.name));
+
+  // A compact quick-add pill: tap the name to open the qty modal, star to (un)favorite.
+  const quickChip = (food: FoodItem) => {
+    const starred = favNames.has(food.name);
+    return (
+      <div
+        key={food.name}
+        className="chip"
+        style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 8px 8px 14px" }}
+      >
+        <button
+          onClick={() => { setSelectedFood(food); setModalStep(1); }}
+          style={{ background: "transparent", border: "none", color: "var(--text)", cursor: "pointer", fontSize: 12, fontWeight: 700, padding: 0 }}
+        >
+          {food.name}
+          <span style={{ color: "var(--text3)", fontWeight: 600, marginLeft: 6 }}>
+            {Math.round(food.cal)} kcal/100g
+          </span>
+        </button>
+        <button
+          onClick={() => toggleFavorite(food)}
+          aria-label={starred ? "Remove favorite" : "Add favorite"}
+          style={{ background: "transparent", border: "none", cursor: "pointer", padding: 2, display: "flex" }}
+        >
+          <Star size={14} color={starred ? "var(--accent)" : "var(--text3)"} fill={starred ? "var(--accent)" : "none"} />
+        </button>
+      </div>
+    );
+  };
+
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="page active">
       <motion.div variants={item} className="page-header">
@@ -174,6 +261,31 @@ const FoodLogger = () => {
       <motion.div variants={item} style={{ marginBottom: 24 }}>
         <DayPills selected={selectedDate} onSelect={setSelectedDate} />
       </motion.div>
+
+      {(favorites.length > 0 || recentToShow.length > 0) && (
+        <motion.div variants={item} className="card" style={{ marginBottom: 24 }}>
+          <div className="card-title">
+            <Zap size={18} color="var(--accent)" />
+            Quick Add
+          </div>
+          {favorites.length > 0 && (
+            <div style={{ marginBottom: recentToShow.length > 0 ? 18 : 0 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
+                Favorites
+              </div>
+              <div className="chip-row">{favorites.map(quickChip)}</div>
+            </div>
+          )}
+          {recentToShow.length > 0 && (
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
+                Recent
+              </div>
+              <div className="chip-row">{recentToShow.map(quickChip)}</div>
+            </div>
+          )}
+        </motion.div>
+      )}
 
       <motion.div variants={item} className="card" style={{ marginBottom: "24px" }}>
         <div className="card-title">
@@ -222,6 +334,13 @@ const FoodLogger = () => {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div className="result-cal" style={{ color: 'var(--accent)', fontWeight: 700 }}>{Math.round(food.cal)} kcal</div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); toggleFavorite(food); }}
+                    aria-label="Toggle favorite"
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}
+                  >
+                    <Star size={15} color={favNames.has(food.name) ? 'var(--accent)' : 'var(--text3)'} fill={favNames.has(food.name) ? 'var(--accent)' : 'none'} />
+                  </button>
                   <Plus size={16} color="var(--text3)" />
                 </div>
               </motion.div>

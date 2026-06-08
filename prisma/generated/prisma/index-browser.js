@@ -189,6 +189,17 @@ exports.Prisma.StepLogScalarFieldEnum = {
   date: 'date'
 };
 
+exports.Prisma.FavoriteFoodScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  cal: 'cal',
+  prot: 'prot',
+  carb: 'carb',
+  fat: 'fat',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -212,7 +223,8 @@ exports.Prisma.ModelName = {
   VerificationToken: 'VerificationToken',
   FoodCache: 'FoodCache',
   FoodLog: 'FoodLog',
-  StepLog: 'StepLog'
+  StepLog: 'StepLog',
+  FavoriteFood: 'FavoriteFood'
 };
 
 /**

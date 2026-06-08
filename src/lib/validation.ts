@@ -18,6 +18,15 @@ export const stepSchema = z.object({
   count: z.number().int().min(0).max(100000),
 });
 
+// A saved quick-add food. Macros are per 100g (same basis as search results).
+export const favoriteFoodSchema = z.object({
+  name: z.string().trim().min(1, "Name is required"),
+  cal: nonNegNumber,
+  prot: nonNegNumber.default(0),
+  carb: nonNegNumber.default(0),
+  fat: nonNegNumber.default(0),
+});
+
 const goalField = z.number().int().positive();
 
 export const goalsSchema = z
@@ -32,3 +41,4 @@ export const goalsSchema = z
 
 export type FoodLogInput = z.infer<typeof foodLogSchema>;
 export type GoalsInput = z.infer<typeof goalsSchema>;
+export type FavoriteFoodInput = z.infer<typeof favoriteFoodSchema>;

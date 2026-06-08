@@ -48,6 +48,7 @@ model User {
   sessions      Session[]
   logs          FoodLog[]
   steps         StepLog[]
+  favorites     FavoriteFood[]
 
   // Daily goals (defaults mirror the previously hardcoded targets)
   calGoal  Int @default(2350)
@@ -96,4 +97,20 @@ model StepLog {
   user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])
+}
+
+// Saved "quick add" foods. Macros are stored per 100g (same basis as search
+// results) so a favorite flows straight into the qty modal like any food.
+model FavoriteFood {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  cal       Float
+  prot      Float
+  carb      Float
+  fat       Float
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
 }
