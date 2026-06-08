@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { getDayStart } from "@/lib/day";
+import { getDayStart, getDayRange, isWithinBackfillWindow } from "@/lib/day";
 import { stepSchema } from "@/lib/validation";
 
 export async function POST(req: Request) {
@@ -19,6 +19,13 @@ export async function POST(req: Request) {
 
     const { count } = parsed.data;
     const date = getDayStart(req);
+
+    if (!isWithinBackfillWindow(date)) {
+      return NextResponse.json(
+        { error: "Date is outside the editable 7-day window" },
+        { status: 400 }
+      );
+    }
 
     // One row per user per day, enforced by the @@unique([userId, date]) index.
     const log = await db.stepLog.upsert({
@@ -39,10 +46,10 @@ export async function GET(req: Request) {
     const { userId, error } = await requireUser();
     if (error) return error;
 
-    const startOfDay = getDayStart(req);
+    const { start, end } = getDayRange(req);
 
     const stepLog = await db.stepLog.findFirst({
-      where: { userId, date: { gte: startOfDay } },
+      where: { userId, date: { gte: start, lt: end } },
     });
 
     return NextResponse.json(stepLog || { count: 0 });

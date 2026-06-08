@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
-import { getLocalStartOfDay } from "@/lib/day";
+import { getLocalStartOfDay, getLastNDays } from "@/lib/day";
+import DayPills from "@/components/DayPills";
 import { containerStagger as container, fadeUpItem as item, useCountUp } from "@/lib/motion";
 import { Footprints, Target, TrendingUp, Clock, Compass, CheckCircle2 } from "lucide-react";
 
@@ -13,17 +14,17 @@ const StepTracker = () => {
   const [inputVal, setInputVal] = useState("");
   const [loading, setLoading] = useState(false);
   const [target, setTarget] = useState(8000);
+  const [selectedDate, setSelectedDate] = useState(getLocalStartOfDay());
 
-  useEffect(() => {
-    if (session) {
-      fetchSteps();
-      fetchGoal();
-    }
-  }, [session]);
+  const todayIso = getLastNDays().at(-1)?.iso ?? getLocalStartOfDay();
+  const isToday = selectedDate === todayIso;
+  const dayLabel = isToday
+    ? "Today's Progress"
+    : new Date(selectedDate).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
 
-  const fetchSteps = async () => {
+  const fetchSteps = useCallback(async () => {
     try {
-      const res = await fetch(`/api/steps?localStart=${getLocalStartOfDay()}`, { cache: "no-store" });
+      const res = await fetch(`/api/steps?localStart=${selectedDate}`, { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
         setSteps(data.count || 0);
@@ -31,7 +32,14 @@ const StepTracker = () => {
     } catch (error) {
       console.error("Fetch steps error:", error);
     }
-  };
+  }, [selectedDate]);
+
+  useEffect(() => {
+    if (session) {
+      fetchSteps();
+      fetchGoal();
+    }
+  }, [session, fetchSteps]);
 
   const fetchGoal = async () => {
     try {
@@ -49,7 +57,7 @@ const StepTracker = () => {
     if (inputVal === "" || isNaN(Number(inputVal))) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/steps?localStart=${getLocalStartOfDay()}`, {
+      const res = await fetch(`/api/steps?localStart=${selectedDate}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ count: Number(inputVal) }),
@@ -87,11 +95,15 @@ const StepTracker = () => {
         </div>
       </motion.div>
 
+      <motion.div variants={item} style={{ marginBottom: 24 }}>
+        <DayPills selected={selectedDate} onSelect={setSelectedDate} />
+      </motion.div>
+
       <div className="grid-2" style={{ marginBottom: "24px" }}>
         <motion.div variants={item} className="card">
           <div className="card-title">
             <Footprints size={18} color="var(--accent)" />
-            Today&apos;s Progress
+            {dayLabel}
           </div>
           <div className="step-display">
             <div className="step-ring-wrap">

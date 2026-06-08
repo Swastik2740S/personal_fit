@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
-import { getDayStart } from "@/lib/day";
+import { getDayRange, isWithinBackfillWindow } from "@/lib/day";
 import { foodLogSchema } from "@/lib/validation";
 
-// POST /api/food/log - Add a food log entry
+// POST /api/food/log - Add a food log entry (to today or a selected past day)
 export async function POST(req: Request) {
   try {
     const { userId, error } = await requireUser();
@@ -18,8 +18,18 @@ export async function POST(req: Request) {
       );
     }
 
+    // The day comes from `?localStart=`; default is today. Stamp it explicitly
+    // so backfilled entries land on the chosen day (Prisma's default is now()).
+    const { start } = getDayRange(req);
+    if (!isWithinBackfillWindow(start)) {
+      return NextResponse.json(
+        { error: "Date is outside the editable 7-day window" },
+        { status: 400 }
+      );
+    }
+
     const log = await db.foodLog.create({
-      data: { userId, ...parsed.data },
+      data: { userId, ...parsed.data, date: start },
     });
 
     return NextResponse.json(log);
@@ -29,18 +39,18 @@ export async function POST(req: Request) {
   }
 }
 
-// GET /api/food/log - Get logs for today
+// GET /api/food/log - Get logs for the selected day (defaults to today)
 export async function GET(req: Request) {
   try {
     const { userId, error } = await requireUser();
     if (error) return error;
 
-    const startOfDay = getDayStart(req);
+    const { start, end } = getDayRange(req);
 
     const logs = await db.foodLog.findMany({
       where: {
         userId,
-        date: { gte: startOfDay },
+        date: { gte: start, lt: end },
       },
       orderBy: { date: "desc" },
     });
@@ -63,11 +73,11 @@ export async function DELETE(req: Request) {
     const all = searchParams.get("all");
 
     if (all === "true") {
-      const startOfDay = getDayStart(req);
+      const { start, end } = getDayRange(req);
       await db.foodLog.deleteMany({
         where: {
           userId,
-          date: { gte: startOfDay },
+          date: { gte: start, lt: end },
         },
       });
       return NextResponse.json({ message: "Cleared all logs" });

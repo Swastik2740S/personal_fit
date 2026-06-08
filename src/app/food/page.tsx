@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getLocalStartOfDay } from "@/lib/day";
+import { getLocalStartOfDay, getLastNDays } from "@/lib/day";
+import DayPills from "@/components/DayPills";
 import { containerStagger as container, fadeUpItem as item } from "@/lib/motion";
 import { 
   Search, 
@@ -41,17 +42,24 @@ const FoodLogger = () => {
   const [qty, setQty] = useState(100);
   const [mealType, setMealType] = useState<string>("Snack");
   const [modalStep, setModalStep] = useState(1);
+  const [selectedDate, setSelectedDate] = useState(getLocalStartOfDay());
+
+  const todayIso = getLastNDays().at(-1)?.iso ?? getLocalStartOfDay();
+  const isToday = selectedDate === todayIso;
+  const dayLabel = isToday
+    ? "Today"
+    : new Date(selectedDate).toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
 
   const fetchLogs = useCallback(async () => {
     try {
-      const res = await fetch(`/api/food/log?localStart=${getLocalStartOfDay()}`, { cache: "no-store" });
+      const res = await fetch(`/api/food/log?localStart=${selectedDate}`, { cache: "no-store" });
       if (!res.ok) return;
       const data = await res.json();
       if (Array.isArray(data)) setLogs(data);
     } catch (error) {
       console.error("Fetch logs error:", error);
     }
-  }, []);
+  }, [selectedDate]);
 
   const setDefaultMealType = useCallback(() => {
     const hour = new Date().getHours();
@@ -98,7 +106,7 @@ const FoodLogger = () => {
     };
 
     try {
-      const res = await fetch("/api/food/log", {
+      const res = await fetch(`/api/food/log?localStart=${selectedDate}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(entry),
@@ -133,9 +141,9 @@ const FoodLogger = () => {
   };
 
   const clearLogs = async () => {
-    if (!confirm("Are you sure you want to clear all logs for today?")) return;
+    if (!confirm(`Are you sure you want to clear all logs for ${dayLabel.toLowerCase()}?`)) return;
     try {
-      const res = await fetch(`/api/food/log?all=true&localStart=${getLocalStartOfDay()}`, {
+      const res = await fetch(`/api/food/log?all=true&localStart=${selectedDate}`, {
         method: "DELETE",
         cache: "no-store",
       });
@@ -161,6 +169,10 @@ const FoodLogger = () => {
       <motion.div variants={item} className="page-header">
         <div className="page-title">Food Logger <span style={{ fontSize: 12, opacity: 0.3 }}>v4.0</span></div>
         <div className="page-sub">Track your nutrition with AI-powered search.</div>
+      </motion.div>
+
+      <motion.div variants={item} style={{ marginBottom: 24 }}>
+        <DayPills selected={selectedDate} onSelect={setSelectedDate} />
       </motion.div>
 
       <motion.div variants={item} className="card" style={{ marginBottom: "24px" }}>
@@ -222,7 +234,7 @@ const FoodLogger = () => {
         <div className="card-title" style={{ justifyContent: "space-between" }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <History size={18} color="var(--neon-cyan)" />
-            Today&apos;s Log
+            {isToday ? "Today's Log" : `${dayLabel} Log`}
           </div>
           <button className="btn-ghost" onClick={clearLogs} style={{ fontSize: 11, padding: '4px 10px' }}>
             <Trash2 size={12} style={{ marginRight: 4 }} /> Clear
