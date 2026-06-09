@@ -40,6 +40,7 @@ model User {
   favorites FavoriteFood[]
   weights   WeightLog[]
   plan      UserPlan?
+  liftLogs  LiftLog[]
 }
 
 // AI-generated personalized plan — one per user, regeneratable
@@ -110,4 +111,20 @@ model WeightLog {
   user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])
+}
+
+model LiftLog {
+  id        String   @id @default(cuid())
+  userId    String
+  exercise  String
+  weightKg  Float
+  sets      Int
+  reps      Int
+  notes     String?
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, exercise])
+  @@index([userId, date])
 }

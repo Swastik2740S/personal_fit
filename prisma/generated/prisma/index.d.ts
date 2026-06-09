@@ -48,6 +48,11 @@ export type FavoriteFood = $Result.DefaultSelection<Prisma.$FavoriteFoodPayload>
  * 
  */
 export type WeightLog = $Result.DefaultSelection<Prisma.$WeightLogPayload>
+/**
+ * Model LiftLog
+ * 
+ */
+export type LiftLog = $Result.DefaultSelection<Prisma.$LiftLogPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -239,6 +244,16 @@ export class PrismaClient<
     * ```
     */
   get weightLog(): Prisma.WeightLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.liftLog`: Exposes CRUD operations for the **LiftLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more LiftLogs
+    * const liftLogs = await prisma.liftLog.findMany()
+    * ```
+    */
+  get liftLog(): Prisma.LiftLogDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -679,7 +694,8 @@ export namespace Prisma {
     FoodLog: 'FoodLog',
     StepLog: 'StepLog',
     FavoriteFood: 'FavoriteFood',
-    WeightLog: 'WeightLog'
+    WeightLog: 'WeightLog',
+    LiftLog: 'LiftLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -695,7 +711,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "userPlan" | "foodCache" | "foodLog" | "stepLog" | "favoriteFood" | "weightLog"
+      modelProps: "user" | "userPlan" | "foodCache" | "foodLog" | "stepLog" | "favoriteFood" | "weightLog" | "liftLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1217,6 +1233,80 @@ export namespace Prisma {
           }
         }
       }
+      LiftLog: {
+        payload: Prisma.$LiftLogPayload<ExtArgs>
+        fields: Prisma.LiftLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.LiftLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LiftLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.LiftLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LiftLogPayload>
+          }
+          findFirst: {
+            args: Prisma.LiftLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LiftLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.LiftLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LiftLogPayload>
+          }
+          findMany: {
+            args: Prisma.LiftLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LiftLogPayload>[]
+          }
+          create: {
+            args: Prisma.LiftLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LiftLogPayload>
+          }
+          createMany: {
+            args: Prisma.LiftLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.LiftLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LiftLogPayload>[]
+          }
+          delete: {
+            args: Prisma.LiftLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LiftLogPayload>
+          }
+          update: {
+            args: Prisma.LiftLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LiftLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.LiftLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.LiftLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.LiftLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LiftLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.LiftLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$LiftLogPayload>
+          }
+          aggregate: {
+            args: Prisma.LiftLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateLiftLog>
+          }
+          groupBy: {
+            args: Prisma.LiftLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<LiftLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.LiftLogCountArgs<ExtArgs>
+            result: $Utils.Optional<LiftLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1332,6 +1422,7 @@ export namespace Prisma {
     stepLog?: StepLogOmit
     favoriteFood?: FavoriteFoodOmit
     weightLog?: WeightLogOmit
+    liftLog?: LiftLogOmit
   }
 
   /* Types for Logging */
@@ -1416,6 +1507,7 @@ export namespace Prisma {
     steps: number
     favorites: number
     weights: number
+    liftLogs: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1423,6 +1515,7 @@ export namespace Prisma {
     steps?: boolean | UserCountOutputTypeCountStepsArgs
     favorites?: boolean | UserCountOutputTypeCountFavoritesArgs
     weights?: boolean | UserCountOutputTypeCountWeightsArgs
+    liftLogs?: boolean | UserCountOutputTypeCountLiftLogsArgs
   }
 
   // Custom InputTypes
@@ -1462,6 +1555,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountWeightsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: WeightLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountLiftLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LiftLogWhereInput
   }
 
 
@@ -1832,6 +1932,7 @@ export namespace Prisma {
     favorites?: boolean | User$favoritesArgs<ExtArgs>
     weights?: boolean | User$weightsArgs<ExtArgs>
     plan?: boolean | User$planArgs<ExtArgs>
+    liftLogs?: boolean | User$liftLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1914,6 +2015,7 @@ export namespace Prisma {
     favorites?: boolean | User$favoritesArgs<ExtArgs>
     weights?: boolean | User$weightsArgs<ExtArgs>
     plan?: boolean | User$planArgs<ExtArgs>
+    liftLogs?: boolean | User$liftLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1927,6 +2029,7 @@ export namespace Prisma {
       favorites: Prisma.$FavoriteFoodPayload<ExtArgs>[]
       weights: Prisma.$WeightLogPayload<ExtArgs>[]
       plan: Prisma.$UserPlanPayload<ExtArgs> | null
+      liftLogs: Prisma.$LiftLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2349,6 +2452,7 @@ export namespace Prisma {
     favorites<T extends User$favoritesArgs<ExtArgs> = {}>(args?: Subset<T, User$favoritesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FavoriteFoodPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     weights<T extends User$weightsArgs<ExtArgs> = {}>(args?: Subset<T, User$weightsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WeightLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     plan<T extends User$planArgs<ExtArgs> = {}>(args?: Subset<T, User$planArgs<ExtArgs>>): Prisma__UserPlanClient<$Result.GetResult<Prisma.$UserPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    liftLogs<T extends User$liftLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$liftLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LiftLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2904,6 +3008,30 @@ export namespace Prisma {
      */
     include?: UserPlanInclude<ExtArgs> | null
     where?: UserPlanWhereInput
+  }
+
+  /**
+   * User.liftLogs
+   */
+  export type User$liftLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LiftLog
+     */
+    select?: LiftLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LiftLog
+     */
+    omit?: LiftLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LiftLogInclude<ExtArgs> | null
+    where?: LiftLogWhereInput
+    orderBy?: LiftLogOrderByWithRelationInput | LiftLogOrderByWithRelationInput[]
+    cursor?: LiftLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LiftLogScalarFieldEnum | LiftLogScalarFieldEnum[]
   }
 
   /**
@@ -9509,6 +9637,1163 @@ export namespace Prisma {
 
 
   /**
+   * Model LiftLog
+   */
+
+  export type AggregateLiftLog = {
+    _count: LiftLogCountAggregateOutputType | null
+    _avg: LiftLogAvgAggregateOutputType | null
+    _sum: LiftLogSumAggregateOutputType | null
+    _min: LiftLogMinAggregateOutputType | null
+    _max: LiftLogMaxAggregateOutputType | null
+  }
+
+  export type LiftLogAvgAggregateOutputType = {
+    weightKg: number | null
+    sets: number | null
+    reps: number | null
+  }
+
+  export type LiftLogSumAggregateOutputType = {
+    weightKg: number | null
+    sets: number | null
+    reps: number | null
+  }
+
+  export type LiftLogMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    exercise: string | null
+    weightKg: number | null
+    sets: number | null
+    reps: number | null
+    notes: string | null
+    date: Date | null
+    createdAt: Date | null
+  }
+
+  export type LiftLogMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    exercise: string | null
+    weightKg: number | null
+    sets: number | null
+    reps: number | null
+    notes: string | null
+    date: Date | null
+    createdAt: Date | null
+  }
+
+  export type LiftLogCountAggregateOutputType = {
+    id: number
+    userId: number
+    exercise: number
+    weightKg: number
+    sets: number
+    reps: number
+    notes: number
+    date: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type LiftLogAvgAggregateInputType = {
+    weightKg?: true
+    sets?: true
+    reps?: true
+  }
+
+  export type LiftLogSumAggregateInputType = {
+    weightKg?: true
+    sets?: true
+    reps?: true
+  }
+
+  export type LiftLogMinAggregateInputType = {
+    id?: true
+    userId?: true
+    exercise?: true
+    weightKg?: true
+    sets?: true
+    reps?: true
+    notes?: true
+    date?: true
+    createdAt?: true
+  }
+
+  export type LiftLogMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    exercise?: true
+    weightKg?: true
+    sets?: true
+    reps?: true
+    notes?: true
+    date?: true
+    createdAt?: true
+  }
+
+  export type LiftLogCountAggregateInputType = {
+    id?: true
+    userId?: true
+    exercise?: true
+    weightKg?: true
+    sets?: true
+    reps?: true
+    notes?: true
+    date?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type LiftLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LiftLog to aggregate.
+     */
+    where?: LiftLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LiftLogs to fetch.
+     */
+    orderBy?: LiftLogOrderByWithRelationInput | LiftLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: LiftLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LiftLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LiftLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned LiftLogs
+    **/
+    _count?: true | LiftLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: LiftLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: LiftLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: LiftLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: LiftLogMaxAggregateInputType
+  }
+
+  export type GetLiftLogAggregateType<T extends LiftLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateLiftLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateLiftLog[P]>
+      : GetScalarType<T[P], AggregateLiftLog[P]>
+  }
+
+
+
+
+  export type LiftLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LiftLogWhereInput
+    orderBy?: LiftLogOrderByWithAggregationInput | LiftLogOrderByWithAggregationInput[]
+    by: LiftLogScalarFieldEnum[] | LiftLogScalarFieldEnum
+    having?: LiftLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: LiftLogCountAggregateInputType | true
+    _avg?: LiftLogAvgAggregateInputType
+    _sum?: LiftLogSumAggregateInputType
+    _min?: LiftLogMinAggregateInputType
+    _max?: LiftLogMaxAggregateInputType
+  }
+
+  export type LiftLogGroupByOutputType = {
+    id: string
+    userId: string
+    exercise: string
+    weightKg: number
+    sets: number
+    reps: number
+    notes: string | null
+    date: Date
+    createdAt: Date
+    _count: LiftLogCountAggregateOutputType | null
+    _avg: LiftLogAvgAggregateOutputType | null
+    _sum: LiftLogSumAggregateOutputType | null
+    _min: LiftLogMinAggregateOutputType | null
+    _max: LiftLogMaxAggregateOutputType | null
+  }
+
+  type GetLiftLogGroupByPayload<T extends LiftLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<LiftLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof LiftLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], LiftLogGroupByOutputType[P]>
+            : GetScalarType<T[P], LiftLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type LiftLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    exercise?: boolean
+    weightKg?: boolean
+    sets?: boolean
+    reps?: boolean
+    notes?: boolean
+    date?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["liftLog"]>
+
+  export type LiftLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    exercise?: boolean
+    weightKg?: boolean
+    sets?: boolean
+    reps?: boolean
+    notes?: boolean
+    date?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["liftLog"]>
+
+  export type LiftLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    exercise?: boolean
+    weightKg?: boolean
+    sets?: boolean
+    reps?: boolean
+    notes?: boolean
+    date?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["liftLog"]>
+
+  export type LiftLogSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    exercise?: boolean
+    weightKg?: boolean
+    sets?: boolean
+    reps?: boolean
+    notes?: boolean
+    date?: boolean
+    createdAt?: boolean
+  }
+
+  export type LiftLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "exercise" | "weightKg" | "sets" | "reps" | "notes" | "date" | "createdAt", ExtArgs["result"]["liftLog"]>
+  export type LiftLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type LiftLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type LiftLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $LiftLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "LiftLog"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      exercise: string
+      weightKg: number
+      sets: number
+      reps: number
+      notes: string | null
+      date: Date
+      createdAt: Date
+    }, ExtArgs["result"]["liftLog"]>
+    composites: {}
+  }
+
+  type LiftLogGetPayload<S extends boolean | null | undefined | LiftLogDefaultArgs> = $Result.GetResult<Prisma.$LiftLogPayload, S>
+
+  type LiftLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<LiftLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: LiftLogCountAggregateInputType | true
+    }
+
+  export interface LiftLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['LiftLog'], meta: { name: 'LiftLog' } }
+    /**
+     * Find zero or one LiftLog that matches the filter.
+     * @param {LiftLogFindUniqueArgs} args - Arguments to find a LiftLog
+     * @example
+     * // Get one LiftLog
+     * const liftLog = await prisma.liftLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends LiftLogFindUniqueArgs>(args: SelectSubset<T, LiftLogFindUniqueArgs<ExtArgs>>): Prisma__LiftLogClient<$Result.GetResult<Prisma.$LiftLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one LiftLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {LiftLogFindUniqueOrThrowArgs} args - Arguments to find a LiftLog
+     * @example
+     * // Get one LiftLog
+     * const liftLog = await prisma.liftLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends LiftLogFindUniqueOrThrowArgs>(args: SelectSubset<T, LiftLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__LiftLogClient<$Result.GetResult<Prisma.$LiftLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LiftLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LiftLogFindFirstArgs} args - Arguments to find a LiftLog
+     * @example
+     * // Get one LiftLog
+     * const liftLog = await prisma.liftLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends LiftLogFindFirstArgs>(args?: SelectSubset<T, LiftLogFindFirstArgs<ExtArgs>>): Prisma__LiftLogClient<$Result.GetResult<Prisma.$LiftLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first LiftLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LiftLogFindFirstOrThrowArgs} args - Arguments to find a LiftLog
+     * @example
+     * // Get one LiftLog
+     * const liftLog = await prisma.liftLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends LiftLogFindFirstOrThrowArgs>(args?: SelectSubset<T, LiftLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__LiftLogClient<$Result.GetResult<Prisma.$LiftLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more LiftLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LiftLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all LiftLogs
+     * const liftLogs = await prisma.liftLog.findMany()
+     * 
+     * // Get first 10 LiftLogs
+     * const liftLogs = await prisma.liftLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const liftLogWithIdOnly = await prisma.liftLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends LiftLogFindManyArgs>(args?: SelectSubset<T, LiftLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LiftLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a LiftLog.
+     * @param {LiftLogCreateArgs} args - Arguments to create a LiftLog.
+     * @example
+     * // Create one LiftLog
+     * const LiftLog = await prisma.liftLog.create({
+     *   data: {
+     *     // ... data to create a LiftLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends LiftLogCreateArgs>(args: SelectSubset<T, LiftLogCreateArgs<ExtArgs>>): Prisma__LiftLogClient<$Result.GetResult<Prisma.$LiftLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many LiftLogs.
+     * @param {LiftLogCreateManyArgs} args - Arguments to create many LiftLogs.
+     * @example
+     * // Create many LiftLogs
+     * const liftLog = await prisma.liftLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends LiftLogCreateManyArgs>(args?: SelectSubset<T, LiftLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many LiftLogs and returns the data saved in the database.
+     * @param {LiftLogCreateManyAndReturnArgs} args - Arguments to create many LiftLogs.
+     * @example
+     * // Create many LiftLogs
+     * const liftLog = await prisma.liftLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many LiftLogs and only return the `id`
+     * const liftLogWithIdOnly = await prisma.liftLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends LiftLogCreateManyAndReturnArgs>(args?: SelectSubset<T, LiftLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LiftLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a LiftLog.
+     * @param {LiftLogDeleteArgs} args - Arguments to delete one LiftLog.
+     * @example
+     * // Delete one LiftLog
+     * const LiftLog = await prisma.liftLog.delete({
+     *   where: {
+     *     // ... filter to delete one LiftLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends LiftLogDeleteArgs>(args: SelectSubset<T, LiftLogDeleteArgs<ExtArgs>>): Prisma__LiftLogClient<$Result.GetResult<Prisma.$LiftLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one LiftLog.
+     * @param {LiftLogUpdateArgs} args - Arguments to update one LiftLog.
+     * @example
+     * // Update one LiftLog
+     * const liftLog = await prisma.liftLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends LiftLogUpdateArgs>(args: SelectSubset<T, LiftLogUpdateArgs<ExtArgs>>): Prisma__LiftLogClient<$Result.GetResult<Prisma.$LiftLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more LiftLogs.
+     * @param {LiftLogDeleteManyArgs} args - Arguments to filter LiftLogs to delete.
+     * @example
+     * // Delete a few LiftLogs
+     * const { count } = await prisma.liftLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends LiftLogDeleteManyArgs>(args?: SelectSubset<T, LiftLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LiftLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LiftLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many LiftLogs
+     * const liftLog = await prisma.liftLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends LiftLogUpdateManyArgs>(args: SelectSubset<T, LiftLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more LiftLogs and returns the data updated in the database.
+     * @param {LiftLogUpdateManyAndReturnArgs} args - Arguments to update many LiftLogs.
+     * @example
+     * // Update many LiftLogs
+     * const liftLog = await prisma.liftLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more LiftLogs and only return the `id`
+     * const liftLogWithIdOnly = await prisma.liftLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends LiftLogUpdateManyAndReturnArgs>(args: SelectSubset<T, LiftLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LiftLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one LiftLog.
+     * @param {LiftLogUpsertArgs} args - Arguments to update or create a LiftLog.
+     * @example
+     * // Update or create a LiftLog
+     * const liftLog = await prisma.liftLog.upsert({
+     *   create: {
+     *     // ... data to create a LiftLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the LiftLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends LiftLogUpsertArgs>(args: SelectSubset<T, LiftLogUpsertArgs<ExtArgs>>): Prisma__LiftLogClient<$Result.GetResult<Prisma.$LiftLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of LiftLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LiftLogCountArgs} args - Arguments to filter LiftLogs to count.
+     * @example
+     * // Count the number of LiftLogs
+     * const count = await prisma.liftLog.count({
+     *   where: {
+     *     // ... the filter for the LiftLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends LiftLogCountArgs>(
+      args?: Subset<T, LiftLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], LiftLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a LiftLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LiftLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends LiftLogAggregateArgs>(args: Subset<T, LiftLogAggregateArgs>): Prisma.PrismaPromise<GetLiftLogAggregateType<T>>
+
+    /**
+     * Group by LiftLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {LiftLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends LiftLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: LiftLogGroupByArgs['orderBy'] }
+        : { orderBy?: LiftLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, LiftLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetLiftLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the LiftLog model
+   */
+  readonly fields: LiftLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for LiftLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__LiftLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the LiftLog model
+   */
+  interface LiftLogFieldRefs {
+    readonly id: FieldRef<"LiftLog", 'String'>
+    readonly userId: FieldRef<"LiftLog", 'String'>
+    readonly exercise: FieldRef<"LiftLog", 'String'>
+    readonly weightKg: FieldRef<"LiftLog", 'Float'>
+    readonly sets: FieldRef<"LiftLog", 'Int'>
+    readonly reps: FieldRef<"LiftLog", 'Int'>
+    readonly notes: FieldRef<"LiftLog", 'String'>
+    readonly date: FieldRef<"LiftLog", 'DateTime'>
+    readonly createdAt: FieldRef<"LiftLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * LiftLog findUnique
+   */
+  export type LiftLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LiftLog
+     */
+    select?: LiftLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LiftLog
+     */
+    omit?: LiftLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LiftLogInclude<ExtArgs> | null
+    /**
+     * Filter, which LiftLog to fetch.
+     */
+    where: LiftLogWhereUniqueInput
+  }
+
+  /**
+   * LiftLog findUniqueOrThrow
+   */
+  export type LiftLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LiftLog
+     */
+    select?: LiftLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LiftLog
+     */
+    omit?: LiftLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LiftLogInclude<ExtArgs> | null
+    /**
+     * Filter, which LiftLog to fetch.
+     */
+    where: LiftLogWhereUniqueInput
+  }
+
+  /**
+   * LiftLog findFirst
+   */
+  export type LiftLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LiftLog
+     */
+    select?: LiftLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LiftLog
+     */
+    omit?: LiftLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LiftLogInclude<ExtArgs> | null
+    /**
+     * Filter, which LiftLog to fetch.
+     */
+    where?: LiftLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LiftLogs to fetch.
+     */
+    orderBy?: LiftLogOrderByWithRelationInput | LiftLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LiftLogs.
+     */
+    cursor?: LiftLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LiftLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LiftLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LiftLogs.
+     */
+    distinct?: LiftLogScalarFieldEnum | LiftLogScalarFieldEnum[]
+  }
+
+  /**
+   * LiftLog findFirstOrThrow
+   */
+  export type LiftLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LiftLog
+     */
+    select?: LiftLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LiftLog
+     */
+    omit?: LiftLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LiftLogInclude<ExtArgs> | null
+    /**
+     * Filter, which LiftLog to fetch.
+     */
+    where?: LiftLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LiftLogs to fetch.
+     */
+    orderBy?: LiftLogOrderByWithRelationInput | LiftLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for LiftLogs.
+     */
+    cursor?: LiftLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LiftLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LiftLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LiftLogs.
+     */
+    distinct?: LiftLogScalarFieldEnum | LiftLogScalarFieldEnum[]
+  }
+
+  /**
+   * LiftLog findMany
+   */
+  export type LiftLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LiftLog
+     */
+    select?: LiftLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LiftLog
+     */
+    omit?: LiftLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LiftLogInclude<ExtArgs> | null
+    /**
+     * Filter, which LiftLogs to fetch.
+     */
+    where?: LiftLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of LiftLogs to fetch.
+     */
+    orderBy?: LiftLogOrderByWithRelationInput | LiftLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing LiftLogs.
+     */
+    cursor?: LiftLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` LiftLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` LiftLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of LiftLogs.
+     */
+    distinct?: LiftLogScalarFieldEnum | LiftLogScalarFieldEnum[]
+  }
+
+  /**
+   * LiftLog create
+   */
+  export type LiftLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LiftLog
+     */
+    select?: LiftLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LiftLog
+     */
+    omit?: LiftLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LiftLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a LiftLog.
+     */
+    data: XOR<LiftLogCreateInput, LiftLogUncheckedCreateInput>
+  }
+
+  /**
+   * LiftLog createMany
+   */
+  export type LiftLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many LiftLogs.
+     */
+    data: LiftLogCreateManyInput | LiftLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * LiftLog createManyAndReturn
+   */
+  export type LiftLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LiftLog
+     */
+    select?: LiftLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LiftLog
+     */
+    omit?: LiftLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many LiftLogs.
+     */
+    data: LiftLogCreateManyInput | LiftLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LiftLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LiftLog update
+   */
+  export type LiftLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LiftLog
+     */
+    select?: LiftLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LiftLog
+     */
+    omit?: LiftLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LiftLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a LiftLog.
+     */
+    data: XOR<LiftLogUpdateInput, LiftLogUncheckedUpdateInput>
+    /**
+     * Choose, which LiftLog to update.
+     */
+    where: LiftLogWhereUniqueInput
+  }
+
+  /**
+   * LiftLog updateMany
+   */
+  export type LiftLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update LiftLogs.
+     */
+    data: XOR<LiftLogUpdateManyMutationInput, LiftLogUncheckedUpdateManyInput>
+    /**
+     * Filter which LiftLogs to update
+     */
+    where?: LiftLogWhereInput
+    /**
+     * Limit how many LiftLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * LiftLog updateManyAndReturn
+   */
+  export type LiftLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LiftLog
+     */
+    select?: LiftLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the LiftLog
+     */
+    omit?: LiftLogOmit<ExtArgs> | null
+    /**
+     * The data used to update LiftLogs.
+     */
+    data: XOR<LiftLogUpdateManyMutationInput, LiftLogUncheckedUpdateManyInput>
+    /**
+     * Filter which LiftLogs to update
+     */
+    where?: LiftLogWhereInput
+    /**
+     * Limit how many LiftLogs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LiftLogIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * LiftLog upsert
+   */
+  export type LiftLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LiftLog
+     */
+    select?: LiftLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LiftLog
+     */
+    omit?: LiftLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LiftLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the LiftLog to update in case it exists.
+     */
+    where: LiftLogWhereUniqueInput
+    /**
+     * In case the LiftLog found by the `where` argument doesn't exist, create a new LiftLog with this data.
+     */
+    create: XOR<LiftLogCreateInput, LiftLogUncheckedCreateInput>
+    /**
+     * In case the LiftLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<LiftLogUpdateInput, LiftLogUncheckedUpdateInput>
+  }
+
+  /**
+   * LiftLog delete
+   */
+  export type LiftLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LiftLog
+     */
+    select?: LiftLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LiftLog
+     */
+    omit?: LiftLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LiftLogInclude<ExtArgs> | null
+    /**
+     * Filter which LiftLog to delete.
+     */
+    where: LiftLogWhereUniqueInput
+  }
+
+  /**
+   * LiftLog deleteMany
+   */
+  export type LiftLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which LiftLogs to delete
+     */
+    where?: LiftLogWhereInput
+    /**
+     * Limit how many LiftLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * LiftLog without action
+   */
+  export type LiftLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LiftLog
+     */
+    select?: LiftLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the LiftLog
+     */
+    omit?: LiftLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LiftLogInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -9621,6 +10906,21 @@ export namespace Prisma {
   };
 
   export type WeightLogScalarFieldEnum = (typeof WeightLogScalarFieldEnum)[keyof typeof WeightLogScalarFieldEnum]
+
+
+  export const LiftLogScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    exercise: 'exercise',
+    weightKg: 'weightKg',
+    sets: 'sets',
+    reps: 'reps',
+    notes: 'notes',
+    date: 'date',
+    createdAt: 'createdAt'
+  };
+
+  export type LiftLogScalarFieldEnum = (typeof LiftLogScalarFieldEnum)[keyof typeof LiftLogScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -9748,6 +11048,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodListRelationFilter
     weights?: WeightLogListRelationFilter
     plan?: XOR<UserPlanNullableScalarRelationFilter, UserPlanWhereInput> | null
+    liftLogs?: LiftLogListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -9777,6 +11078,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodOrderByRelationAggregateInput
     weights?: WeightLogOrderByRelationAggregateInput
     plan?: UserPlanOrderByWithRelationInput
+    liftLogs?: LiftLogOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -9809,6 +11111,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodListRelationFilter
     weights?: WeightLogListRelationFilter
     plan?: XOR<UserPlanNullableScalarRelationFilter, UserPlanWhereInput> | null
+    liftLogs?: LiftLogListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -10245,6 +11548,83 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter<"WeightLog"> | Date | string
   }
 
+  export type LiftLogWhereInput = {
+    AND?: LiftLogWhereInput | LiftLogWhereInput[]
+    OR?: LiftLogWhereInput[]
+    NOT?: LiftLogWhereInput | LiftLogWhereInput[]
+    id?: StringFilter<"LiftLog"> | string
+    userId?: StringFilter<"LiftLog"> | string
+    exercise?: StringFilter<"LiftLog"> | string
+    weightKg?: FloatFilter<"LiftLog"> | number
+    sets?: IntFilter<"LiftLog"> | number
+    reps?: IntFilter<"LiftLog"> | number
+    notes?: StringNullableFilter<"LiftLog"> | string | null
+    date?: DateTimeFilter<"LiftLog"> | Date | string
+    createdAt?: DateTimeFilter<"LiftLog"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type LiftLogOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    exercise?: SortOrder
+    weightKg?: SortOrder
+    sets?: SortOrder
+    reps?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type LiftLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: LiftLogWhereInput | LiftLogWhereInput[]
+    OR?: LiftLogWhereInput[]
+    NOT?: LiftLogWhereInput | LiftLogWhereInput[]
+    userId?: StringFilter<"LiftLog"> | string
+    exercise?: StringFilter<"LiftLog"> | string
+    weightKg?: FloatFilter<"LiftLog"> | number
+    sets?: IntFilter<"LiftLog"> | number
+    reps?: IntFilter<"LiftLog"> | number
+    notes?: StringNullableFilter<"LiftLog"> | string | null
+    date?: DateTimeFilter<"LiftLog"> | Date | string
+    createdAt?: DateTimeFilter<"LiftLog"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type LiftLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    exercise?: SortOrder
+    weightKg?: SortOrder
+    sets?: SortOrder
+    reps?: SortOrder
+    notes?: SortOrderInput | SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+    _count?: LiftLogCountOrderByAggregateInput
+    _avg?: LiftLogAvgOrderByAggregateInput
+    _max?: LiftLogMaxOrderByAggregateInput
+    _min?: LiftLogMinOrderByAggregateInput
+    _sum?: LiftLogSumOrderByAggregateInput
+  }
+
+  export type LiftLogScalarWhereWithAggregatesInput = {
+    AND?: LiftLogScalarWhereWithAggregatesInput | LiftLogScalarWhereWithAggregatesInput[]
+    OR?: LiftLogScalarWhereWithAggregatesInput[]
+    NOT?: LiftLogScalarWhereWithAggregatesInput | LiftLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"LiftLog"> | string
+    userId?: StringWithAggregatesFilter<"LiftLog"> | string
+    exercise?: StringWithAggregatesFilter<"LiftLog"> | string
+    weightKg?: FloatWithAggregatesFilter<"LiftLog"> | number
+    sets?: IntWithAggregatesFilter<"LiftLog"> | number
+    reps?: IntWithAggregatesFilter<"LiftLog"> | number
+    notes?: StringNullableWithAggregatesFilter<"LiftLog"> | string | null
+    date?: DateTimeWithAggregatesFilter<"LiftLog"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"LiftLog"> | Date | string
+  }
+
   export type UserCreateInput = {
     id: string
     email: string
@@ -10272,6 +11652,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
     weights?: WeightLogCreateNestedManyWithoutUserInput
     plan?: UserPlanCreateNestedOneWithoutUserInput
+    liftLogs?: LiftLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -10301,6 +11682,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
     weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
     plan?: UserPlanUncheckedCreateNestedOneWithoutUserInput
+    liftLogs?: LiftLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -10330,6 +11712,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
     weights?: WeightLogUpdateManyWithoutUserNestedInput
     plan?: UserPlanUpdateOneWithoutUserNestedInput
+    liftLogs?: LiftLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -10359,6 +11742,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
     weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
     plan?: UserPlanUncheckedUpdateOneWithoutUserNestedInput
+    liftLogs?: LiftLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -10820,6 +12204,89 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type LiftLogCreateInput = {
+    id?: string
+    exercise: string
+    weightKg: number
+    sets: number
+    reps: number
+    notes?: string | null
+    date?: Date | string
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutLiftLogsInput
+  }
+
+  export type LiftLogUncheckedCreateInput = {
+    id?: string
+    userId: string
+    exercise: string
+    weightKg: number
+    sets: number
+    reps: number
+    notes?: string | null
+    date?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type LiftLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    exercise?: StringFieldUpdateOperationsInput | string
+    weightKg?: FloatFieldUpdateOperationsInput | number
+    sets?: IntFieldUpdateOperationsInput | number
+    reps?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutLiftLogsNestedInput
+  }
+
+  export type LiftLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    exercise?: StringFieldUpdateOperationsInput | string
+    weightKg?: FloatFieldUpdateOperationsInput | number
+    sets?: IntFieldUpdateOperationsInput | number
+    reps?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LiftLogCreateManyInput = {
+    id?: string
+    userId: string
+    exercise: string
+    weightKg: number
+    sets: number
+    reps: number
+    notes?: string | null
+    date?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type LiftLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    exercise?: StringFieldUpdateOperationsInput | string
+    weightKg?: FloatFieldUpdateOperationsInput | number
+    sets?: IntFieldUpdateOperationsInput | number
+    reps?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LiftLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    exercise?: StringFieldUpdateOperationsInput | string
+    weightKg?: FloatFieldUpdateOperationsInput | number
+    sets?: IntFieldUpdateOperationsInput | number
+    reps?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -10928,6 +12395,12 @@ export namespace Prisma {
     isNot?: UserPlanWhereInput | null
   }
 
+  export type LiftLogListRelationFilter = {
+    every?: LiftLogWhereInput
+    some?: LiftLogWhereInput
+    none?: LiftLogWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -10946,6 +12419,10 @@ export namespace Prisma {
   }
 
   export type WeightLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type LiftLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -11412,6 +12889,54 @@ export namespace Prisma {
     weight?: SortOrder
   }
 
+  export type LiftLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    exercise?: SortOrder
+    weightKg?: SortOrder
+    sets?: SortOrder
+    reps?: SortOrder
+    notes?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type LiftLogAvgOrderByAggregateInput = {
+    weightKg?: SortOrder
+    sets?: SortOrder
+    reps?: SortOrder
+  }
+
+  export type LiftLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    exercise?: SortOrder
+    weightKg?: SortOrder
+    sets?: SortOrder
+    reps?: SortOrder
+    notes?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type LiftLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    exercise?: SortOrder
+    weightKg?: SortOrder
+    sets?: SortOrder
+    reps?: SortOrder
+    notes?: SortOrder
+    date?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type LiftLogSumOrderByAggregateInput = {
+    weightKg?: SortOrder
+    sets?: SortOrder
+    reps?: SortOrder
+  }
+
   export type FoodLogCreateNestedManyWithoutUserInput = {
     create?: XOR<FoodLogCreateWithoutUserInput, FoodLogUncheckedCreateWithoutUserInput> | FoodLogCreateWithoutUserInput[] | FoodLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: FoodLogCreateOrConnectWithoutUserInput | FoodLogCreateOrConnectWithoutUserInput[]
@@ -11446,6 +12971,13 @@ export namespace Prisma {
     connect?: UserPlanWhereUniqueInput
   }
 
+  export type LiftLogCreateNestedManyWithoutUserInput = {
+    create?: XOR<LiftLogCreateWithoutUserInput, LiftLogUncheckedCreateWithoutUserInput> | LiftLogCreateWithoutUserInput[] | LiftLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: LiftLogCreateOrConnectWithoutUserInput | LiftLogCreateOrConnectWithoutUserInput[]
+    createMany?: LiftLogCreateManyUserInputEnvelope
+    connect?: LiftLogWhereUniqueInput | LiftLogWhereUniqueInput[]
+  }
+
   export type FoodLogUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<FoodLogCreateWithoutUserInput, FoodLogUncheckedCreateWithoutUserInput> | FoodLogCreateWithoutUserInput[] | FoodLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: FoodLogCreateOrConnectWithoutUserInput | FoodLogCreateOrConnectWithoutUserInput[]
@@ -11478,6 +13010,13 @@ export namespace Prisma {
     create?: XOR<UserPlanCreateWithoutUserInput, UserPlanUncheckedCreateWithoutUserInput>
     connectOrCreate?: UserPlanCreateOrConnectWithoutUserInput
     connect?: UserPlanWhereUniqueInput
+  }
+
+  export type LiftLogUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<LiftLogCreateWithoutUserInput, LiftLogUncheckedCreateWithoutUserInput> | LiftLogCreateWithoutUserInput[] | LiftLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: LiftLogCreateOrConnectWithoutUserInput | LiftLogCreateOrConnectWithoutUserInput[]
+    createMany?: LiftLogCreateManyUserInputEnvelope
+    connect?: LiftLogWhereUniqueInput | LiftLogWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -11586,6 +13125,20 @@ export namespace Prisma {
     update?: XOR<XOR<UserPlanUpdateToOneWithWhereWithoutUserInput, UserPlanUpdateWithoutUserInput>, UserPlanUncheckedUpdateWithoutUserInput>
   }
 
+  export type LiftLogUpdateManyWithoutUserNestedInput = {
+    create?: XOR<LiftLogCreateWithoutUserInput, LiftLogUncheckedCreateWithoutUserInput> | LiftLogCreateWithoutUserInput[] | LiftLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: LiftLogCreateOrConnectWithoutUserInput | LiftLogCreateOrConnectWithoutUserInput[]
+    upsert?: LiftLogUpsertWithWhereUniqueWithoutUserInput | LiftLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: LiftLogCreateManyUserInputEnvelope
+    set?: LiftLogWhereUniqueInput | LiftLogWhereUniqueInput[]
+    disconnect?: LiftLogWhereUniqueInput | LiftLogWhereUniqueInput[]
+    delete?: LiftLogWhereUniqueInput | LiftLogWhereUniqueInput[]
+    connect?: LiftLogWhereUniqueInput | LiftLogWhereUniqueInput[]
+    update?: LiftLogUpdateWithWhereUniqueWithoutUserInput | LiftLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: LiftLogUpdateManyWithWhereWithoutUserInput | LiftLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: LiftLogScalarWhereInput | LiftLogScalarWhereInput[]
+  }
+
   export type FoodLogUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<FoodLogCreateWithoutUserInput, FoodLogUncheckedCreateWithoutUserInput> | FoodLogCreateWithoutUserInput[] | FoodLogUncheckedCreateWithoutUserInput[]
     connectOrCreate?: FoodLogCreateOrConnectWithoutUserInput | FoodLogCreateOrConnectWithoutUserInput[]
@@ -11650,6 +13203,20 @@ export namespace Prisma {
     delete?: UserPlanWhereInput | boolean
     connect?: UserPlanWhereUniqueInput
     update?: XOR<XOR<UserPlanUpdateToOneWithWhereWithoutUserInput, UserPlanUpdateWithoutUserInput>, UserPlanUncheckedUpdateWithoutUserInput>
+  }
+
+  export type LiftLogUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<LiftLogCreateWithoutUserInput, LiftLogUncheckedCreateWithoutUserInput> | LiftLogCreateWithoutUserInput[] | LiftLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: LiftLogCreateOrConnectWithoutUserInput | LiftLogCreateOrConnectWithoutUserInput[]
+    upsert?: LiftLogUpsertWithWhereUniqueWithoutUserInput | LiftLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: LiftLogCreateManyUserInputEnvelope
+    set?: LiftLogWhereUniqueInput | LiftLogWhereUniqueInput[]
+    disconnect?: LiftLogWhereUniqueInput | LiftLogWhereUniqueInput[]
+    delete?: LiftLogWhereUniqueInput | LiftLogWhereUniqueInput[]
+    connect?: LiftLogWhereUniqueInput | LiftLogWhereUniqueInput[]
+    update?: LiftLogUpdateWithWhereUniqueWithoutUserInput | LiftLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: LiftLogUpdateManyWithWhereWithoutUserInput | LiftLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: LiftLogScalarWhereInput | LiftLogScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutPlanInput = {
@@ -11728,6 +13295,20 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutWeightsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutWeightsInput, UserUpdateWithoutWeightsInput>, UserUncheckedUpdateWithoutWeightsInput>
+  }
+
+  export type UserCreateNestedOneWithoutLiftLogsInput = {
+    create?: XOR<UserCreateWithoutLiftLogsInput, UserUncheckedCreateWithoutLiftLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutLiftLogsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutLiftLogsNestedInput = {
+    create?: XOR<UserCreateWithoutLiftLogsInput, UserUncheckedCreateWithoutLiftLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutLiftLogsInput
+    upsert?: UserUpsertWithoutLiftLogsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLiftLogsInput, UserUpdateWithoutLiftLogsInput>, UserUncheckedUpdateWithoutLiftLogsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -12069,6 +13650,38 @@ export namespace Prisma {
     create: XOR<UserPlanCreateWithoutUserInput, UserPlanUncheckedCreateWithoutUserInput>
   }
 
+  export type LiftLogCreateWithoutUserInput = {
+    id?: string
+    exercise: string
+    weightKg: number
+    sets: number
+    reps: number
+    notes?: string | null
+    date?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type LiftLogUncheckedCreateWithoutUserInput = {
+    id?: string
+    exercise: string
+    weightKg: number
+    sets: number
+    reps: number
+    notes?: string | null
+    date?: Date | string
+    createdAt?: Date | string
+  }
+
+  export type LiftLogCreateOrConnectWithoutUserInput = {
+    where: LiftLogWhereUniqueInput
+    create: XOR<LiftLogCreateWithoutUserInput, LiftLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type LiftLogCreateManyUserInputEnvelope = {
+    data: LiftLogCreateManyUserInput | LiftLogCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type FoodLogUpsertWithWhereUniqueWithoutUserInput = {
     where: FoodLogWhereUniqueInput
     update: XOR<FoodLogUpdateWithoutUserInput, FoodLogUncheckedUpdateWithoutUserInput>
@@ -12212,6 +13825,37 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type LiftLogUpsertWithWhereUniqueWithoutUserInput = {
+    where: LiftLogWhereUniqueInput
+    update: XOR<LiftLogUpdateWithoutUserInput, LiftLogUncheckedUpdateWithoutUserInput>
+    create: XOR<LiftLogCreateWithoutUserInput, LiftLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type LiftLogUpdateWithWhereUniqueWithoutUserInput = {
+    where: LiftLogWhereUniqueInput
+    data: XOR<LiftLogUpdateWithoutUserInput, LiftLogUncheckedUpdateWithoutUserInput>
+  }
+
+  export type LiftLogUpdateManyWithWhereWithoutUserInput = {
+    where: LiftLogScalarWhereInput
+    data: XOR<LiftLogUpdateManyMutationInput, LiftLogUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type LiftLogScalarWhereInput = {
+    AND?: LiftLogScalarWhereInput | LiftLogScalarWhereInput[]
+    OR?: LiftLogScalarWhereInput[]
+    NOT?: LiftLogScalarWhereInput | LiftLogScalarWhereInput[]
+    id?: StringFilter<"LiftLog"> | string
+    userId?: StringFilter<"LiftLog"> | string
+    exercise?: StringFilter<"LiftLog"> | string
+    weightKg?: FloatFilter<"LiftLog"> | number
+    sets?: IntFilter<"LiftLog"> | number
+    reps?: IntFilter<"LiftLog"> | number
+    notes?: StringNullableFilter<"LiftLog"> | string | null
+    date?: DateTimeFilter<"LiftLog"> | Date | string
+    createdAt?: DateTimeFilter<"LiftLog"> | Date | string
+  }
+
   export type UserCreateWithoutPlanInput = {
     id: string
     email: string
@@ -12238,6 +13882,7 @@ export namespace Prisma {
     steps?: StepLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
     weights?: WeightLogCreateNestedManyWithoutUserInput
+    liftLogs?: LiftLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPlanInput = {
@@ -12266,6 +13911,7 @@ export namespace Prisma {
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
     weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
+    liftLogs?: LiftLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPlanInput = {
@@ -12310,6 +13956,7 @@ export namespace Prisma {
     steps?: StepLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
     weights?: WeightLogUpdateManyWithoutUserNestedInput
+    liftLogs?: LiftLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPlanInput = {
@@ -12338,6 +13985,7 @@ export namespace Prisma {
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
     weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
+    liftLogs?: LiftLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutLogsInput = {
@@ -12366,6 +14014,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
     weights?: WeightLogCreateNestedManyWithoutUserInput
     plan?: UserPlanCreateNestedOneWithoutUserInput
+    liftLogs?: LiftLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLogsInput = {
@@ -12394,6 +14043,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
     weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
     plan?: UserPlanUncheckedCreateNestedOneWithoutUserInput
+    liftLogs?: LiftLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLogsInput = {
@@ -12438,6 +14088,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
     weights?: WeightLogUpdateManyWithoutUserNestedInput
     plan?: UserPlanUpdateOneWithoutUserNestedInput
+    liftLogs?: LiftLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLogsInput = {
@@ -12466,6 +14117,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
     weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
     plan?: UserPlanUncheckedUpdateOneWithoutUserNestedInput
+    liftLogs?: LiftLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutStepsInput = {
@@ -12494,6 +14146,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
     weights?: WeightLogCreateNestedManyWithoutUserInput
     plan?: UserPlanCreateNestedOneWithoutUserInput
+    liftLogs?: LiftLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutStepsInput = {
@@ -12522,6 +14175,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
     weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
     plan?: UserPlanUncheckedCreateNestedOneWithoutUserInput
+    liftLogs?: LiftLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutStepsInput = {
@@ -12566,6 +14220,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
     weights?: WeightLogUpdateManyWithoutUserNestedInput
     plan?: UserPlanUpdateOneWithoutUserNestedInput
+    liftLogs?: LiftLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStepsInput = {
@@ -12594,6 +14249,7 @@ export namespace Prisma {
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
     weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
     plan?: UserPlanUncheckedUpdateOneWithoutUserNestedInput
+    liftLogs?: LiftLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutFavoritesInput = {
@@ -12622,6 +14278,7 @@ export namespace Prisma {
     steps?: StepLogCreateNestedManyWithoutUserInput
     weights?: WeightLogCreateNestedManyWithoutUserInput
     plan?: UserPlanCreateNestedOneWithoutUserInput
+    liftLogs?: LiftLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFavoritesInput = {
@@ -12650,6 +14307,7 @@ export namespace Prisma {
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
     plan?: UserPlanUncheckedCreateNestedOneWithoutUserInput
+    liftLogs?: LiftLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFavoritesInput = {
@@ -12694,6 +14352,7 @@ export namespace Prisma {
     steps?: StepLogUpdateManyWithoutUserNestedInput
     weights?: WeightLogUpdateManyWithoutUserNestedInput
     plan?: UserPlanUpdateOneWithoutUserNestedInput
+    liftLogs?: LiftLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFavoritesInput = {
@@ -12722,6 +14381,7 @@ export namespace Prisma {
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
     plan?: UserPlanUncheckedUpdateOneWithoutUserNestedInput
+    liftLogs?: LiftLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutWeightsInput = {
@@ -12750,6 +14410,7 @@ export namespace Prisma {
     steps?: StepLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
     plan?: UserPlanCreateNestedOneWithoutUserInput
+    liftLogs?: LiftLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutWeightsInput = {
@@ -12778,6 +14439,7 @@ export namespace Prisma {
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
     plan?: UserPlanUncheckedCreateNestedOneWithoutUserInput
+    liftLogs?: LiftLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutWeightsInput = {
@@ -12822,6 +14484,7 @@ export namespace Prisma {
     steps?: StepLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
     plan?: UserPlanUpdateOneWithoutUserNestedInput
+    liftLogs?: LiftLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWeightsInput = {
@@ -12849,6 +14512,139 @@ export namespace Prisma {
     logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
+    plan?: UserPlanUncheckedUpdateOneWithoutUserNestedInput
+    liftLogs?: LiftLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutLiftLogsInput = {
+    id: string
+    email: string
+    name?: string | null
+    image?: string | null
+    createdAt?: Date | string
+    onboardingComplete?: boolean
+    heightCm?: number | null
+    startingWeightKg?: number | null
+    age?: number | null
+    sex?: string | null
+    activityLevel?: string | null
+    primaryGoal?: string | null
+    fitnessExperience?: string | null
+    dietaryPreference?: string | null
+    equipment?: string | null
+    calGoal?: number
+    protGoal?: number
+    carbGoal?: number
+    fatGoal?: number
+    stepGoal?: number
+    weightGoal?: number | null
+    logs?: FoodLogCreateNestedManyWithoutUserInput
+    steps?: StepLogCreateNestedManyWithoutUserInput
+    favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
+    weights?: WeightLogCreateNestedManyWithoutUserInput
+    plan?: UserPlanCreateNestedOneWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutLiftLogsInput = {
+    id: string
+    email: string
+    name?: string | null
+    image?: string | null
+    createdAt?: Date | string
+    onboardingComplete?: boolean
+    heightCm?: number | null
+    startingWeightKg?: number | null
+    age?: number | null
+    sex?: string | null
+    activityLevel?: string | null
+    primaryGoal?: string | null
+    fitnessExperience?: string | null
+    dietaryPreference?: string | null
+    equipment?: string | null
+    calGoal?: number
+    protGoal?: number
+    carbGoal?: number
+    fatGoal?: number
+    stepGoal?: number
+    weightGoal?: number | null
+    logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
+    steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
+    favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
+    weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
+    plan?: UserPlanUncheckedCreateNestedOneWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutLiftLogsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutLiftLogsInput, UserUncheckedCreateWithoutLiftLogsInput>
+  }
+
+  export type UserUpsertWithoutLiftLogsInput = {
+    update: XOR<UserUpdateWithoutLiftLogsInput, UserUncheckedUpdateWithoutLiftLogsInput>
+    create: XOR<UserCreateWithoutLiftLogsInput, UserUncheckedCreateWithoutLiftLogsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutLiftLogsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutLiftLogsInput, UserUncheckedUpdateWithoutLiftLogsInput>
+  }
+
+  export type UserUpdateWithoutLiftLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingComplete?: BoolFieldUpdateOperationsInput | boolean
+    heightCm?: NullableFloatFieldUpdateOperationsInput | number | null
+    startingWeightKg?: NullableFloatFieldUpdateOperationsInput | number | null
+    age?: NullableIntFieldUpdateOperationsInput | number | null
+    sex?: NullableStringFieldUpdateOperationsInput | string | null
+    activityLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    primaryGoal?: NullableStringFieldUpdateOperationsInput | string | null
+    fitnessExperience?: NullableStringFieldUpdateOperationsInput | string | null
+    dietaryPreference?: NullableStringFieldUpdateOperationsInput | string | null
+    equipment?: NullableStringFieldUpdateOperationsInput | string | null
+    calGoal?: IntFieldUpdateOperationsInput | number
+    protGoal?: IntFieldUpdateOperationsInput | number
+    carbGoal?: IntFieldUpdateOperationsInput | number
+    fatGoal?: IntFieldUpdateOperationsInput | number
+    stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    logs?: FoodLogUpdateManyWithoutUserNestedInput
+    steps?: StepLogUpdateManyWithoutUserNestedInput
+    favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUpdateManyWithoutUserNestedInput
+    plan?: UserPlanUpdateOneWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutLiftLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingComplete?: BoolFieldUpdateOperationsInput | boolean
+    heightCm?: NullableFloatFieldUpdateOperationsInput | number | null
+    startingWeightKg?: NullableFloatFieldUpdateOperationsInput | number | null
+    age?: NullableIntFieldUpdateOperationsInput | number | null
+    sex?: NullableStringFieldUpdateOperationsInput | string | null
+    activityLevel?: NullableStringFieldUpdateOperationsInput | string | null
+    primaryGoal?: NullableStringFieldUpdateOperationsInput | string | null
+    fitnessExperience?: NullableStringFieldUpdateOperationsInput | string | null
+    dietaryPreference?: NullableStringFieldUpdateOperationsInput | string | null
+    equipment?: NullableStringFieldUpdateOperationsInput | string | null
+    calGoal?: IntFieldUpdateOperationsInput | number
+    protGoal?: IntFieldUpdateOperationsInput | number
+    carbGoal?: IntFieldUpdateOperationsInput | number
+    fatGoal?: IntFieldUpdateOperationsInput | number
+    stepGoal?: IntFieldUpdateOperationsInput | number
+    weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
+    steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
+    favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
+    weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
     plan?: UserPlanUncheckedUpdateOneWithoutUserNestedInput
   }
 
@@ -12884,6 +14680,17 @@ export namespace Prisma {
     id?: string
     weight: number
     date?: Date | string
+  }
+
+  export type LiftLogCreateManyUserInput = {
+    id?: string
+    exercise: string
+    weightKg: number
+    sets: number
+    reps: number
+    notes?: string | null
+    date?: Date | string
+    createdAt?: Date | string
   }
 
   export type FoodLogUpdateWithoutUserInput = {
@@ -12986,6 +14793,39 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     weight?: FloatFieldUpdateOperationsInput | number
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LiftLogUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    exercise?: StringFieldUpdateOperationsInput | string
+    weightKg?: FloatFieldUpdateOperationsInput | number
+    sets?: IntFieldUpdateOperationsInput | number
+    reps?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LiftLogUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    exercise?: StringFieldUpdateOperationsInput | string
+    weightKg?: FloatFieldUpdateOperationsInput | number
+    sets?: IntFieldUpdateOperationsInput | number
+    reps?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LiftLogUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    exercise?: StringFieldUpdateOperationsInput | string
+    weightKg?: FloatFieldUpdateOperationsInput | number
+    sets?: IntFieldUpdateOperationsInput | number
+    reps?: IntFieldUpdateOperationsInput | number
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

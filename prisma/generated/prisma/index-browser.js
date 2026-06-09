@@ -200,6 +200,18 @@ exports.Prisma.WeightLogScalarFieldEnum = {
   date: 'date'
 };
 
+exports.Prisma.LiftLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  exercise: 'exercise',
+  weightKg: 'weightKg',
+  sets: 'sets',
+  reps: 'reps',
+  notes: 'notes',
+  date: 'date',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -223,7 +235,8 @@ exports.Prisma.ModelName = {
   FoodLog: 'FoodLog',
   StepLog: 'StepLog',
   FavoriteFood: 'FavoriteFood',
-  WeightLog: 'WeightLog'
+  WeightLog: 'WeightLog',
+  LiftLog: 'LiftLog'
 };
 
 /**
