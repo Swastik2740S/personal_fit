@@ -20,7 +20,13 @@ export default clerkMiddleware(async (auth, req) => {
   // Authenticated but onboarding not finished → redirect to onboarding
   // Skip API routes — they handle their own auth; redirecting a POST would cause 405
   const isApiRoute = req.nextUrl.pathname.startsWith("/api/");
-  if (userId && !sessionClaims?.metadata?.onboardingComplete && !isApiRoute) {
+  
+  // Fast-path: Check cookie bypass to avoid stale JWT redirect loops.
+  // We check BOTH the Clerk session claim and our own user-specific cookie.
+  const onboardedCookie = req.cookies.get(`sf_onboarded_${userId}`);
+  const hasOnboarded     = onboardedCookie?.value === "true" || !!sessionClaims?.metadata?.onboardingComplete;
+
+  if (userId && !hasOnboarded && !isApiRoute) {
     return NextResponse.redirect(new URL("/onboarding", req.url));
   }
 

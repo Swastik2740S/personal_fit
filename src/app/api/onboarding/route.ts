@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { currentUser, clerkClient } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { calculateTDEE } from "@/lib/tdee";
@@ -26,7 +27,7 @@ const onboardingSchema = z.object({
 async function ensureUserRow(userId: string, email: string, name: string | null, image: string | null) {
   // Already exists with correct Clerk id → nothing to do
   const existingById = await db.user.findUnique({ where: { id: userId } });
-  if (existingById) return;
+  if (existingById) return existingById;
 
   // Check for a legacy row with the same email (old NextAuth user)
   const legacyUser = email ? await db.user.findUnique({ where: { email } }) : null;
@@ -40,33 +41,100 @@ async function ensureUserRow(userId: string, email: string, name: string | null,
     // 2. Create the new Clerk user row (FK target must exist before moving relations).
     //    upsert (not create) so a racing Clerk webhook that already inserted the
     //    row doesn't blow up with a P2002 unique violation.
-    await db.user.upsert({
+    const newUser = await db.user.upsert({
       where:  { id: userId },
-      update: { email, name, image },
-      create: { id: userId, email, name, image },
+      update: { email, name, image, onboardingComplete: legacyUser.onboardingComplete },
+      create: { 
+        id: userId, 
+        email, 
+        name, 
+        image, 
+        onboardingComplete: legacyUser.onboardingComplete,
+        // Copy other fields too if they exist
+        heightCm: legacyUser.heightCm,
+        startingWeightKg: legacyUser.startingWeightKg,
+        age: legacyUser.age,
+        sex: legacyUser.sex,
+        activityLevel: legacyUser.activityLevel,
+        primaryGoal: legacyUser.primaryGoal,
+        fitnessExperience: legacyUser.fitnessExperience,
+        dietaryPreference: legacyUser.dietaryPreference,
+        equipment: legacyUser.equipment,
+        calGoal: legacyUser.calGoal,
+        protGoal: legacyUser.protGoal,
+        carbGoal: legacyUser.carbGoal,
+        fatGoal: legacyUser.fatGoal,
+        stepGoal: legacyUser.stepGoal,
+      },
     });
     // 3. Move all app data from old id → new Clerk id
     await db.foodLog.updateMany({ where: { userId: legacyUser.id }, data: { userId } });
     await db.stepLog.updateMany({ where: { userId: legacyUser.id }, data: { userId } });
     await db.weightLog.updateMany({ where: { userId: legacyUser.id }, data: { userId } });
     await db.favoriteFood.updateMany({ where: { userId: legacyUser.id }, data: { userId } });
-    // 4. UserPlan will be regenerated — drop the old one
-    await db.userPlan.deleteMany({ where: { userId: legacyUser.id } });
+    // 4. Move UserPlan instead of deleting if it exists
+    await db.userPlan.updateMany({ where: { userId: legacyUser.id }, data: { userId } });
     // 5. Delete the now-orphaned legacy row
     await db.user.delete({ where: { id: legacyUser.id } });
-    return;
+    return newUser;
   }
 
-  // Brand new user. `email` may be "" if currentUser() failed on a cold start —
-  // fall back to a per-user-unique placeholder so we never collide on the unique
-  // email constraint (two empty-string emails would conflict). The Clerk webhook
-  // backfills the real address. upsert guards against a racing webhook insert.
+  // Brand new user.
   const safeEmail = email || `${userId}@clerk.local`;
-  await db.user.upsert({
+  return await db.user.upsert({
     where:  { id: userId },
     update: {},
     create: { id: userId, email: safeEmail, name, image },
   });
+}
+
+export async function GET() {
+  try {
+    const { userId, error } = await requireUser();
+    if (error) return error;
+
+    let user = await db.user.findUnique({ where: { id: userId } });
+    
+    // If not found, check for migration
+    if (!user) {
+      let email = "";
+      let name: string | null = null;
+      let image: string | null = null;
+      try {
+        const clerkUser = await currentUser();
+        email = clerkUser?.emailAddresses[0]?.emailAddress ?? "";
+        name  = clerkUser?.fullName ?? null;
+        image = clerkUser?.imageUrl ?? null;
+      } catch {}
+      user = await ensureUserRow(userId, email, name, image);
+    }
+
+    if (user?.onboardingComplete) {
+      // Sync Clerk metadata if it's missing (self-healing)
+      const clerk = await clerkClient();
+      const clerkUser = await clerk.users.getUser(userId);
+      if (!clerkUser.publicMetadata.onboardingComplete) {
+        await clerk.users.updateUserMetadata(userId, {
+          publicMetadata: { onboardingComplete: true },
+        });
+      }
+      
+      // Also set the bypass cookie
+      const cookieStore = await cookies();
+      cookieStore.set(`sf_onboarded_${userId}`, "true", {
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+        path: "/",
+        httpOnly: true,
+      });
+
+      return NextResponse.json({ onboardingComplete: true });
+    }
+
+    return NextResponse.json({ onboardingComplete: false });
+  } catch (e) {
+    console.error("[onboarding] GET failed:", e);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
 
 export async function POST(req: Request) {
@@ -137,6 +205,14 @@ export async function POST(req: Request) {
     const clerk = await clerkClient();
     await clerk.users.updateUserMetadata(userId, {
       publicMetadata: { onboardingComplete: true },
+    });
+
+    // Set the bypass cookie to avoid stale JWT redirect loops
+    const cookieStore = await cookies();
+    cookieStore.set(`sf_onboarded_${userId}`, "true", {
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      path: "/",
+      httpOnly: true,
     });
 
     return NextResponse.json({ success: true, tdee });
