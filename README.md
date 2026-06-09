@@ -1,11 +1,10 @@
 <div align="center">
 
-# 🟢 SwastikFit
+# SwastikFit
 
-### Fat Loss Command Center
+### AI-Powered Body Recomposition Platform
 
-A personal fitness tracker for logging **food, macros, and daily steps** against
-**editable goals** — with GitHub auth, a cached nutrition search, and a weekly performance report.
+Multi-user fitness tracker — onboard with your stats, get a TDEE-calibrated macro plan and a 6-day Push/Pull/Legs programme, log food, steps, bodyweight, and every lift with a progressive-overload target system.
 
 <br/>
 
@@ -13,10 +12,10 @@ A personal fitness tracker for logging **food, macros, and daily steps** against
 ![React](https://img.shields.io/badge/React_19-09090b?style=for-the-badge&logo=react&logoColor=22d3ee)
 ![TypeScript](https://img.shields.io/badge/TypeScript-09090b?style=for-the-badge&logo=typescript&logoColor=3178c6)
 ![Prisma](https://img.shields.io/badge/Prisma_7-09090b?style=for-the-badge&logo=prisma&logoColor=fafafa)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-09090b?style=for-the-badge&logo=postgresql&logoColor=4169e1)
+![PostgreSQL](https://img.shields.io/badge/Neon_PostgreSQL-09090b?style=for-the-badge&logo=postgresql&logoColor=4169e1)
 
-![NextAuth](https://img.shields.io/badge/NextAuth.js-09090b?style=for-the-badge&logo=auth0&logoColor=a855f7)
-![Zod](https://img.shields.io/badge/Zod-09090b?style=for-the-badge&logo=zod&logoColor=3068b7)
+![Clerk](https://img.shields.io/badge/Clerk_7-09090b?style=for-the-badge&logo=clerk&logoColor=a855f7)
+![Zod](https://img.shields.io/badge/Zod_4-09090b?style=for-the-badge&logo=zod&logoColor=3068b7)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-09090b?style=for-the-badge&logo=framer&logoColor=fbbf24)
 ![Edamam](https://img.shields.io/badge/Edamam_API-09090b?style=for-the-badge&logo=uber-eats&logoColor=c8f542)
 
@@ -24,98 +23,108 @@ A personal fitness tracker for logging **food, macros, and daily steps** against
 
 ---
 
-## 📸 Screenshots
-
-<div align="center">
-
-### Food Logger
-<img src="docs/screenshots/food-logger.png" alt="Food Logger — search foods and track macros by meal" width="850"/>
-
-</div>
-
-> [!NOTE]
-> The Dashboard, Settings, and Weekly Report screens are behind GitHub sign-in.
-> To showcase them, sign in and drop screenshots into `docs/screenshots/` using these names —
-> they'll render automatically here:
-> `dashboard.png` · `settings.png` · `weekly-report.png` · `step-tracker.png`
-
----
-
-## ✨ Features
+## Features
 
 | | Feature | Description |
 |---|---|---|
-| 🔐 | **GitHub sign-in** | Database-backed sessions via NextAuth + Prisma adapter |
-| 🍎 | **Food logging** | Search foods (Edamam) and log by meal — Breakfast / Lunch / Snack / Dinner |
-| ⚡ | **Cached nutrition** | Results cached in Postgres with a 30-day TTL to cut API calls |
-| 👟 | **Step tracking** | One entry per day, enforced by an upsert on `(userId, date)` |
-| 📊 | **Dashboard** | Live macro progress bars and an animated step-goal ring |
-| 📈 | **Weekly report** | 7-day calorie, protein, and step trends with a summary table |
-| 🎯 | **Editable goals** | Per-user calorie / macro / step targets, set on the Settings page |
-| 🌗 | **Timezone-correct** | "Today" is computed from the client's local day, consistently everywhere |
+| 🔐 | **Google sign-in** | Clerk 7 — hosted sign-in/sign-up UI, Svix webhooks for user sync |
+| 📋 | **5-step onboarding** | Height / weight / age / sex / activity / goal / experience / diet / equipment |
+| 🧮 | **TDEE calculation** | Mifflin-St Jeor with activity multiplier → per-user calorie + macro targets |
+| 🍽️ | **Personalised meal plan** | Rule-based, diet-preference-aware (eggetarian, vegan, high-protein, low-carb, …) |
+| 🏋️ | **6-Day Push/Pull/Legs** | Strength + Hypertrophy rotation, regeneratable from the Training page |
+| 📈 | **Progressive overload log** | Log every lift; target system suggests `+2.5 kg` when you hit all reps, or "climb the rep range first" |
+| 🍎 | **Food logging** | Search Edamam (auth-gated, 30-day cache), log by meal type + backfill up to 7 days |
+| ⭐ | **Favourites & recents** | Star foods for instant re-add; recent foods normalised to per-100 g |
+| 👟 | **Step tracking** | One entry per day, upserted — DayPills for 7-day backfill |
+| ⚖️ | **Weight log** | Daily bodyweight history, same backfill pattern |
+| 📊 | **Dashboard** | Live macro rings, step progress, consistency streak, 7-day adherence |
+| 📈 | **Weekly report** | 7-day calorie, protein, step trends + summary table |
+| 🎯 | **Editable goals** | Override TDEE-computed targets per-user in Settings |
+| 🌗 | **Timezone-correct** | All "today" boundaries computed from the client's local day-start |
 
 ---
 
-## 🧱 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|------------|
-| **Framework** | Next.js 16 (App Router, Turbopack) · React 19 |
+| **Framework** | Next.js 16.2.6 (App Router, Turbopack) · React 19 |
 | **Language** | TypeScript (strict) |
-| **Auth** | NextAuth v4 + `@auth/prisma-adapter` (GitHub OAuth) |
-| **Database** | PostgreSQL via Prisma 7 (`@prisma/adapter-pg` connection pool) |
-| **Validation** | Zod (request schemas) |
-| **UI / Motion** | Framer Motion · lucide-react · CSS variables (custom neon dark theme) |
-| **External API** | Edamam Food Database (nutrition lookup) |
+| **Auth** | Clerk 7.4.3 — Google OAuth, `requireUser()` server helper, Svix webhook |
+| **Database** | Neon serverless PostgreSQL via Prisma 7 (`@prisma/adapter-pg` pool) |
+| **Validation** | Zod 4 (all API request bodies) |
+| **UI / Motion** | Framer Motion 12 · lucide-react · plain CSS (CSS variables, frosted-glass dark theme) |
+| **External API** | Edamam Food Database (nutrition lookup, cached) |
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```mermaid
 flowchart LR
-    Browser["🌐 Browser<br/>(client pages)"]
+    Browser["Browser\n(client pages)"]
 
-    subgraph Next["▲ Next.js 16 — App Router"]
-        Pages["Client Components<br/>Dashboard · Food · Steps · Report · Settings"]
-        API["Route Handlers<br/>/api/*"]
-        Auth["requireUser()<br/>+ NextAuth session"]
+    subgraph Next["Next.js 16 — App Router"]
+        Pages["Client Components\nDashboard · Food · Steps · Weight\nTraining · Meals · Report · Settings"]
+        API["Route Handlers\n/api/*"]
+        Auth["requireUser()\nClerk auth()"]
+        Proxy["proxy.ts\nClerk middleware"]
     end
 
-    Prisma["Prisma 7<br/>(pg pool adapter)"]
-    DB[("🐘 PostgreSQL")]
-    Edamam["🍎 Edamam<br/>Food API"]
-    GitHub["🐙 GitHub OAuth"]
+    Prisma["Prisma 7\n(pg pool adapter)"]
+    DB[("Neon PostgreSQL")]
+    Edamam["Edamam\nFood API"]
+    Clerk["Clerk\nGoogle OAuth"]
 
     Browser <-->|fetch JSON| API
     Browser --> Pages
+    Proxy --> Clerk
     API --> Auth
-    Auth --> GitHub
+    Auth --> Clerk
     API --> Prisma
     Prisma --> DB
-    API -.->|cache miss / stale| Edamam
+    API -.->|cache miss| Edamam
 ```
 
 ---
 
-## 🗃️ Data Model
+## Data Model
 
 ```mermaid
 erDiagram
-    User ||--o{ Account : has
-    User ||--o{ Session : has
     User ||--o{ FoodLog : logs
     User ||--o{ StepLog : logs
+    User ||--o{ WeightLog : logs
+    User ||--o{ LiftLog : logs
+    User ||--o{ FavoriteFood : saves
+    User ||--|| UserPlan : has
 
     User {
-        string id PK
+        string id PK "Clerk userId"
         string email UK
         string name
-        int calGoal "default 2350"
-        int protGoal "default 160"
-        int carbGoal "default 245"
-        int fatGoal "default 65"
-        int stepGoal "default 8000"
+        bool onboardingComplete
+        float heightCm
+        float startingWeightKg
+        int age
+        string sex
+        string activityLevel
+        string primaryGoal
+        string fitnessExperience
+        string dietaryPreference
+        string equipment
+        int calGoal
+        int protGoal
+        int carbGoal
+        int fatGoal
+        int stepGoal
+    }
+    UserPlan {
+        string id PK
+        string userId FK
+        string mealPlan "JSON MealPlanItem[]"
+        string workoutPlan "JSON WorkoutDay[]"
+        string summary
     }
     FoodLog {
         string id PK
@@ -126,7 +135,7 @@ erDiagram
         float prot
         float carb
         float fat
-        string mealType "Breakfast|Lunch|Snack|Dinner"
+        string mealType
         datetime date
     }
     StepLog {
@@ -135,44 +144,42 @@ erDiagram
         int count
         datetime date "1 row per user per day"
     }
+    WeightLog {
+        string id PK
+        string userId FK
+        float weight
+        datetime date "1 row per user per day"
+    }
+    LiftLog {
+        string id PK
+        string userId FK
+        string exercise
+        float weightKg
+        int sets
+        int reps
+        string notes
+        datetime date
+    }
+    FavoriteFood {
+        string id PK
+        string userId FK
+        string name
+        float cal
+        float prot
+        float carb
+        float fat "stored per 100g"
+    }
     FoodCache {
         string id PK
         string query UK
-        string data "serialized Edamam results"
-        datetime createdAt "TTL anchor (30d)"
+        string data "serialised Edamam results"
+        datetime createdAt "30-day TTL"
     }
 ```
 
 ---
 
-## 🔄 Request Flow — Food Search with Cache
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant U as User
-    participant P as Food Page
-    participant API as /api/food/search
-    participant C as FoodCache (Postgres)
-    participant E as Edamam API
-
-    U->>P: type "apple" + search
-    P->>API: GET ?q=apple
-    API->>C: findUnique(query)
-    alt fresh hit (< 30 days)
-        C-->>API: cached results
-    else miss or stale
-        API->>E: fetch nutrition
-        E-->>API: hints[]
-        API->>C: upsert(query, data, createdAt)
-    end
-    API-->>P: foods[] (top 10)
-    P-->>U: render results
-```
-
----
-
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Install dependencies
 
@@ -182,29 +189,27 @@ npm install
 
 ### 2. Configure environment
 
-Create a `.env` file in the project root:
+Create `.env.local` in the project root:
 
 ```bash
-# Database (PostgreSQL connection string)
-DATABASE_URL="postgresql://user:password@host:5432/dbname"
+# Neon serverless PostgreSQL
+DATABASE_URL="postgresql://user:password@host/dbname?sslmode=require"
 
-# NextAuth
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="<run: openssl rand -base64 32>"
-
-# GitHub OAuth app — https://github.com/settings/developers
-GITHUB_ID="..."
-GITHUB_SECRET="..."
+# Clerk — https://dashboard.clerk.com
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_..."
+CLERK_SECRET_KEY="sk_..."
+CLERK_WEBHOOK_SECRET="whsec_..."
 
 # Edamam Food Database — https://developer.edamam.com
 EDAMAM_APP_ID="..."
 EDAMAM_APP_KEY="..."
 ```
 
-### 3. Set up the database
+### 3. Apply migrations and generate the Prisma client
 
 ```bash
-npx prisma migrate dev
+npx prisma migrate deploy
+npx prisma generate
 ```
 
 ### 4. Run the dev server
@@ -213,11 +218,11 @@ npx prisma migrate dev
 npm run dev
 ```
 
-Open **[http://localhost:3000](http://localhost:3000)** 🎉
+Open **[http://localhost:3000](http://localhost:3000)**
 
 ---
 
-## 📜 Scripts
+## Scripts
 
 | Command | Description |
 |---------|-------------|
@@ -225,51 +230,83 @@ Open **[http://localhost:3000](http://localhost:3000)** 🎉
 | `npm run build` | Production build |
 | `npm start` | Run the production build |
 | `npm run lint` | Lint with ESLint |
+| `npx prisma migrate deploy` | Apply pending migrations |
+| `npx prisma generate` | Regenerate Prisma client after schema changes |
 
 ---
 
-## 🛰️ API Reference
+## API Reference
 
-All `/api` routes (except `food/search`) require an authenticated session.
+All routes require a Clerk session except the webhook.
 
 | Method | Route | Purpose |
 |--------|-------|---------|
-| `GET` | `/api/dashboard/stats` | Today's macro totals, steps, and the user's goals |
+| `GET` | `/api/dashboard/stats` | Today's macro totals, steps, user goals |
 | `GET` | `/api/dashboard/weekly` | 7-day aggregated trends |
-| `GET` · `POST` · `DELETE` | `/api/food/log` | List / add / delete food log entries |
-| `GET` | `/api/food/search?q=` | Search foods (cached → Edamam) |
-| `GET` · `POST` | `/api/steps` | Read / upsert today's step count |
-| `GET` · `PATCH` | `/api/profile` | Read / update per-user goals |
-| `*` | `/api/auth/[...nextauth]` | NextAuth handlers |
+| `GET · POST · DELETE` | `/api/food/log` | List / add / delete food entries |
+| `GET` | `/api/food/search?q=` | Food search (auth-gated, Edamam + 30-day cache) |
+| `GET · POST · DELETE` | `/api/food/favorites` | List / star / unstar favourite foods (per 100 g) |
+| `GET` | `/api/food/recent` | Recently logged foods, normalised to per 100 g |
+| `GET · POST` | `/api/steps` | Read / upsert daily steps |
+| `GET · POST` | `/api/weight` | Weight history / upsert daily bodyweight |
+| `GET` | `/api/insights` | Logging streak + 7-day goal adherence |
+| `GET · PATCH` | `/api/profile` | Read / update per-user goals |
+| `POST` | `/api/onboarding` | TDEE calc + rule-based plan gen + save UserPlan |
+| `GET · POST` | `/api/plan` | Fetch / regenerate UserPlan |
+| `GET · POST` | `/api/lifts` | List lift history / log a new entry |
+| `DELETE` | `/api/lifts/[id]` | Delete a lift entry |
+| `GET` | `/api/lifts/targets` | Progressive overload targets for today's workout |
+| `POST` | `/api/webhooks/clerk` | Svix-verified Clerk user sync (no auth) |
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
+├── proxy.ts                  Clerk middleware (Next.js 16 uses proxy.ts)
 ├── app/
-│   ├── api/            # Route handlers (REST-style endpoints)
-│   ├── (pages)/        # Dashboard, Food, Steps, Report, Settings, …
-│   ├── layout.tsx      # Fonts + AuthProvider + LayoutWrapper
-│   └── globals.css     # Neon dark theme (CSS variables)
-├── components/         # Dashboard, Sidebar, MobileNav, providers
-├── lib/
-│   ├── db.ts           # Prisma singleton (pg pool)
-│   ├── auth.ts         # NextAuth config + requireUser() helper
-│   ├── day.ts          # Shared local-day boundary helpers
-│   └── validation.ts   # Zod request schemas
-└── types/
-    └── next-auth.d.ts  # Session.user.id augmentation
+│   ├── api/                  Route handlers
+│   │   ├── dashboard/        stats · weekly
+│   │   ├── food/             log · search · favorites · recent
+│   │   ├── lifts/            route · [id] · targets
+│   │   ├── onboarding/       TDEE + plan generation
+│   │   ├── plan/             fetch / regenerate UserPlan
+│   │   ├── profile/          goals CRUD
+│   │   ├── steps/            daily steps
+│   │   ├── weight/           bodyweight log
+│   │   ├── insights/         streak + adherence
+│   │   └── webhooks/clerk/   Svix user sync
+│   ├── onboarding/           5-step wizard
+│   ├── training/             workout plan + lift logger
+│   ├── meals/                meal plan viewer
+│   ├── food/                 food logger
+│   ├── steps/                step tracker
+│   ├── weight/               bodyweight tracker
+│   ├── report/               weekly report
+│   ├── settings/             goal editor
+│   ├── layout.tsx            ClerkProvider + LayoutWrapper
+│   └── globals.css           Frosted-glass dark design system
+├── components/               Dashboard · Sidebar · MobileNav · Drawer · LandingPage
+└── lib/
+    ├── db.ts                 Prisma singleton + Neon retry logic
+    ├── auth.ts               requireUser() — Clerk auth() helper
+    ├── tdee.ts               Mifflin-St Jeor TDEE + macro targets
+    ├── planGenerator.ts      Rule-based meal + workout plan (synchronous)
+    ├── day.ts                Local day-start helpers (TZ-correct)
+    ├── motion.ts             Shared Framer Motion variants
+    ├── nav.ts                ALL_NAV / PRIMARY_NAV
+    └── validation.ts         Zod request schemas
 prisma/
-├── schema.prisma       # Models
-└── migrations/         # SQL migration history
+├── schema.prisma             Models
+├── migrations/               SQL migration history
+└── generated/                Committed Prisma client
 ```
 
 ---
 
 <div align="center">
 
-Built with ☕ and 🟢 — **SwastikFit**
+Built with SwastikFit
 
 </div>
