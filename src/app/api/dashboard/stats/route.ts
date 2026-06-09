@@ -9,6 +9,7 @@ const GOAL_SELECT = {
   carbGoal: true,
   fatGoal: true,
   stepGoal: true,
+  onboardingComplete: true,
 };
 
 export async function GET(req: Request) {
