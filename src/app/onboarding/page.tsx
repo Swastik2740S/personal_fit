@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { calculateTDEE } from "@/lib/tdee";
 import type { OnboardingProfile } from "@/lib/tdee";
@@ -118,7 +117,6 @@ function OptionCard<T extends string>({
 const TOTAL_STEPS = 5;
 
 export default function OnboardingPage() {
-  const router = useRouter();
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -199,7 +197,10 @@ export default function OnboardingPage() {
         setSubmitError(msg);
         return;
       }
-      router.push("/");
+      // Hard reload so Clerk middleware re-verifies the session against its
+      // servers, picks up the updated publicMetadata (onboardingComplete: true),
+      // and issues a fresh JWT before the middleware gate runs again.
+      window.location.href = "/";
     } catch {
       setSubmitError("Network error. Please try again.");
     } finally {
