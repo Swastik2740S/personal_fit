@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { currentUser } from "@clerk/nextjs/server";
+import { currentUser, clerkClient } from "@clerk/nextjs/server";
 import { requireUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { calculateTDEE } from "@/lib/tdee";
@@ -130,6 +130,13 @@ export async function POST(req: Request) {
         workoutPlan: JSON.stringify(plan.workoutPlan),
         summary:     plan.summary,
       },
+    });
+
+    // Mark onboarding complete in Clerk publicMetadata so the middleware
+    // can gate access without a DB query on every request.
+    const clerk = await clerkClient();
+    await clerk.users.updateUserMetadata(userId, {
+      publicMetadata: { onboardingComplete: true },
     });
 
     return NextResponse.json({ success: true, tdee });
