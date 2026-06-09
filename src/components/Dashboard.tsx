@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { getLocalStartOfDay } from "@/lib/day";
 import { containerStagger as container, fadeUpItem as item, useCountUp } from "@/lib/motion";
 import { useTimePhase } from "./providers/TimeContext";
@@ -17,7 +18,6 @@ import {
   Activity,
   ArrowUpRight,
   Award,
-  X
 } from "lucide-react";
 
 interface Insights {
@@ -31,10 +31,13 @@ interface Insights {
 
 const Dashboard = () => {
   const { user, isLoaded } = useUser();
+  const router = useRouter();
   const { phase } = useTimePhase();
   const { isPrivate } = usePrivacy();
-  const [selectedCard, setSelectedCard] = useState<string | null>(null);
-  
+  // Hold rendering until we've confirmed onboarding status, so incomplete users
+  // are redirected to /onboarding instead of flashing a default-goals dashboard.
+  const [gateChecked, setGateChecked] = useState(false);
+
   const [stats, setStats] = useState({
     cal: 0,
     prot: 0,
@@ -69,6 +72,13 @@ const Dashboard = () => {
       if (res.ok) {
         const data = await res.json();
         const { goals, ...totals } = data;
+        // Gate: a signed-in user who hasn't finished onboarding has no real
+        // plan/goals yet — send them to complete it (keep the spinner showing
+        // during navigation by returning before setGateChecked).
+        if (goals && goals.onboardingComplete === false) {
+          router.replace("/onboarding");
+          return;
+        }
         setStats(totals);
         if (goals) {
           setTargets({
@@ -80,8 +90,10 @@ const Dashboard = () => {
           });
         }
       }
+      setGateChecked(true);
     } catch (error) {
       console.error("Dashboard fetch error:", error);
+      setGateChecked(true);
     }
   };
 
@@ -102,7 +114,7 @@ const Dashboard = () => {
   const stepCount = Math.round(useCountUp(stats.steps));
   const remainingCount = Math.max(0, targets.cal - calCount);
 
-  if (!isLoaded) {
+  if (!isLoaded || !gateChecked) {
     return (
       <div style={{ display: 'flex', height: '80vh', alignItems: 'center', justifyContent: 'center' }}>
         <div className="spinner"></div>
@@ -151,54 +163,26 @@ const Dashboard = () => {
         </Link>
       </motion.div>
 
-      {/* PROGRESSIVE DISCLOSURE GRID */}
-      <AnimatePresence>
-        {selectedCard ? (
-           <motion.div
-            layoutId={`card-${selectedCard}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, width: "100%", height: "400px" }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="card"
-            style={{ marginBottom: 32, position: 'relative', cursor: 'default' }}
+      {/* METRIC GRID */}
+      <motion.div variants={item} className="metric-grid">
+        {orderedCards.map((c) => (
+          <motion.div
+            key={c.id}
+            className="metric-card"
+            whileHover={{ scale: 1.02 }}
           >
-            <button onClick={() => setSelectedCard(null)} className="btn-ghost" style={{ position: 'absolute', top: 20, right: 20 }}>
-               <X size={20} />
-            </button>
-            <div className="card-title">Expanded Metric View</div>
-            <div style={{ fontSize: 48, fontWeight: 800, marginTop: 40 }} className={pBlur}>
-              {orderedCards.find(c => c.id === selectedCard)?.count}
+            <div className="metric-label">{c.label}</div>
+            <div className={`metric-val ${pBlur}`}>
+              {c.count}
+              <span className="metric-unit">{c.unit}</span>
             </div>
-            <div style={{ fontSize: 24, color: 'var(--text2)' }}>
-              {orderedCards.find(c => c.id === selectedCard)?.label} Detail View
+            <div className={`metric-sub ${pBlur}`}>{c.sub}</div>
+            <div style={{ position: 'absolute', right: 20, bottom: 20, opacity: 0.1 }}>
+              <c.Icon size={48} color={c.color} />
             </div>
           </motion.div>
-        ) : (
-          <motion.div className="metric-grid" exit={{ opacity: 0, scale: 0.95 }}>
-            {orderedCards.map((c) => (
-              <motion.div 
-                layoutId={`card-${c.id}`}
-                key={c.id} 
-                className="metric-card"
-                onClick={() => setSelectedCard(c.id)}
-                style={{ cursor: "pointer" }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <div className="metric-label">{c.label}</div>
-                <div className={`metric-val ${pBlur}`}>
-                  {c.count}
-                  <span className="metric-unit">{c.unit}</span>
-                </div>
-                <div className={`metric-sub ${pBlur}`}>{c.sub}</div>
-                <div style={{ position: 'absolute', right: 20, bottom: 20, opacity: 0.1 }}>
-                  <c.Icon size={48} color={c.color} />
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+        ))}
+      </motion.div>
 
       {insights && (
         <motion.div variants={item} className="card" style={{ marginTop: 24 }}>
@@ -337,8 +321,8 @@ const Dashboard = () => {
             </div>
             <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
               <div style={{ textAlign: "center", background: "var(--bg3)", borderRadius: "var(--r)", padding: "12px", flex: 1 }}>
-                <div style={{ fontSize: "11px", color: "var(--text3)", textTransform: 'uppercase', marginBottom: 4 }}>Paced</div>
-                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--text2)" }} className={pBlur}>~2,000</div>
+                <div style={{ fontSize: "11px", color: "var(--text3)", textTransform: 'uppercase', marginBottom: 4 }}>Logged</div>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: "var(--text2)" }} className={pBlur}>{stats.steps.toLocaleString()}</div>
               </div>
               <div style={{ textAlign: "center", background: "var(--accent-dim)", borderRadius: "var(--r)", padding: "12px", flex: 1, border: '1px solid rgba(200, 245, 66, 0.1)' }}>
                 <div style={{ fontSize: "11px", color: "var(--accent)", textTransform: 'uppercase', marginBottom: 4 }}>Required</div>

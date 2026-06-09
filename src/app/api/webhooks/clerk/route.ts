@@ -58,7 +58,9 @@ export async function POST(req: Request) {
 
     await db.user.upsert({
       where: { id: data.id },
-      update: { name, image: data.image_url },
+      // include email on update so a placeholder written during a cold-start
+      // onboarding (when currentUser() failed) gets corrected to the real one.
+      update: { email: primaryEmail, name, image: data.image_url },
       create: {
         id: data.id,
         email: primaryEmail,

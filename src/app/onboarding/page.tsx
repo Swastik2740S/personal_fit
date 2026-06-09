@@ -185,8 +185,18 @@ export default function OnboardingPage() {
         }),
       });
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        setSubmitError(err.error || "Something went wrong. Please try again.");
+        // Read the body as text first so we can surface BOTH the route's JSON
+        // error AND any non-JSON platform error (e.g. a Vercel 504 HTML page on
+        // a DB timeout), which would otherwise be swallowed as a generic message.
+        const raw = await res.text().catch(() => "");
+        let msg = `Something went wrong (HTTP ${res.status}). Please try again.`;
+        try {
+          const parsed = raw ? JSON.parse(raw) : null;
+          if (parsed?.error) msg = parsed.error;
+        } catch {
+          if (raw) console.error("[onboarding] non-JSON error response:", raw.slice(0, 500));
+        }
+        setSubmitError(msg);
         return;
       }
       router.push("/");

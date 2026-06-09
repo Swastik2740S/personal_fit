@@ -37,8 +37,14 @@ async function ensureUserRow(userId: string, email: string, name: string | null,
       where: { id: legacyUser.id },
       data:  { email: `__migrated__${legacyUser.id}` },
     });
-    // 2. Create the new Clerk user row (FK target must exist before moving relations)
-    await db.user.create({ data: { id: userId, email, name, image } });
+    // 2. Create the new Clerk user row (FK target must exist before moving relations).
+    //    upsert (not create) so a racing Clerk webhook that already inserted the
+    //    row doesn't blow up with a P2002 unique violation.
+    await db.user.upsert({
+      where:  { id: userId },
+      update: { email, name, image },
+      create: { id: userId, email, name, image },
+    });
     // 3. Move all app data from old id → new Clerk id
     await db.foodLog.updateMany({ where: { userId: legacyUser.id }, data: { userId } });
     await db.stepLog.updateMany({ where: { userId: legacyUser.id }, data: { userId } });
@@ -48,10 +54,19 @@ async function ensureUserRow(userId: string, email: string, name: string | null,
     await db.userPlan.deleteMany({ where: { userId: legacyUser.id } });
     // 5. Delete the now-orphaned legacy row
     await db.user.delete({ where: { id: legacyUser.id } });
-  } else {
-    // Brand new user — create fresh
-    await db.user.create({ data: { id: userId, email, name, image } });
+    return;
   }
+
+  // Brand new user. `email` may be "" if currentUser() failed on a cold start —
+  // fall back to a per-user-unique placeholder so we never collide on the unique
+  // email constraint (two empty-string emails would conflict). The Clerk webhook
+  // backfills the real address. upsert guards against a racing webhook insert.
+  const safeEmail = email || `${userId}@clerk.local`;
+  await db.user.upsert({
+    where:  { id: userId },
+    update: {},
+    create: { id: userId, email: safeEmail, name, image },
+  });
 }
 
 export async function POST(req: Request) {
