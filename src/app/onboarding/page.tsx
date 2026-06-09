@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { calculateTDEE } from "@/lib/tdee";
 import type { OnboardingProfile } from "@/lib/tdee";
@@ -120,6 +120,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [checking, setChecking] = useState(true);
 
   const [form, setForm] = useState<FormData>({
     heightCm: "",
@@ -132,6 +133,20 @@ export default function OnboardingPage() {
     dietaryPreference: "",
     equipment: "",
   });
+
+  // On mount: check if user is already onboarded (self-healing/bypass)
+  useEffect(() => {
+    fetch("/api/onboarding")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.onboardingComplete) {
+          window.location.href = "/";
+        } else {
+          setChecking(false);
+        }
+      })
+      .catch(() => setChecking(false));
+  }, []);
 
   const set = <K extends keyof FormData>(key: K, val: FormData[K]) =>
     setForm((f) => ({ ...f, [key]: val }));
@@ -213,6 +228,14 @@ export default function OnboardingPage() {
     center: { opacity: 1, x: 0 },
     exit:   { opacity: 0, x: -30 },
   };
+
+  if (checking) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg)" }}>
+        <div className="spinner" />
+      </div>
+    );
+  }
 
   return (
     <div style={{
