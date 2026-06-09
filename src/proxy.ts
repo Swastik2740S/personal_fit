@@ -18,7 +18,9 @@ export default clerkMiddleware(async (auth, req) => {
   if (isOnboardingRoute(req)) return NextResponse.next();
 
   // Authenticated but onboarding not finished → redirect to onboarding
-  if (userId && !sessionClaims?.metadata?.onboardingComplete) {
+  // Skip API routes — they handle their own auth; redirecting a POST would cause 405
+  const isApiRoute = req.nextUrl.pathname.startsWith("/api/");
+  if (userId && !sessionClaims?.metadata?.onboardingComplete && !isApiRoute) {
     return NextResponse.redirect(new URL("/onboarding", req.url));
   }
 
