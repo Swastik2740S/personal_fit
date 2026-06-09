@@ -419,6 +419,9 @@ body {
   transition: all 0.2s;
 }
 .btn-ghost:hover { background: var(--surface-2); color: var(--text); border-color: var(--glass-border-strong); }
+@media (max-width: 768px) {
+  .btn-ghost { min-height: 44px; min-width: 44px; }
+}
 
 /* ============ REUSABLE COMPONENTS ============ */
 /* Layout helpers (replace inline grids so they can be responsive) */
