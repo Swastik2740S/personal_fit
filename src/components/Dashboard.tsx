@@ -236,8 +236,7 @@ const Dashboard = () => {
         </motion.div>
       )}
 
-      <div className="dashboard-grid" style={{ marginTop: 24, display: "flex", flexDirection: phase === "morning" ? "column-reverse" : "column" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 24 }} className="dashboard-grid">
+      <div className="dashboard-grid" style={{ marginTop: 24 }}>
           <motion.div variants={item} className="card">
             <div className="card-title">
               <TrendingUp size={18} color="var(--accent)" />
@@ -347,7 +346,6 @@ const Dashboard = () => {
               </div>
             </div>
           </motion.div>
-        </div>
       </div>
     </motion.div>
   );
