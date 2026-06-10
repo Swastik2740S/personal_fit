@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Target, Flame, Activity, Footprints, Save, User, RefreshCw, Loader } from "lucide-react";
+import { Target, Flame, Activity, Footprints, Save, User, RefreshCw, Loader, Download } from "lucide-react";
 import { calculateTDEE } from "@/lib/tdee";
 import type { OnboardingProfile } from "@/lib/tdee";
 
@@ -146,8 +146,15 @@ const Settings = () => {
 
   if (!isLoaded || loading) {
     return (
-      <div style={{ display: "flex", height: "80vh", alignItems: "center", justifyContent: "center" }}>
-        <div className="spinner" />
+      <div className="page active">
+        <div className="page-header">
+          <div style={{ width: "100%" }}>
+            <div className="skeleton" style={{ height: 34, width: "min(180px, 50%)", marginBottom: 10 }} />
+            <div className="skeleton" style={{ height: 16, width: "min(300px, 80%)" }} />
+          </div>
+        </div>
+        <div className="skeleton" style={{ height: 220, maxWidth: 560, marginBottom: 24 }} />
+        <div className="skeleton" style={{ height: 420, maxWidth: 560 }} />
       </div>
     );
   }
@@ -254,6 +261,30 @@ const Settings = () => {
               Saved ✓
             </motion.span>
           )}
+        </div>
+      </motion.div>
+
+      {/* Data export */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="card" style={{ maxWidth: 560, marginTop: 24 }}>
+        <div className="card-title">
+          <Download size={18} color="var(--neon-cyan)" />
+          Your Data
+        </div>
+        <p style={{ fontSize: 13, color: "var(--text3)", marginBottom: 16 }}>
+          Download your complete history as CSV — it&apos;s your data, take it anywhere.
+        </p>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          {[
+            { type: "food", label: "Food log" },
+            { type: "steps", label: "Steps" },
+            { type: "weight", label: "Weight" },
+          ].map((d) => (
+            <a key={d.type} href={`/api/export?type=${d.type}`} download>
+              <button className="btn-ghost" style={{ fontSize: 13 }}>
+                <Download size={13} style={{ marginRight: 6 }} /> {d.label}
+              </button>
+            </a>
+          ))}
         </div>
       </motion.div>
 

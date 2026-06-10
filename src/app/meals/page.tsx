@@ -3,9 +3,29 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Utensils, RefreshCw, AlertCircle, Loader, Sparkles } from "lucide-react";
+import { Utensils, RefreshCw, AlertCircle, Loader, Sparkles, Plus, Check } from "lucide-react";
 import { containerStagger as container, fadeUpItem as item } from "@/lib/motion";
+import { getLocalStartOfDay } from "@/lib/day";
 import type { MealPlanItem } from "@/lib/planGenerator";
+
+// Map a plan meal onto the food-log meal categories: name keywords first,
+// then the meal's scheduled time, defaulting to Snack.
+function mealTypeFor(meal: MealPlanItem): "Breakfast" | "Lunch" | "Snack" | "Dinner" {
+  const n = meal.name.toLowerCase();
+  if (n.includes("breakfast")) return "Breakfast";
+  if (n.includes("lunch")) return "Lunch";
+  if (n.includes("dinner")) return "Dinner";
+  if (n.includes("snack")) return "Snack";
+  const m = meal.time.match(/(\d+)(?::\d+)?\s*(am|pm)/i);
+  if (m) {
+    let h = parseInt(m[1], 10) % 12;
+    if (m[2].toLowerCase() === "pm") h += 12;
+    if (h >= 5 && h < 10) return "Breakfast";
+    if (h >= 12 && h < 15) return "Lunch";
+    if (h >= 18 && h < 22) return "Dinner";
+  }
+  return "Snack";
+}
 
 export default function MealsPage() {
   const router = useRouter();
@@ -16,6 +36,40 @@ export default function MealsPage() {
   const [noPlan, setNoPlan] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loggingIdx, setLoggingIdx] = useState<number | null>(null);
+  const [loggedIdx, setLoggedIdx] = useState<Set<number>>(new Set());
+
+  // One-tap logging: send the plan meal's macros straight to today's food log.
+  const logMeal = async (meal: MealPlanItem, idx: number) => {
+    setLoggingIdx(idx);
+    setError(null);
+    try {
+      const res = await fetch(`/api/food/log?localStart=${getLocalStartOfDay()}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: meal.name,
+          qty: 1,
+          cal: meal.cal,
+          prot: meal.prot,
+          carb: meal.carb,
+          fat: meal.fat,
+          mealType: mealTypeFor(meal),
+        }),
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setError(err.error || `Couldn't log "${meal.name}".`);
+        return;
+      }
+      setLoggedIdx((prev) => new Set(prev).add(idx));
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoggingIdx(null);
+    }
+  };
 
   const fetchPlan = async () => {
     setLoading(true);
@@ -63,8 +117,21 @@ export default function MealsPage() {
 
   if (loading) {
     return (
-      <div style={{ display: "flex", height: "80vh", alignItems: "center", justifyContent: "center" }}>
-        <div className="spinner" />
+      <div className="page active">
+        <div className="page-header">
+          <div style={{ width: "100%" }}>
+            <div className="skeleton" style={{ height: 34, width: "min(220px, 60%)", marginBottom: 10 }} />
+            <div className="skeleton" style={{ height: 16, width: "min(320px, 90%)" }} />
+          </div>
+        </div>
+        <div className="metric-grid">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="skeleton" style={{ height: 120 }} />
+          ))}
+        </div>
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="skeleton" style={{ height: 150, marginBottom: 16 }} />
+        ))}
       </div>
     );
   }
@@ -188,20 +255,38 @@ export default function MealsPage() {
             {meal.description}
           </div>
 
-          <div className="chip-row">
-            {[
-              { label: `P: ${Math.round(meal.prot)}g`, color: "var(--neon-cyan)" },
-              { label: `C: ${Math.round(meal.carb)}g`, color: "var(--neon-amber)" },
-              { label: `F: ${Math.round(meal.fat)}g`, color: "var(--neon-purple)" },
-            ].map((chip) => (
-              <span
-                key={chip.label}
-                className="chip"
-                style={{ fontSize: 12, fontWeight: 700, color: chip.color, background: "var(--bg3)", border: "none" }}
-              >
-                {chip.label}
-              </span>
-            ))}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <div className="chip-row">
+              {[
+                { label: `P: ${Math.round(meal.prot)}g`, color: "var(--neon-cyan)" },
+                { label: `C: ${Math.round(meal.carb)}g`, color: "var(--neon-amber)" },
+                { label: `F: ${Math.round(meal.fat)}g`, color: "var(--neon-purple)" },
+              ].map((chip) => (
+                <span
+                  key={chip.label}
+                  className="chip"
+                  style={{ fontSize: 12, fontWeight: 700, color: chip.color, background: "var(--bg3)", border: "none" }}
+                >
+                  {chip.label}
+                </span>
+              ))}
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
+              className="btn-ghost"
+              style={{ fontSize: 12 }}
+              onClick={() => logMeal(meal, i)}
+              disabled={loggingIdx === i}
+            >
+              {loggedIdx.has(i) ? (
+                <><Check size={13} style={{ marginRight: 5, color: "var(--accent)" }} /> Logged — log again</>
+              ) : loggingIdx === i ? (
+                <><Loader size={13} style={{ marginRight: 5, animation: "spin 1s linear infinite" }} /> Logging…</>
+              ) : (
+                <><Plus size={13} style={{ marginRight: 5 }} /> Log to today</>
+              )}
+            </motion.button>
           </div>
         </motion.div>
       ))}

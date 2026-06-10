@@ -47,7 +47,7 @@ const FoodLogger = () => {
   const [selectedDate, setSelectedDate] = useState(getLocalStartOfDay());
   const [favorites, setFavorites] = useState<FoodItem[]>([]);
   const [recent, setRecent] = useState<FoodItem[]>([]);
-  const [addError, setAddError] = useState<string | null>(null);
+  const [logError, setLogError] = useState<string | null>(null);
   const [confirmingClear, setConfirmingClear] = useState(false);
 
   const favNames = new Set(favorites.map((f) => f.name));
@@ -123,12 +123,6 @@ const FoodLogger = () => {
     setDefaultMealType();
   }, [setDefaultMealType]);
 
-  // Clear any stale add-error whenever the quantity modal opens/closes or the
-  // selected food changes, so errors don't carry over between entries.
-  useEffect(() => {
-    setAddError(null);
-  }, [selectedFood, modalStep]);
-
   useEffect(() => {
     if (isSignedIn) fetchLogs();
   }, [isSignedIn, fetchLogs]);
@@ -144,7 +138,9 @@ const FoodLogger = () => {
     if (!query.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/food/search?q=${encodeURIComponent(query)}`, { cache: "no-store" });
+      // No `cache: "no-store"` here on purpose — the route sends
+      // Cache-Control so repeat searches are served from the browser cache.
+      const res = await fetch(`/api/food/search?q=${encodeURIComponent(query)}`);
       if (!res.ok) return;
       const data = await res.json();
       if (Array.isArray(data)) setResults(data);
@@ -155,9 +151,11 @@ const FoodLogger = () => {
     }
   };
 
+  // Optimistic add: the entry appears (and the modal closes) instantly; the
+  // temp row is swapped for the server row on success, removed on failure.
   const addToLog = async () => {
     if (!selectedFood) return;
-    setAddError(null);
+    setLogError(null);
     const factor = qty / 100;
     const entry = {
       name: selectedFood.name,
@@ -169,6 +167,14 @@ const FoodLogger = () => {
       mealType: mealType || "Snack",
     };
 
+    const tempId = `tmp-${Date.now()}`;
+    setLogs((prev) => [{ id: tempId, ...entry }, ...prev]);
+    setSelectedFood(null);
+    setModalStep(1);
+    setDefaultMealType();
+    setQuery("");
+    setResults([]);
+
     try {
       const res = await fetch(`/api/food/log?localStart=${selectedDate}`, {
         method: "POST",
@@ -177,32 +183,35 @@ const FoodLogger = () => {
         cache: "no-store",
       });
       if (res.ok) {
-        setSelectedFood(null);
-        setModalStep(1);
-        setDefaultMealType();
-        setQuery("");
-        setResults([]);
-        await fetchLogs();
+        const saved = await res.json();
+        setLogs((prev) => prev.map((l) => (l.id === tempId ? saved : l)));
         fetchRecent();
       } else {
         const err = await res.json().catch(() => ({}));
-        setAddError(err.error || "Couldn't add that food. Please try again.");
+        setLogs((prev) => prev.filter((l) => l.id !== tempId));
+        setLogError(err.error || `Couldn't add "${entry.name}". Please try again.`);
       }
     } catch (error) {
       console.error("Add log error:", error);
-      setAddError("Network error. Please try again.");
+      setLogs((prev) => prev.filter((l) => l.id !== tempId));
+      setLogError(`Network error — "${entry.name}" wasn't saved. Please try again.`);
     }
   };
 
+  // Optimistic delete: remove instantly, restore the list if the server says no.
   const deleteLog = async (id: string) => {
+    if (id.startsWith("tmp-")) return; // still being saved
+    const prev = logs;
+    setLogs((cur) => cur.filter((l) => l.id !== id));
     try {
       const res = await fetch(`/api/food/log?id=${id}`, {
         method: "DELETE",
         cache: "no-store",
       });
-      if (res.ok) await fetchLogs();
+      if (!res.ok) setLogs(prev);
     } catch (error) {
       console.error("Delete log error:", error);
+      setLogs(prev);
     }
   };
 
@@ -371,6 +380,12 @@ const FoodLogger = () => {
           </button>
         </div>
 
+        {logError && (
+          <div role="alert" className="alert-error" style={{ marginBottom: 16 }}>
+            {logError}
+          </div>
+        )}
+
         <div className="metric-grid">
           {[
             { label: 'Calories', val: Math.round(totals.cal), unit: 'kcal', color: 'var(--accent)' },
@@ -427,7 +442,7 @@ const FoodLogger = () => {
                         <div>
                           <div className="log-name" style={{ fontSize: 15, fontWeight: 600 }}>{log.name}</div>
                           <div className="log-qty" style={{ fontSize: 12, color: 'var(--text3)', marginTop: 2 }}>
-                            {Math.round(log.qty)}g · P: {Math.round(log.prot)}g · C: {Math.round(log.carb)}g · F: {Math.round(log.fat)}g
+                            {log.qty > 1 ? `${Math.round(log.qty)}g · ` : ""}P: {Math.round(log.prot)}g · C: {Math.round(log.carb)}g · F: {Math.round(log.fat)}g
                           </div>
                         </div>
                         <div className="log-right" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -474,7 +489,7 @@ const FoodLogger = () => {
                         <div>
                           <div className="log-name" style={{ fontSize: 15, fontWeight: 600 }}>{log.name}</div>
                           <div className="log-qty" style={{ fontSize: 12, color: 'var(--text3)', marginTop: 2 }}>
-                            {Math.round(log.qty)}g · {log.mealType || "No Type"}
+                            {log.qty > 1 ? `${Math.round(log.qty)}g · ` : ""}{log.mealType || "No Type"}
                           </div>
                         </div>
                         <div className="log-right" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -552,12 +567,6 @@ const FoodLogger = () => {
                     </div>
                   </div>
 
-                  {addError && (
-                    <div role="alert" className="alert-error" style={{ marginBottom: 12 }}>
-                      {addError}
-                    </div>
-                  )}
-
                   <div className="modal-actions" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     <button className="btn" style={{ width: '100%' }} onClick={addToLog}>Add to {mealType}</button>
                     <div style={{ display: 'flex', gap: 10 }}>
@@ -588,7 +597,7 @@ const FoodLogger = () => {
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', fontWeight: 700 }}>Quantity</div>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>{Math.round(viewingLog.qty)}g</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>{viewingLog.qty > 1 ? `${Math.round(viewingLog.qty)}g` : "1 serving"}</div>
                   </div>
                 </div>
               </div>
