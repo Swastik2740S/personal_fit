@@ -122,6 +122,50 @@ const WeightLogger = () => {
   const delta = latest != null && prev != null ? latest - prev : null;
   const toGoal = latest != null && goal != null ? latest - goal : null;
 
+  // Trend intelligence: 7-entry moving average (raw daily weights are noisy),
+  // least-squares rate over the last 14 entries, and a goal-date projection.
+  const movingAvg = history.map((_, i) => {
+    const win = history.slice(Math.max(0, i - 6), i + 1);
+    return win.reduce((s, e) => s + e.weight, 0) / win.length;
+  });
+
+  let ratePerWeek: number | null = null;
+  const trendWindow = history.slice(-14);
+  if (trendWindow.length >= 3) {
+    const t0 = new Date(trendWindow[0].date).getTime();
+    const pts = trendWindow.map((h) => ({
+      x: (new Date(h.date).getTime() - t0) / 86400000,
+      y: h.weight,
+    }));
+    const n = pts.length;
+    const sx = pts.reduce((s, p) => s + p.x, 0);
+    const sy = pts.reduce((s, p) => s + p.y, 0);
+    const sxy = pts.reduce((s, p) => s + p.x * p.y, 0);
+    const sxx = pts.reduce((s, p) => s + p.x * p.x, 0);
+    const denom = n * sxx - sx * sx;
+    if (denom !== 0) ratePerWeek = ((n * sxy - sx * sy) / denom) * 7;
+  }
+
+  let projection: string | null = null;
+  if (ratePerWeek != null && goal != null && latest != null) {
+    const diff = goal - latest;
+    const perDay = ratePerWeek / 7;
+    if (Math.abs(diff) < 0.2) projection = "Goal reached 🎉";
+    else if (Math.abs(ratePerWeek) < 0.05) projection = "Holding steady — adjust intake to move toward your goal";
+    else if (Math.sign(diff) === Math.sign(perDay)) {
+      const days = Math.round(diff / perDay);
+      if (days <= 730) {
+        const d = new Date();
+        d.setDate(d.getDate() + days);
+        projection = `On track to reach ${goal.toFixed(1)} kg around ${d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: d.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined })}`;
+      } else {
+        projection = "Over 2 years away at the current rate";
+      }
+    } else {
+      projection = "Trending away from your goal right now";
+    }
+  }
+
   // Chart geometry.
   const W = 320, H = 120, pad = 12;
   const weights = history.map((h) => h.weight);
@@ -135,6 +179,12 @@ const WeightLogger = () => {
   };
   const points = history.map((h, i) => xy(i, h.weight));
   const polyline = points.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+  const maPolyline = movingAvg
+    .map((w, i) => {
+      const p = xy(i, w);
+      return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
+    })
+    .join(" ");
   const goalY = goal != null ? pad + (1 - (goal - lo) / span) * (H - 2 * pad) : null;
 
   return (
@@ -293,14 +343,53 @@ const WeightLogger = () => {
                   strokeLinecap="round"
                 />
               )}
+              {history.length > 2 && (
+                <polyline
+                  points={maPolyline}
+                  fill="none"
+                  stroke="var(--neon-purple)"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                  opacity="0.75"
+                />
+              )}
               {points.map((p, i) => (
                 <circle key={i} cx={p.x} cy={p.y} r="2.5" fill="var(--accent)" />
               ))}
             </svg>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--text3)", marginTop: 6 }}>
               <span>{new Date(history[0].date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
+              <span style={{ color: "var(--neon-purple)" }}>— 7-day average</span>
               <span>{new Date(history[history.length - 1].date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
             </div>
+
+            {history.length >= 3 && (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, marginTop: 16 }}>
+                <div style={{ background: "var(--bg3)", borderRadius: "var(--r)", padding: "12px 14px" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.05em" }}>7-Day Average</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: "var(--neon-purple)", marginTop: 2 }}>
+                    {movingAvg[movingAvg.length - 1].toFixed(1)} kg
+                  </div>
+                </div>
+                {ratePerWeek != null && (
+                  <div style={{ background: "var(--bg3)", borderRadius: "var(--r)", padding: "12px 14px" }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Trend</div>
+                    <div style={{ fontSize: 16, fontWeight: 800, color: ratePerWeek <= 0 ? "var(--accent)" : "var(--neon-amber)", marginTop: 2 }}>
+                      {ratePerWeek > 0 ? "+" : ""}{ratePerWeek.toFixed(2)} kg/week
+                    </div>
+                  </div>
+                )}
+                {projection && (
+                  <div style={{ background: "var(--bg3)", borderRadius: "var(--r)", padding: "12px 14px" }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Projection</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text2)", marginTop: 4, lineHeight: 1.4 }}>
+                      {projection}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </motion.div>
