@@ -24,6 +24,11 @@ export default function RootLayout({
             href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
             rel="stylesheet"
           />
+          <link rel="manifest" href="/manifest.json" />
+          <meta name="theme-color" content="#c8f542" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+          <meta name="apple-mobile-web-app-title" content="SwastikFit" />
         </head>
         <body>
           <LayoutWrapper>{children}</LayoutWrapper>
