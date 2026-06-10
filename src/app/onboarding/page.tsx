@@ -488,7 +488,7 @@ export default function OnboardingPage() {
 
         {/* Error */}
         {submitError && (
-          <div role="alert" style={{ background: "rgba(255,90,90,0.12)", border: "1px solid rgba(255,90,90,0.35)", color: "#ff9a9a", fontSize: 13, fontWeight: 600, padding: "10px 14px", borderRadius: "var(--r-pill)", marginTop: 16 }}>
+          <div role="alert" className="alert-error" style={{ marginTop: 16 }}>
             {submitError}
           </div>
         )}
@@ -545,7 +545,6 @@ export default function OnboardingPage() {
           )}
         </div>
 
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     </div>
   );

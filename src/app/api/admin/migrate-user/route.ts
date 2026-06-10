@@ -25,13 +25,63 @@ export async function POST(req: Request) {
   }
 
   // Reassign all app data to the new Clerk userId
-  await db.$transaction([
-    db.foodLog.updateMany({ where: { userId: oldUser.id }, data: { userId } }),
-    db.stepLog.updateMany({ where: { userId: oldUser.id }, data: { userId } }),
-    db.weightLog.updateMany({ where: { userId: oldUser.id }, data: { userId } }),
-    db.favoriteFood.updateMany({ where: { userId: oldUser.id }, data: { userId } }),
-    db.user.delete({ where: { id: oldUser.id } }),
-  ]);
+  await db.$transaction(async (tx) => {
+    // 1. Free the unique email constraint on the old row
+    await tx.user.update({
+      where: { id: oldUser.id },
+      data: { email: `__migrated__${oldUser.id}` },
+    });
+    // 2. Ensure target user row exists (Clerk webhook may have already created it)
+    await tx.user.upsert({
+      where: { id: userId },
+      update: {
+        onboardingComplete: oldUser.onboardingComplete,
+        heightCm: oldUser.heightCm,
+        startingWeightKg: oldUser.startingWeightKg,
+        age: oldUser.age,
+        sex: oldUser.sex,
+        activityLevel: oldUser.activityLevel,
+        primaryGoal: oldUser.primaryGoal,
+        fitnessExperience: oldUser.fitnessExperience,
+        dietaryPreference: oldUser.dietaryPreference,
+        equipment: oldUser.equipment,
+        calGoal: oldUser.calGoal,
+        protGoal: oldUser.protGoal,
+        carbGoal: oldUser.carbGoal,
+        fatGoal: oldUser.fatGoal,
+        stepGoal: oldUser.stepGoal,
+      },
+      create: {
+        id: userId,
+        email: oldUser.email,
+        name: oldUser.name,
+        image: oldUser.image,
+        onboardingComplete: oldUser.onboardingComplete,
+        heightCm: oldUser.heightCm,
+        startingWeightKg: oldUser.startingWeightKg,
+        age: oldUser.age,
+        sex: oldUser.sex,
+        activityLevel: oldUser.activityLevel,
+        primaryGoal: oldUser.primaryGoal,
+        fitnessExperience: oldUser.fitnessExperience,
+        dietaryPreference: oldUser.dietaryPreference,
+        equipment: oldUser.equipment,
+        calGoal: oldUser.calGoal,
+        protGoal: oldUser.protGoal,
+        carbGoal: oldUser.carbGoal,
+        fatGoal: oldUser.fatGoal,
+        stepGoal: oldUser.stepGoal,
+      },
+    });
+    // 3. Move all FK-referencing rows before deleting the old user
+    await tx.foodLog.updateMany({ where: { userId: oldUser.id }, data: { userId } });
+    await tx.stepLog.updateMany({ where: { userId: oldUser.id }, data: { userId } });
+    await tx.weightLog.updateMany({ where: { userId: oldUser.id }, data: { userId } });
+    await tx.favoriteFood.updateMany({ where: { userId: oldUser.id }, data: { userId } });
+    await tx.userPlan.updateMany({ where: { userId: oldUser.id }, data: { userId } });
+    // 4. Delete the now-orphaned legacy row
+    await tx.user.delete({ where: { id: oldUser.id } });
+  });
 
   return NextResponse.json({ success: true, migratedFrom: oldUser.id, to: userId });
 }

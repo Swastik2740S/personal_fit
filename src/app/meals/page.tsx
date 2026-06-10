@@ -129,7 +129,7 @@ export default function MealsPage() {
       </motion.div>
 
       {error && (
-        <motion.div variants={item} style={{ background: "rgba(255,90,90,0.12)", border: "1px solid rgba(255,90,90,0.35)", color: "#ff9a9a", fontSize: 13, fontWeight: 600, padding: "10px 14px", borderRadius: "var(--r-pill)", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+        <motion.div variants={item} className="alert-error" style={{ marginBottom: 16 }}>
           <AlertCircle size={14} /> {error}
         </motion.div>
       )}
@@ -206,7 +206,6 @@ export default function MealsPage() {
         </motion.div>
       ))}
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </motion.div>
   );
 }

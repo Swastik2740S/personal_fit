@@ -553,7 +553,7 @@ const FoodLogger = () => {
                   </div>
 
                   {addError && (
-                    <div role="alert" style={{ background: 'rgba(255,90,90,0.12)', border: '1px solid rgba(255,90,90,0.35)', color: '#ff9a9a', fontSize: 13, fontWeight: 600, padding: '10px 14px', borderRadius: 'var(--r-pill)', marginBottom: 12 }}>
+                    <div role="alert" className="alert-error" style={{ marginBottom: 12 }}>
                       {addError}
                     </div>
                   )}
