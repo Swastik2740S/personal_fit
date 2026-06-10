@@ -5,10 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
-    "vercel-build": "DATABASE_URL=${DIRECT_URL:-$DATABASE_URL} prisma migrate deploy && next build --webpack",
+    "vercel-build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "db:deploy": "prisma migrate deploy"
+    "db:deploy": "DATABASE_URL=${DIRECT_URL:-$DATABASE_URL} prisma migrate deploy"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.102.0",
