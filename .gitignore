@@ -50,3 +50,8 @@ CLAUDE.md
 AGENTS.md
 GEMINI.md
 PROJECT_CONTEXT.md
+
+# next-pwa generated service worker files (regenerated at build time)
+/public/sw.js
+/public/workbox-*.js
+scripts/

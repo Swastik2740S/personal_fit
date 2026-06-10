@@ -26,16 +26,17 @@ export async function GET(req: Request) {
 
     const { start, end } = getDayRange(req);
 
-    const user = await db.user.findUnique({ where: { id: userId }, select: GOAL_SELECT });
-
-    const [foodAgg, stepLog, waterLog, insights] = await Promise.all([
+    // Run all queries in parallel — user fetch no longer blocks the aggregates.
+    // getInsights fetches its own user row since we can't pass it ahead of time.
+    const [user, foodAgg, stepLog, waterLog, insights] = await Promise.all([
+      db.user.findUnique({ where: { id: userId }, select: GOAL_SELECT }),
       db.foodLog.aggregate({
         where: { userId, date: { gte: start, lt: end } },
         _sum: { cal: true, prot: true, carb: true, fat: true },
       }),
       db.stepLog.findFirst({ where: { userId, date: { gte: start, lt: end } } }),
       db.waterLog.findFirst({ where: { userId, date: { gte: start, lt: end } } }),
-      getInsights(userId, start, user),
+      getInsights(userId, start),
     ]);
 
     return NextResponse.json({
