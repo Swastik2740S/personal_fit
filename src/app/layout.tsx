@@ -20,6 +20,13 @@ export default function RootLayout({
     >
       <html lang="en">
         <head>
+          {/* Apply the saved UI theme before paint to avoid a flash (FOUC). */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html:
+                "try{var t=localStorage.getItem('sf:ui-theme');if(t==='liquid'||t==='classic')document.documentElement.dataset.ui=t;}catch(e){}",
+            }}
+          />
           <link
             href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
             rel="stylesheet"

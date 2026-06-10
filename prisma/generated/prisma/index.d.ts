@@ -1727,6 +1727,7 @@ export namespace Prisma {
     fatGoal: number | null
     stepGoal: number | null
     weightGoal: number | null
+    uiTheme: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -1751,6 +1752,7 @@ export namespace Prisma {
     fatGoal: number | null
     stepGoal: number | null
     weightGoal: number | null
+    uiTheme: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -1775,6 +1777,7 @@ export namespace Prisma {
     fatGoal: number
     stepGoal: number
     weightGoal: number
+    uiTheme: number
     _all: number
   }
 
@@ -1825,6 +1828,7 @@ export namespace Prisma {
     fatGoal?: true
     stepGoal?: true
     weightGoal?: true
+    uiTheme?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -1849,6 +1853,7 @@ export namespace Prisma {
     fatGoal?: true
     stepGoal?: true
     weightGoal?: true
+    uiTheme?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -1873,6 +1878,7 @@ export namespace Prisma {
     fatGoal?: true
     stepGoal?: true
     weightGoal?: true
+    uiTheme?: true
     _all?: true
   }
 
@@ -1984,6 +1990,7 @@ export namespace Prisma {
     fatGoal: number
     stepGoal: number
     weightGoal: number | null
+    uiTheme: string
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -2027,6 +2034,7 @@ export namespace Prisma {
     fatGoal?: boolean
     stepGoal?: boolean
     weightGoal?: boolean
+    uiTheme?: boolean
     logs?: boolean | User$logsArgs<ExtArgs>
     steps?: boolean | User$stepsArgs<ExtArgs>
     favorites?: boolean | User$favoritesArgs<ExtArgs>
@@ -2059,6 +2067,7 @@ export namespace Prisma {
     fatGoal?: boolean
     stepGoal?: boolean
     weightGoal?: boolean
+    uiTheme?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2083,6 +2092,7 @@ export namespace Prisma {
     fatGoal?: boolean
     stepGoal?: boolean
     weightGoal?: boolean
+    uiTheme?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -2107,9 +2117,10 @@ export namespace Prisma {
     fatGoal?: boolean
     stepGoal?: boolean
     weightGoal?: boolean
+    uiTheme?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "image" | "createdAt" | "onboardingComplete" | "heightCm" | "startingWeightKg" | "age" | "sex" | "activityLevel" | "primaryGoal" | "fitnessExperience" | "dietaryPreference" | "equipment" | "calGoal" | "protGoal" | "carbGoal" | "fatGoal" | "stepGoal" | "weightGoal", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "name" | "image" | "createdAt" | "onboardingComplete" | "heightCm" | "startingWeightKg" | "age" | "sex" | "activityLevel" | "primaryGoal" | "fitnessExperience" | "dietaryPreference" | "equipment" | "calGoal" | "protGoal" | "carbGoal" | "fatGoal" | "stepGoal" | "weightGoal" | "uiTheme", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     logs?: boolean | User$logsArgs<ExtArgs>
     steps?: boolean | User$stepsArgs<ExtArgs>
@@ -2156,6 +2167,7 @@ export namespace Prisma {
       fatGoal: number
       stepGoal: number
       weightGoal: number | null
+      uiTheme: string
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2607,6 +2619,7 @@ export namespace Prisma {
     readonly fatGoal: FieldRef<"User", 'Int'>
     readonly stepGoal: FieldRef<"User", 'Int'>
     readonly weightGoal: FieldRef<"User", 'Float'>
+    readonly uiTheme: FieldRef<"User", 'String'>
   }
     
 
@@ -12040,7 +12053,8 @@ export namespace Prisma {
     carbGoal: 'carbGoal',
     fatGoal: 'fatGoal',
     stepGoal: 'stepGoal',
-    weightGoal: 'weightGoal'
+    weightGoal: 'weightGoal',
+    uiTheme: 'uiTheme'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -12265,6 +12279,7 @@ export namespace Prisma {
     fatGoal?: IntFilter<"User"> | number
     stepGoal?: IntFilter<"User"> | number
     weightGoal?: FloatNullableFilter<"User"> | number | null
+    uiTheme?: StringFilter<"User"> | string
     logs?: FoodLogListRelationFilter
     steps?: StepLogListRelationFilter
     favorites?: FavoriteFoodListRelationFilter
@@ -12296,6 +12311,7 @@ export namespace Prisma {
     fatGoal?: SortOrder
     stepGoal?: SortOrder
     weightGoal?: SortOrderInput | SortOrder
+    uiTheme?: SortOrder
     logs?: FoodLogOrderByRelationAggregateInput
     steps?: StepLogOrderByRelationAggregateInput
     favorites?: FavoriteFoodOrderByRelationAggregateInput
@@ -12330,6 +12346,7 @@ export namespace Prisma {
     fatGoal?: IntFilter<"User"> | number
     stepGoal?: IntFilter<"User"> | number
     weightGoal?: FloatNullableFilter<"User"> | number | null
+    uiTheme?: StringFilter<"User"> | string
     logs?: FoodLogListRelationFilter
     steps?: StepLogListRelationFilter
     favorites?: FavoriteFoodListRelationFilter
@@ -12361,6 +12378,7 @@ export namespace Prisma {
     fatGoal?: SortOrder
     stepGoal?: SortOrder
     weightGoal?: SortOrderInput | SortOrder
+    uiTheme?: SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -12393,6 +12411,7 @@ export namespace Prisma {
     fatGoal?: IntWithAggregatesFilter<"User"> | number
     stepGoal?: IntWithAggregatesFilter<"User"> | number
     weightGoal?: FloatNullableWithAggregatesFilter<"User"> | number | null
+    uiTheme?: StringWithAggregatesFilter<"User"> | string
   }
 
   export type UserPlanWhereInput = {
@@ -12925,6 +12944,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogCreateNestedManyWithoutUserInput
     steps?: StepLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
@@ -12956,6 +12976,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
@@ -12987,6 +13008,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUpdateManyWithoutUserNestedInput
     steps?: StepLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
@@ -13018,6 +13040,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
@@ -13049,6 +13072,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
   }
 
   export type UserUpdateManyMutationInput = {
@@ -13073,6 +13097,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -13097,6 +13122,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserPlanCreateInput = {
@@ -13788,6 +13814,7 @@ export namespace Prisma {
     fatGoal?: SortOrder
     stepGoal?: SortOrder
     weightGoal?: SortOrder
+    uiTheme?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -13824,6 +13851,7 @@ export namespace Prisma {
     fatGoal?: SortOrder
     stepGoal?: SortOrder
     weightGoal?: SortOrder
+    uiTheme?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -13848,6 +13876,7 @@ export namespace Prisma {
     fatGoal?: SortOrder
     stepGoal?: SortOrder
     weightGoal?: SortOrder
+    uiTheme?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -15356,6 +15385,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogCreateNestedManyWithoutUserInput
     steps?: StepLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
@@ -15386,6 +15416,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
@@ -15432,6 +15463,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUpdateManyWithoutUserNestedInput
     steps?: StepLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
@@ -15462,6 +15494,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
@@ -15492,6 +15525,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     steps?: StepLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
     weights?: WeightLogCreateNestedManyWithoutUserInput
@@ -15522,6 +15556,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
     weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
@@ -15568,6 +15603,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     steps?: StepLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
     weights?: WeightLogUpdateManyWithoutUserNestedInput
@@ -15598,6 +15634,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
     weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
@@ -15628,6 +15665,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
     weights?: WeightLogCreateNestedManyWithoutUserInput
@@ -15658,6 +15696,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
     weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
@@ -15704,6 +15743,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
     weights?: WeightLogUpdateManyWithoutUserNestedInput
@@ -15734,6 +15774,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
     weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
@@ -15764,6 +15805,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogCreateNestedManyWithoutUserInput
     steps?: StepLogCreateNestedManyWithoutUserInput
     weights?: WeightLogCreateNestedManyWithoutUserInput
@@ -15794,6 +15836,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     weights?: WeightLogUncheckedCreateNestedManyWithoutUserInput
@@ -15840,6 +15883,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUpdateManyWithoutUserNestedInput
     steps?: StepLogUpdateManyWithoutUserNestedInput
     weights?: WeightLogUpdateManyWithoutUserNestedInput
@@ -15870,6 +15914,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     weights?: WeightLogUncheckedUpdateManyWithoutUserNestedInput
@@ -15900,6 +15945,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogCreateNestedManyWithoutUserInput
     steps?: StepLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
@@ -15930,6 +15976,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
@@ -15976,6 +16023,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUpdateManyWithoutUserNestedInput
     steps?: StepLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
@@ -16006,6 +16054,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
@@ -16036,6 +16085,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogCreateNestedManyWithoutUserInput
     steps?: StepLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
@@ -16066,6 +16116,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
@@ -16112,6 +16163,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUpdateManyWithoutUserNestedInput
     steps?: StepLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
@@ -16142,6 +16194,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput
@@ -16172,6 +16225,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogCreateNestedManyWithoutUserInput
     steps?: StepLogCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodCreateNestedManyWithoutUserInput
@@ -16202,6 +16256,7 @@ export namespace Prisma {
     fatGoal?: number
     stepGoal?: number
     weightGoal?: number | null
+    uiTheme?: string
     logs?: FoodLogUncheckedCreateNestedManyWithoutUserInput
     steps?: StepLogUncheckedCreateNestedManyWithoutUserInput
     favorites?: FavoriteFoodUncheckedCreateNestedManyWithoutUserInput
@@ -16248,6 +16303,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUpdateManyWithoutUserNestedInput
     steps?: StepLogUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUpdateManyWithoutUserNestedInput
@@ -16278,6 +16334,7 @@ export namespace Prisma {
     fatGoal?: IntFieldUpdateOperationsInput | number
     stepGoal?: IntFieldUpdateOperationsInput | number
     weightGoal?: NullableFloatFieldUpdateOperationsInput | number | null
+    uiTheme?: StringFieldUpdateOperationsInput | string
     logs?: FoodLogUncheckedUpdateManyWithoutUserNestedInput
     steps?: StepLogUncheckedUpdateManyWithoutUserNestedInput
     favorites?: FavoriteFoodUncheckedUpdateManyWithoutUserNestedInput

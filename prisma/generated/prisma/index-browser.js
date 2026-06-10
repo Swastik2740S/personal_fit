@@ -141,7 +141,8 @@ exports.Prisma.UserScalarFieldEnum = {
   carbGoal: 'carbGoal',
   fatGoal: 'fatGoal',
   stepGoal: 'stepGoal',
-  weightGoal: 'weightGoal'
+  weightGoal: 'weightGoal',
+  uiTheme: 'uiTheme'
 };
 
 exports.Prisma.UserPlanScalarFieldEnum = {

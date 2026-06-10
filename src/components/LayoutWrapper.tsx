@@ -5,11 +5,13 @@ import Sidebar from "./Sidebar";
 import MobileNav from "./MobileNav";
 import MobileHeader from "./MobileHeader";
 import DynamicMesh from "./DynamicMesh";
+import GlassFilters from "./GlassFilters";
 import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { pageVariants } from "@/lib/motion";
 import { TimeProvider } from "./providers/TimeContext";
 import { PrivacyProvider } from "./providers/PrivacyContext";
+import { ThemeProvider } from "./providers/ThemeContext";
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const { isSignedIn, isLoaded } = useAuth();
@@ -21,11 +23,13 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   const showNav = isSignedIn === true || (!isLoaded && !isPublicPath);
 
   return (
-    <TimeProvider>
-      <PrivacyProvider>
-        <MotionConfig reducedMotion="user">
-          <DynamicMesh />
-          <div className="shell">
+    <ThemeProvider>
+      <TimeProvider>
+        <PrivacyProvider>
+          <MotionConfig reducedMotion="user">
+            <DynamicMesh />
+            <GlassFilters />
+            <div className="shell">
             {showNav && <Sidebar />}
             {showNav && <MobileHeader />}
             <main className="main" style={!showNav ? { margin: 0, padding: 0, maxWidth: "none" } : {}}>
@@ -36,9 +40,10 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
               </AnimatePresence>
             </main>
             {showNav && <MobileNav />}
-          </div>
-        </MotionConfig>
-      </PrivacyProvider>
-    </TimeProvider>
+            </div>
+          </MotionConfig>
+        </PrivacyProvider>
+      </TimeProvider>
+    </ThemeProvider>
   );
 }

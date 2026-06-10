@@ -734,3 +734,157 @@ body {
   filter: blur(0px);
   opacity: 1;
 }
+
+/* ============================================================================
+   LIQUID GLASS THEME (iOS 26) — opt-in, activated by html[data-ui="liquid"].
+   When the attribute is absent the classic frosted look above is untouched.
+   Principle (Apple HIG): glass lives on the NAVIGATION layer that floats above
+   content; controls energize on press; content (cards) stays restrained. True
+   edge refraction is gated to Chromium via [data-refraction="on"] (set in
+   ThemeContext) because backdrop-filter: url(#svg) only renders there.
+   ============================================================================ */
+[data-ui="liquid"] {
+  --lg-tint:     rgba(40, 42, 52, 0.42);   /* content/control glass */
+  --lg-tint-bar: rgba(26, 28, 36, 0.50);   /* navigation chrome (more see-through) */
+  --lg-rim:      rgba(255, 255, 255, 0.55); /* specular highlight (top-left) */
+  --lg-rim-soft: rgba(255, 255, 255, 0.10);
+  --lg-blur:     blur(28px) saturate(180%);
+  --lg-shadow:   0 10px 40px rgba(0, 0, 0, 0.50), 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* --- Navigation layer: floating glass bars --- */
+[data-ui="liquid"] .sidebar,
+[data-ui="liquid"] .app-topbar,
+[data-ui="liquid"] .drawer,
+[data-ui="liquid"] .mobile-nav {
+  background: var(--lg-tint-bar);
+  backdrop-filter: var(--lg-blur);
+  -webkit-backdrop-filter: var(--lg-blur);
+  border-color: var(--lg-rim-soft);
+  box-shadow: var(--lg-shadow);
+}
+[data-ui="liquid"] .modal {
+  position: relative;
+  background: var(--lg-tint-bar);
+  box-shadow: var(--lg-shadow), inset 0 1px 0 var(--lg-rim-soft);
+}
+
+/* --- Specular rim: a 1px gradient border, bright at the top-left, fading out.
+   The mask carves the fill so only the border ring paints (the center stays
+   transparent, so it never covers content). --- */
+[data-ui="liquid"] .sidebar::before,
+[data-ui="liquid"] .app-topbar::before,
+[data-ui="liquid"] .drawer::before,
+[data-ui="liquid"] .mobile-nav::before,
+[data-ui="liquid"] .modal::before,
+[data-ui="liquid"] .btn::before,
+[data-ui="liquid"] .btn-ghost::before,
+[data-ui="liquid"] .card::before,
+[data-ui="liquid"] .glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--lg-rim), transparent 38%, transparent 62%, var(--lg-rim-soft));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* --- Edge refraction / lensing (Chromium only) via the SVG displacement map.
+   Base rule above keeps a clean frosted bar for Safari/Firefox. --- */
+[data-ui="liquid"][data-refraction="on"] .sidebar,
+[data-ui="liquid"][data-refraction="on"] .app-topbar,
+[data-ui="liquid"][data-refraction="on"] .drawer,
+[data-ui="liquid"][data-refraction="on"] .mobile-nav,
+[data-ui="liquid"][data-refraction="on"] .modal {
+  backdrop-filter: url(#lg-refraction) var(--lg-blur);
+  -webkit-backdrop-filter: url(#lg-refraction) var(--lg-blur);
+}
+
+/* --- Controls: glass + "energize" (scale + brighten) on press --- */
+[data-ui="liquid"] .btn,
+[data-ui="liquid"] .btn-ghost { position: relative; }
+[data-ui="liquid"] .btn-ghost {
+  background: var(--lg-tint);
+  backdrop-filter: var(--lg-blur);
+  -webkit-backdrop-filter: var(--lg-blur);
+  border-color: var(--lg-rim-soft);
+}
+[data-ui="liquid"] .btn:active,
+[data-ui="liquid"] .btn-ghost:active {
+  transform: scale(0.96);
+  filter: brightness(1.12);
+}
+
+/* --- Nav items: active = accent glass pill; hover = faint glass --- */
+[data-ui="liquid"] .nav-item { position: relative; }
+[data-ui="liquid"] .nav-item:hover {
+  background: var(--lg-tint);
+  border-color: var(--lg-rim-soft);
+}
+[data-ui="liquid"] .nav-item.active {
+  background: var(--accent-dim);
+  border-color: rgba(200, 245, 66, 0.28);
+  box-shadow: inset 0 1px 0 var(--lg-rim-soft);
+}
+
+/* --- Content layer stays restrained: cards get a subtle frost + fainter rim,
+   and deliberately NO refraction, to preserve the controls-vs-content hierarchy.
+   Inputs/chips/tiles stay solid (glass can't sample glass). --- */
+[data-ui="liquid"] .card,
+[data-ui="liquid"] .glass-panel {
+  position: relative;
+  background: var(--lg-tint);
+}
+[data-ui="liquid"] .card::before,
+[data-ui="liquid"] .glass-panel::before { opacity: 0.6; }
+
+/* --- Accessibility fallbacks (scoped to liquid) --- */
+@media (prefers-reduced-transparency: reduce) {
+  [data-ui="liquid"] .sidebar,
+  [data-ui="liquid"] .app-topbar,
+  [data-ui="liquid"] .drawer,
+  [data-ui="liquid"] .mobile-nav,
+  [data-ui="liquid"] .modal,
+  [data-ui="liquid"] .card,
+  [data-ui="liquid"] .glass-panel,
+  [data-ui="liquid"] .btn-ghost {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--surface-bar);
+  }
+  [data-ui="liquid"] .sidebar::before,
+  [data-ui="liquid"] .app-topbar::before,
+  [data-ui="liquid"] .drawer::before,
+  [data-ui="liquid"] .mobile-nav::before,
+  [data-ui="liquid"] .modal::before,
+  [data-ui="liquid"] .btn::before,
+  [data-ui="liquid"] .btn-ghost::before,
+  [data-ui="liquid"] .card::before,
+  [data-ui="liquid"] .glass-panel::before { display: none; }
+}
+@media (prefers-contrast: more) {
+  [data-ui="liquid"] {
+    --lg-tint: rgba(20, 22, 28, 0.88);
+    --lg-tint-bar: rgba(16, 18, 24, 0.92);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-ui="liquid"] .btn:active,
+  [data-ui="liquid"] .btn-ghost:active { transform: none; }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  [data-ui="liquid"] .sidebar,
+  [data-ui="liquid"] .app-topbar,
+  [data-ui="liquid"] .drawer,
+  [data-ui="liquid"] .mobile-nav,
+  [data-ui="liquid"] .modal { background: var(--bg); }
+  [data-ui="liquid"] .card,
+  [data-ui="liquid"] .glass-panel,
+  [data-ui="liquid"] .btn-ghost { background: var(--bg2); }
+}
