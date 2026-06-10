@@ -18,6 +18,11 @@ export const stepSchema = z.object({
   count: z.number().int().min(0).max(100000),
 });
 
+// Daily water intake total in ml (absolute value, upserted like steps).
+export const waterSchema = z.object({
+  ml: z.number().int().min(0).max(20000),
+});
+
 // A saved quick-add food. Macros are per 100g (same basis as search results).
 export const favoriteFoodSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
