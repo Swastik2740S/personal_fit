@@ -29,6 +29,8 @@ export interface Exercise {
   sets: string;
   reps: string;
   note: string;
+  /** True when the user replaced this exercise via the swap feature. */
+  swapped?: boolean;
 }
 
 export interface WorkoutDay {

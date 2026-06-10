@@ -45,6 +45,21 @@ export const weightSchema = z.object({
   weight: z.number().finite().positive().max(1000),
 });
 
+// Swap one exercise in the stored workout plan. `expectedName` is an
+// optimistic-concurrency guard: the swap only applies if the slot still holds
+// the exercise the client was looking at.
+export const exerciseSwapSchema = z.object({
+  dayIndex: z.number().int().min(0).max(6),
+  exerciseIndex: z.number().int().min(0).max(19),
+  expectedName: z.string().trim().min(1).max(80),
+  replacement: z.object({
+    name: z.string().trim().min(1).max(80),
+    sets: z.string().trim().min(1).max(20),
+    reps: z.string().trim().min(1).max(30),
+    note: z.string().trim().max(160).default(""),
+  }),
+});
+
 export type FoodLogInput = z.infer<typeof foodLogSchema>;
 export type GoalsInput = z.infer<typeof goalsSchema>;
 export type FavoriteFoodInput = z.infer<typeof favoriteFoodSchema>;

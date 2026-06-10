@@ -9,9 +9,16 @@ export async function GET() {
   const { userId, error } = await requireUser();
   if (error) return error;
 
-  const plan = await db.userPlan.findUnique({ where: { userId } });
+  // Equipment rides along so the training page can filter swap suggestions
+  // without a second round trip.
+  const [plan, user] = await Promise.all([
+    db.userPlan.findUnique({ where: { userId } }),
+    db.user.findUnique({ where: { id: userId }, select: { equipment: true } }),
+  ]);
+  const equipment = user?.equipment ?? "none";
+
   if (!plan) {
-    return NextResponse.json({ plan: null });
+    return NextResponse.json({ plan: null, equipment });
   }
 
   return NextResponse.json({
@@ -21,6 +28,7 @@ export async function GET() {
       summary:     plan.summary,
       generatedAt: plan.generatedAt,
     },
+    equipment,
   });
 }
 
