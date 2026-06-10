@@ -263,7 +263,6 @@ const Settings = () => {
         <span style={{ display: "flex", alignItems: "center", gap: 6 }}><Footprints size={14} /> Steps</span>
       </div>
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </motion.div>
   );
 };
