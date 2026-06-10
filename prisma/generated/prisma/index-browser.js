@@ -200,6 +200,13 @@ exports.Prisma.WeightLogScalarFieldEnum = {
   date: 'date'
 };
 
+exports.Prisma.WaterLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  ml: 'ml',
+  date: 'date'
+};
+
 exports.Prisma.LiftLogScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -236,6 +243,7 @@ exports.Prisma.ModelName = {
   StepLog: 'StepLog',
   FavoriteFood: 'FavoriteFood',
   WeightLog: 'WeightLog',
+  WaterLog: 'WaterLog',
   LiftLog: 'LiftLog'
 };
 

@@ -41,6 +41,7 @@ model User {
   weights   WeightLog[]
   plan      UserPlan?
   liftLogs  LiftLog[]
+  waters    WaterLog[]
 }
 
 // AI-generated personalized plan — one per user, regeneratable
@@ -77,6 +78,8 @@ model FoodLog {
   mealType String   @default("Snack")
   date     DateTime @default(now())
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
 }
 
 model StepLog {
@@ -107,6 +110,16 @@ model WeightLog {
   id     String   @id @default(cuid())
   userId String
   weight Float
+  date   DateTime @default(now())
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}
+
+model WaterLog {
+  id     String   @id @default(cuid())
+  userId String
+  ml     Int
   date   DateTime @default(now())
   user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 

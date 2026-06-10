@@ -19,29 +19,23 @@ export async function GET(req: Request) {
 
     const { start, end } = getDayRange(req);
 
-    const [user, foodLogs, stepLog] = await Promise.all([
+    // Totals are summed in the database — no row payload over the wire.
+    const [user, foodAgg, stepLog] = await Promise.all([
       db.user.findUnique({ where: { id: userId }, select: GOAL_SELECT }),
-      db.foodLog.findMany({
+      db.foodLog.aggregate({
         where: { userId, date: { gte: start, lt: end } },
+        _sum: { cal: true, prot: true, carb: true, fat: true },
       }),
       db.stepLog.findFirst({
         where: { userId, date: { gte: start, lt: end } },
       }),
     ]);
 
-    const totals = foodLogs.reduce(
-      (acc, log) => {
-        acc.cal += log.cal;
-        acc.prot += log.prot;
-        acc.carb += log.carb;
-        acc.fat += log.fat;
-        return acc;
-      },
-      { cal: 0, prot: 0, carb: 0, fat: 0 }
-    );
-
     return NextResponse.json({
-      ...totals,
+      cal: foodAgg._sum.cal ?? 0,
+      prot: foodAgg._sum.prot ?? 0,
+      carb: foodAgg._sum.carb ?? 0,
+      fat: foodAgg._sum.fat ?? 0,
       steps: stepLog?.count || 0,
       goals: user,
     });

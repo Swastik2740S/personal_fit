@@ -5,10 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { motion } from "framer-motion";
+import useSWR from "swr";
 import { getLocalStartOfDay } from "@/lib/day";
+import { fetcher, readSnapshot, saveSnapshot } from "@/lib/fetcher";
 import { containerStagger as container, fadeUpItem as item, useCountUp } from "@/lib/motion";
-import { useTimePhase } from "./providers/TimeContext";
+import { useTimePhase, type TimePhase } from "./providers/TimeContext";
 import { usePrivacy } from "./providers/PrivacyContext";
+import Celebration from "./Celebration";
 import {
   Zap,
   Target,
@@ -18,6 +21,10 @@ import {
   Activity,
   ArrowUpRight,
   Award,
+  Droplets,
+  Utensils,
+  Plus,
+  Minus,
 } from "lucide-react";
 
 interface Insights {
@@ -29,80 +36,149 @@ interface Insights {
   stepHit: number;
 }
 
+interface DashboardData {
+  stats: { cal: number; prot: number; carb: number; fat: number; steps: number; water: number };
+  goals: {
+    calGoal: number;
+    protGoal: number;
+    carbGoal: number;
+    fatGoal: number;
+    stepGoal: number;
+    onboardingComplete: boolean;
+  } | null;
+  insights: Insights;
+}
+
+const DEFAULT_TARGETS = { cal: 2350, prot: 160, carb: 245, fat: 65, steps: 8000 };
+const EMPTY_STATS = { cal: 0, prot: 0, carb: 0, fat: 0, steps: 0, water: 0 };
+
+const WATER_GOAL_ML = 2500;
+const WATER_MAX_ML = 20000;
+const STREAK_MILESTONES = [3, 7, 14, 30, 50, 100];
+
+// Contextual coaching line: turns raw numbers into the one thing worth knowing
+// right now, based on time of day.
+function buildNarrative(
+  phase: TimePhase,
+  stats: DashboardData["stats"],
+  targets: typeof DEFAULT_TARGETS
+): string {
+  const calLeft = Math.max(0, Math.round(targets.cal - stats.cal));
+  const protLeft = Math.max(0, Math.round(targets.prot - stats.prot));
+  const stepsLeft = Math.max(0, targets.steps - stats.steps);
+
+  if (phase === "morning") {
+    if (stats.cal === 0)
+      return `Fresh day — ${targets.cal} kcal and ${targets.prot}g protein on the board. Start with breakfast.`;
+    return `Morning so far: ${Math.round(stats.cal)} kcal in · ${protLeft}g protein and ${calLeft} kcal to go.`;
+  }
+  if (protLeft === 0 && calLeft > 0) return `Protein goal hit 💪 — ${calLeft} kcal still in budget.`;
+  if (protLeft > 0)
+    return `Evening check-in: ${protLeft}g protein left${
+      stepsLeft > 0 ? ` · ${stepsLeft.toLocaleString()} steps to goal` : ""
+    }.`;
+  return "All targets closed out — strong day.";
+}
+
+const DashboardSkeleton = () => (
+  <div className="page active">
+    <div className="page-header">
+      <div style={{ width: "100%" }}>
+        <div className="skeleton" style={{ height: 34, width: "min(260px, 70%)", marginBottom: 10 }} />
+        <div className="skeleton" style={{ height: 16, width: "min(340px, 90%)" }} />
+      </div>
+    </div>
+    <div className="metric-grid">
+      {[0, 1, 2, 3].map((i) => (
+        <div key={i} className="skeleton" style={{ height: 140 }} />
+      ))}
+    </div>
+    <div className="skeleton" style={{ height: 180, marginTop: 24 }} />
+    <div className="dashboard-grid" style={{ marginTop: 24 }}>
+      <div className="skeleton" style={{ height: 320 }} />
+      <div className="skeleton" style={{ height: 320 }} />
+    </div>
+  </div>
+);
+
 const Dashboard = () => {
   const { user, isLoaded } = useUser();
   const router = useRouter();
   const { phase } = useTimePhase();
   const { isPrivate } = usePrivacy();
-  // Hold rendering until we've confirmed onboarding status, so incomplete users
-  // are redirected to /onboarding instead of flashing a default-goals dashboard.
-  const [gateChecked, setGateChecked] = useState(false);
 
-  const [stats, setStats] = useState({
-    cal: 0,
-    prot: 0,
-    carb: 0,
-    fat: 0,
-    steps: 0,
-  });
+  // One round trip for stats + goals + insights (was two separate calls).
+  const url = user ? `/api/dashboard?localStart=${getLocalStartOfDay()}` : null;
+  const { data, mutate } = useSWR<DashboardData>(url, fetcher);
 
-  const DEFAULT_TARGETS = {
-    cal: 2350,
-    prot: 160,
-    carb: 245,
-    fat: 65,
-    steps: 8000,
-  };
-
-  const [targets, setTargets] = useState(DEFAULT_TARGETS);
-  const [insights, setInsights] = useState<Insights | null>(null);
-
-  const fetchInsights = async () => {
-    try {
-      const res = await fetch(`/api/insights?localStart=${getLocalStartOfDay()}`, { cache: "no-store" });
-      if (res.ok) setInsights(await res.json());
-    } catch (error) {
-      console.error("Insights fetch error:", error);
-    }
-  };
-
-  const fetchStats = async () => {
-    try {
-      const res = await fetch(`/api/dashboard/stats?localStart=${getLocalStartOfDay()}`, { cache: "no-store" });
-      if (res.ok) {
-        const data = await res.json();
-        const { goals, ...totals } = data;
-        // Gate: a signed-in user who hasn't finished onboarding has no real
-        // plan/goals yet — send them to complete it (keep the spinner showing
-        // during navigation by returning before setGateChecked).
-        if (goals && goals.onboardingComplete === false) {
-          router.replace("/onboarding");
-          return;
-        }
-        setStats(totals);
-        if (goals) {
-          setTargets({
-            cal: goals.calGoal,
-            prot: goals.protGoal,
-            carb: goals.carbGoal,
-            fat: goals.fatGoal,
-            steps: goals.stepGoal,
-          });
-        }
-      }
-      setGateChecked(true);
-    } catch (error) {
-      console.error("Dashboard fetch error:", error);
-      setGateChecked(true);
-    }
-  };
-
+  // Last good payload from localStorage: instant paint on revisit while SWR
+  // revalidates (read in an effect to avoid SSR/hydration mismatch).
+  const [snap, setSnap] = useState<DashboardData | null>(null);
   useEffect(() => {
-    if (user) {
-      fetchStats();
-      fetchInsights();
+    if (user && !data) setSnap(readSnapshot<DashboardData>("dashboard", user.id));
+  }, [user, data]);
+  useEffect(() => {
+    // Never snapshot a pre-onboarding payload — it would paint a default-goals
+    // dashboard for users who belong on /onboarding.
+    if (user && data && data.goals?.onboardingComplete !== false) {
+      saveSnapshot("dashboard", user.id, data);
     }
-  }, [user]);
+  }, [user, data]);
+
+  // Gate: a signed-in user who hasn't finished onboarding has no real
+  // plan/goals yet — send them to complete it (skeleton keeps showing).
+  const needsOnboarding = data?.goals?.onboardingComplete === false;
+  useEffect(() => {
+    if (needsOnboarding) router.replace("/onboarding");
+  }, [needsOnboarding, router]);
+
+  const view = data ?? snap;
+  const stats = view?.stats ?? EMPTY_STATS;
+  const insights = view?.insights ?? null;
+  const targets = view?.goals
+    ? {
+        cal: view.goals.calGoal,
+        prot: view.goals.protGoal,
+        carb: view.goals.carbGoal,
+        fat: view.goals.fatGoal,
+        steps: view.goals.stepGoal,
+      }
+    : DEFAULT_TARGETS;
+
+  // Streak milestone celebration — once per milestone per user.
+  const [celebrating, setCelebrating] = useState(false);
+  useEffect(() => {
+    const streak = data?.insights?.streak;
+    if (!user || !streak || !STREAK_MILESTONES.includes(streak)) return;
+    const key = `sf:celebrated:${user.id}:${streak}`;
+    try {
+      if (localStorage.getItem(key)) return;
+      localStorage.setItem(key, "1");
+    } catch {
+      return;
+    }
+    setCelebrating(true);
+    const t = setTimeout(() => setCelebrating(false), 3500);
+    return () => clearTimeout(t);
+  }, [data, user]);
+
+  // Optimistic water logging: bump the number instantly, reconcile after POST.
+  const setWater = async (ml: number) => {
+    if (!view) return;
+    const clamped = Math.max(0, Math.min(WATER_MAX_ML, ml));
+    mutate({ ...view, stats: { ...view.stats, water: clamped } }, false);
+    try {
+      await fetch(`/api/water?localStart=${getLocalStartOfDay()}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ml: clamped }),
+      });
+    } catch (error) {
+      console.error("Water log error:", error);
+    } finally {
+      mutate();
+    }
+  };
 
   const stepPct = Math.min(100, Math.round((stats.steps / targets.steps) * 100));
   const circ = 427;
@@ -114,15 +190,13 @@ const Dashboard = () => {
   const stepCount = Math.round(useCountUp(stats.steps));
   const remainingCount = Math.max(0, targets.cal - calCount);
 
-  if (!isLoaded || !gateChecked) {
-    return (
-      <div style={{ display: 'flex', height: '80vh', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="spinner"></div>
-      </div>
-    );
+  if (!isLoaded || !view || needsOnboarding) {
+    return <DashboardSkeleton />;
   }
 
   const pBlur = isPrivate ? "privacy-blur" : "";
+  const nothingLoggedToday = stats.cal === 0 && stats.steps === 0 && !insights?.loggedToday;
+  const waterPct = Math.min(100, Math.round((stats.water / WATER_GOAL_ML) * 100));
 
   // TEMPORAL LAYOUT PROJECTION
   // In morning: generic/recovery (Steps, Remaining) come first.
@@ -134,34 +208,59 @@ const Dashboard = () => {
     { id: "rem", label: "Remaining", count: remainingCount, unit: "kcal", sub: "Daily balance", Icon: Target, color: "var(--neon-amber)" },
   ];
 
-  const orderedCards = phase === "morning" 
+  const orderedCards = phase === "morning"
     ? [...metricCards].reverse() // Steps/Rem first
     : metricCards; // Cal/Prot first
 
   return (
-    <motion.div 
+    <motion.div
       variants={container}
       initial="hidden"
       animate="show"
-      id="page-dashboard" 
+      id="page-dashboard"
       className="page active"
     >
+      {celebrating && <Celebration />}
+
       <motion.div variants={item} className="page-header">
         <div>
           <div className="page-title">Welcome back, {user?.firstName ?? user?.fullName?.split(' ')[0]} 👋</div>
-          <div className="page-sub">Your performance summary for today. ({phase} phase active)</div>
+          <div className="page-sub">{buildNarrative(phase, stats, targets)}</div>
         </div>
         <Link href="/report">
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="btn" 
+            className="btn"
             style={{ fontSize: 13 }}
           >
             View Weekly Report <ArrowUpRight size={14} />
           </motion.button>
         </Link>
       </motion.div>
+
+      {/* EMPTY-DAY CTA */}
+      {nothingLoggedToday && (
+        <motion.div
+          variants={item}
+          className="card"
+          style={{ marginBottom: 24, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16 }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <Utensils size={22} color="var(--accent)" />
+            <div>
+              <div style={{ fontWeight: 700 }}>Nothing logged yet today</div>
+              <div style={{ fontSize: 13, color: "var(--text3)", marginTop: 2 }}>
+                Logging your first meal takes about 10 seconds.
+              </div>
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <Link href="/food"><button className="btn" style={{ fontSize: 13 }}>Log a meal</button></Link>
+            <Link href="/steps"><button className="btn-ghost" style={{ fontSize: 13 }}>Log steps</button></Link>
+          </div>
+        </motion.div>
+      )}
 
       {/* METRIC GRID */}
       <motion.div variants={item} className="metric-grid">
@@ -235,14 +334,14 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div className="prog-track">
-                  <motion.div 
+                  <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.min(100, (stats.cal / targets.cal) * 100)}%` }}
-                    className="prog-fill" 
+                    className="prog-fill"
                   />
                 </div>
               </div>
-              
+
               <div className="prog-wrap prog-cyan" style={{ marginTop: "20px" }}>
                 <div className="prog-label">
                   <span className="prog-name">Protein</span>
@@ -251,10 +350,10 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div className="prog-track">
-                  <motion.div 
+                  <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.min(100, (stats.prot / targets.prot) * 100)}%` }}
-                    className="prog-fill" 
+                    className="prog-fill"
                   />
                 </div>
               </div>
@@ -267,10 +366,10 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div className="prog-track">
-                  <motion.div 
+                  <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.min(100, (stats.carb / targets.carb) * 100)}%` }}
-                    className="prog-fill" 
+                    className="prog-fill"
                   />
                 </div>
               </div>
@@ -283,10 +382,10 @@ const Dashboard = () => {
                   </span>
                 </div>
                 <div className="prog-track">
-                  <motion.div 
+                  <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.min(100, (stats.fat / targets.fat) * 100)}%` }}
-                    className="prog-fill" 
+                    className="prog-fill"
                   />
                 </div>
               </div>
@@ -331,6 +430,43 @@ const Dashboard = () => {
             </div>
           </motion.div>
       </div>
+
+      {/* HYDRATION */}
+      <motion.div variants={item} className="card" style={{ marginTop: 24 }}>
+        <div className="card-title" style={{ justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <Droplets size={18} color="var(--neon-cyan)" />
+            Hydration
+          </div>
+          <div className={`badge ${pBlur}`} style={{ color: "var(--neon-cyan)" }}>
+            {(stats.water / 1000).toFixed(2)} L / {(WATER_GOAL_ML / 1000).toFixed(1)} L
+          </div>
+        </div>
+        <div className="prog-track" style={{ marginTop: 8 }}>
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${waterPct}%` }}
+            className="prog-fill"
+            style={{ background: "var(--neon-cyan)" }}
+          />
+        </div>
+        <div style={{ display: "flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
+          <button className="btn-ghost" style={{ fontSize: 13 }} onClick={() => setWater(stats.water + 250)}>
+            <Plus size={14} style={{ marginRight: 4 }} /> 250 ml
+          </button>
+          <button className="btn-ghost" style={{ fontSize: 13 }} onClick={() => setWater(stats.water + 500)}>
+            <Plus size={14} style={{ marginRight: 4 }} /> 500 ml
+          </button>
+          <button
+            className="btn-ghost"
+            style={{ fontSize: 13, opacity: stats.water === 0 ? 0.4 : 1 }}
+            onClick={() => setWater(stats.water - 250)}
+            disabled={stats.water === 0}
+          >
+            <Minus size={14} style={{ marginRight: 4 }} /> 250 ml
+          </button>
+        </div>
+      </motion.div>
     </motion.div>
   );
 };

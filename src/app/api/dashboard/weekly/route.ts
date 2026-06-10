@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireUser } from "@/lib/auth";
 import { getDayStart } from "@/lib/day";
+import { getDailyFoodTotals } from "@/lib/foodAggregate";
 
 export async function GET(req: Request) {
   try {
@@ -14,25 +15,15 @@ export async function GET(req: Request) {
     const startDate = new Date(localStart);
     startDate.setDate(startDate.getDate() - 6);
 
-    // Fetch Food Logs and Step Logs
-    const [foodLogs, stepLogs] = await Promise.all([
-      db.foodLog.findMany({
-        where: {
-          userId,
-          date: { gte: startDate },
-        },
-        orderBy: { date: "asc" },
-      }),
+    // Food totals are day-bucketed in SQL; steps are ≤7 rows (one per day).
+    const [foodDays, stepLogs] = await Promise.all([
+      getDailyFoodTotals(userId, startDate, 7),
       db.stepLog.findMany({
-        where: {
-          userId,
-          date: { gte: startDate },
-        },
+        where: { userId, date: { gte: startDate } },
         orderBy: { date: "asc" },
       }),
     ]);
 
-    // Aggregate by day
     const weeklyData = [];
     for (let i = 0; i < 7; i++) {
       const currentDay = new Date(startDate);
@@ -40,28 +31,18 @@ export async function GET(req: Request) {
       const nextDay = new Date(currentDay);
       nextDay.setDate(nextDay.getDate() + 1);
 
-      const dayFoods = foodLogs.filter(
-        (log) => log.date >= currentDay && log.date < nextDay
-      );
       const dayStep = stepLogs.find(
         (log) => log.date >= currentDay && log.date < nextDay
       );
-
-      const dayTotals = dayFoods.reduce(
-        (acc, log) => {
-          acc.cal += log.cal;
-          acc.prot += log.prot;
-          acc.carb += log.carb;
-          acc.fat += log.fat;
-          return acc;
-        },
-        { cal: 0, prot: 0, carb: 0, fat: 0 }
-      );
+      const f = foodDays[i];
 
       weeklyData.push({
         date: currentDay.toISOString(),
         label: currentDay.toLocaleDateString("en-US", { weekday: "short" }),
-        ...dayTotals,
+        cal: f.cal,
+        prot: f.prot,
+        carb: f.carb,
+        fat: f.fat,
         steps: dayStep?.count || 0,
       });
     }

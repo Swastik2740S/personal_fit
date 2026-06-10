@@ -22,11 +22,15 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Missing query" }, { status: 400 });
   }
 
+  // Nutrition data per query is stable (server cache holds it 30 days), so let
+  // the browser keep results for a day — repeat searches skip the network.
+  const browserCache = { "Cache-Control": "private, max-age=86400" };
+
   try {
     // 1. Serve from cache if present and fresh
     const cached = await db.foodCache.findUnique({ where: { query } });
     if (cached && Date.now() - cached.createdAt.getTime() < CACHE_TTL_MS) {
-      return NextResponse.json(JSON.parse(cached.data));
+      return NextResponse.json(JSON.parse(cached.data), { headers: browserCache });
     }
 
     // 2. Fetch from Edamam
@@ -59,7 +63,7 @@ export async function GET(req: Request) {
       create: { query, data: serialized },
     });
 
-    return NextResponse.json(foods);
+    return NextResponse.json(foods, { headers: browserCache });
   } catch (error) {
     console.error("Search API Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

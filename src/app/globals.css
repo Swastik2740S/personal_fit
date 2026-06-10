@@ -700,6 +700,29 @@ body {
   }
 }
 
+/* ============ SKELETON LOADING ============ */
+/* Shimmering placeholder blocks rendered in the real page layout while data
+   loads (replaces the full-screen spinner). The global reduced-motion net
+   above already disables the shimmer for users who prefer reduced motion. */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r2);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  animation: skeleton-shimmer 1.6s infinite;
+}
+@keyframes skeleton-shimmer {
+  100% { transform: translateX(100%); }
+}
+
 /* PRIVACY MASKING */
 .privacy-blur {
   filter: blur(8px);
