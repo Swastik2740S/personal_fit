@@ -4,9 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Target, Flame, Activity, Footprints, Save, User, RefreshCw, Loader, Download } from "lucide-react";
+import { Target, Flame, Activity, Footprints, Save, User, RefreshCw, Loader, Download, Palette, Droplets, Square, Check } from "lucide-react";
 import { calculateTDEE } from "@/lib/tdee";
 import type { OnboardingProfile } from "@/lib/tdee";
+import { useTheme } from "@/components/providers/ThemeContext";
 
 interface Goals {
   calGoal: number;
@@ -59,6 +60,7 @@ const EXPERIENCE_LABEL: Record<string, string> = {
 const Settings = () => {
   const { isLoaded } = useAuth();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [goals, setGoals] = useState<Goals>(DEFAULT_GOALS);
   const [loading, setLoading] = useState(true);
@@ -167,6 +169,49 @@ const Settings = () => {
         <div className="page-title">Settings</div>
         <div className="page-sub">Manage your profile and daily targets.</div>
       </div>
+
+      {/* Appearance — Classic ↔ iOS 26 Liquid Glass */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card" style={{ maxWidth: 560, marginBottom: 24 }}>
+        <div className="card-title">
+          <Palette size={18} color="var(--neon-purple)" />
+          Appearance
+        </div>
+        <p style={{ fontSize: 13, color: "var(--text3)", marginBottom: 16 }}>
+          Pick your interface style. <strong style={{ color: "var(--text2)" }}>Liquid Glass</strong> brings iOS&nbsp;26-style
+          frosted, refractive surfaces — the glass refraction renders best in Chrome &amp; Edge.
+        </p>
+        <div style={{ display: "flex", gap: 10 }}>
+          {([
+            { id: "classic", label: "Classic", Icon: Square },
+            { id: "liquid", label: "Liquid Glass", Icon: Droplets },
+          ] as const).map(({ id, label, Icon }) => {
+            const active = theme === id;
+            return (
+              <motion.button
+                key={id}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setTheme(id)}
+                className="btn-ghost"
+                aria-pressed={active}
+                style={{
+                  flex: 1,
+                  justifyContent: "flex-start",
+                  gap: 10,
+                  padding: "14px 16px",
+                  minHeight: 52,
+                  borderColor: active ? "var(--accent)" : "var(--glass-border)",
+                  background: active ? "var(--accent-dim)" : "var(--surface-1)",
+                  color: active ? "var(--accent)" : "var(--text2)",
+                }}
+              >
+                <Icon size={16} />
+                <span style={{ fontWeight: 700 }}>{label}</span>
+                {active && <Check size={15} style={{ marginLeft: "auto" }} />}
+              </motion.button>
+            );
+          })}
+        </div>
+      </motion.div>
 
       {/* Profile summary (only if onboarding complete) */}
       {hasProfile && (

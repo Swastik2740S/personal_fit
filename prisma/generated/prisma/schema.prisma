@@ -34,6 +34,9 @@ model User {
   stepGoal   Int    @default(8000)
   weightGoal Float?
 
+  // UI appearance preference: "classic" (default frosted) | "liquid" (iOS 26 Liquid Glass)
+  uiTheme String @default("classic")
+
   // Relations
   logs      FoodLog[]
   steps     StepLog[]

@@ -10,6 +10,7 @@ const GOAL_SELECT = {
   fatGoal: true,
   stepGoal: true,
   weightGoal: true,
+  uiTheme: true,
   // onboarding profile fields (read-only in settings, edited via /onboarding)
   onboardingComplete: true,
   heightCm: true,

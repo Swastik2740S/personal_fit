@@ -42,6 +42,8 @@ export const goalsSchema = z
     fatGoal: goalField,
     stepGoal: goalField,
     weightGoal: z.number().finite().positive().max(1000),
+    // UI appearance preference (also patched here so it persists per-account)
+    uiTheme: z.enum(["classic", "liquid"]),
   })
   .partial();
 
