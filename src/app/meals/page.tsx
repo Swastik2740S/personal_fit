@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Utensils, RefreshCw, AlertCircle, Loader, Sparkles, Plus, Check } from "lucide-react";
 import { containerStagger as container, fadeUpItem as item } from "@/lib/motion";
 import { getLocalStartOfDay } from "@/lib/day";
-import type { MealPlanItem } from "@/lib/planGenerator";
+import type { MealPlanItem, WorkoutDay } from "@/lib/planGenerator";
 
 // Map a plan meal onto the food-log meal categories: name keywords first,
 // then the meal's scheduled time, defaulting to Snack.
@@ -36,6 +36,11 @@ export default function MealsPage() {
   const [noPlan, setNoPlan] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Regenerating rebuilds the workout plan too — warn if it has swapped exercises.
+  const [hasSwaps, setHasSwaps] = useState(false);
+  const [confirmRegen, setConfirmRegen] = useState(false);
+
   const [loggingIdx, setLoggingIdx] = useState<number | null>(null);
   const [loggedIdx, setLoggedIdx] = useState<Set<number>>(new Set());
 
@@ -84,6 +89,8 @@ export default function MealsPage() {
         setMealPlan(data.plan.mealPlan);
         setSummary(data.plan.summary);
         setGeneratedAt(data.plan.generatedAt);
+        const workout: WorkoutDay[] = data.plan.workoutPlan ?? [];
+        setHasSwaps(workout.some((d) => d.exercises.some((e) => e.swapped)));
       }
     } catch {
       setError("Could not load your meal plan.");
@@ -106,6 +113,7 @@ export default function MealsPage() {
       setMealPlan(data.plan.mealPlan);
       setSummary(data.plan.summary);
       setGeneratedAt(data.plan.generatedAt);
+      setHasSwaps(false);
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -183,7 +191,7 @@ export default function MealsPage() {
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.96 }}
           className="btn-ghost"
-          onClick={regenerate}
+          onClick={() => (hasSwaps ? setConfirmRegen(true) : regenerate())}
           disabled={regenerating}
           style={{ fontSize: 13 }}
         >
@@ -290,6 +298,26 @@ export default function MealsPage() {
           </div>
         </motion.div>
       ))}
+
+      {/* Regenerate confirm (workout plan has swapped exercises) */}
+      <AnimatePresence>
+        {confirmRegen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="modal-overlay" onClick={() => setConfirmRegen(false)}>
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-title">Regenerate plan?</div>
+              <div className="modal-sub">
+                This rebuilds both your meal and workout plans from your profile — the exercises you swapped in on the Training page will be discarded.
+              </div>
+              <div className="modal-actions" style={{ display: "flex", gap: 10, marginTop: 8 }}>
+                <button className="btn-ghost" style={{ flex: 1 }} onClick={() => setConfirmRegen(false)}>Cancel</button>
+                <button className="btn" style={{ flex: 1 }} onClick={() => { setConfirmRegen(false); regenerate(); }}>
+                  <RefreshCw size={14} style={{ marginRight: 6 }} /> Regenerate
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </motion.div>
   );

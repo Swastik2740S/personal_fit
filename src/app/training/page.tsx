@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Dumbbell, RefreshCw, AlertCircle, Loader, Sparkles,
-  TrendingUp, ChevronDown, ChevronUp, History, X, Trophy,
+  TrendingUp, ChevronDown, ChevronUp, History, X, Trophy, ArrowLeftRight,
 } from "lucide-react";
 import { containerStagger as container, fadeUpItem as item } from "@/lib/motion";
-import type { WorkoutDay } from "@/lib/planGenerator";
+import type { Exercise, WorkoutDay } from "@/lib/planGenerator";
+import { getSuggestions, type EquipmentTier } from "@/lib/exerciseLibrary";
 import type { LiftTarget, TargetsResponse } from "@/app/api/lifts/targets/route";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -305,6 +306,186 @@ function HistoryModal({ exercise, dayColor, onClose }: HistoryModalProps) {
   );
 }
 
+// ── Swap modal ────────────────────────────────────────────────────────────────
+
+interface SwapReplacement {
+  name: string;
+  sets: string;
+  reps: string;
+  note: string;
+}
+
+interface SwapModalProps {
+  exercise: Exercise;
+  equipment: EquipmentTier;
+  excludeNames: string[];
+  dayColor: string;
+  onSwap: (replacement: SwapReplacement) => void;
+  onClose: () => void;
+}
+
+const EQUIP_CHIP: Record<EquipmentTier, string> = {
+  none: "bodyweight",
+  home_gym: "home gym",
+  full_gym: "gym",
+};
+
+function SwapModal({ exercise, equipment, excludeNames, dayColor, onSwap, onClose }: SwapModalProps) {
+  const suggestions = getSuggestions(exercise.name, equipment, excludeNames);
+  const [customOpen, setCustomOpen] = useState(suggestions.length === 0);
+  const [name, setName] = useState("");
+  const [sets, setSets] = useState(exercise.sets);
+  const [reps, setReps] = useState(exercise.reps);
+  const [err, setErr] = useState<string | null>(null);
+
+  function saveCustom() {
+    if (!name.trim() || !sets.trim() || !reps.trim()) {
+      setErr("Name, sets and reps are required.");
+      return;
+    }
+    onSwap({ name: name.trim(), sets: sets.trim(), reps: reps.trim(), note: "" });
+  }
+
+  const inputStyle: React.CSSProperties = {
+    background: "var(--surface-2)",
+    border: "1px solid var(--border)",
+    borderRadius: "var(--r-pill)",
+    color: "var(--text)",
+    padding: "8px 14px",
+    fontSize: 13,
+    width: "100%",
+    outline: "none",
+  };
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        style={{
+          position: "fixed", inset: 0, zIndex: 999,
+          background: "rgba(0,0,0,0.6)",
+          display: "flex", alignItems: "flex-end", justifyContent: "center",
+          padding: "0 0 env(safe-area-inset-bottom)",
+        }}
+        onClick={onClose}
+      >
+        <motion.div
+          initial={{ y: "100%" }}
+          animate={{ y: 0 }}
+          exit={{ y: "100%" }}
+          transition={{ type: "spring", damping: 28, stiffness: 300 }}
+          className="modal"
+          style={{ width: "100%", maxWidth: 560, maxHeight: "85vh", overflow: "hidden", display: "flex", flexDirection: "column" }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 20px 0" }}>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: 16, color: dayColor }}>Replace {exercise.name}</div>
+              <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2 }}>
+                Same movement pattern, matched to your equipment.
+              </div>
+            </div>
+            <button className="btn-ghost" style={{ padding: "6px 10px" }} onClick={onClose}>
+              <X size={16} />
+            </button>
+          </div>
+
+          <div style={{ overflowY: "auto", padding: "12px 20px 20px", flex: 1 }}>
+            {suggestions.length > 0 && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {suggestions.map((s, i) => (
+                  <motion.button
+                    key={s.name}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.03 }}
+                    onClick={() => onSwap({ name: s.name, sets: s.sets, reps: s.reps, note: s.note })}
+                    style={{
+                      display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12,
+                      padding: "12px 4px", background: "transparent", border: "none",
+                      borderBottom: "1px solid var(--border)", cursor: "pointer", textAlign: "left", width: "100%",
+                    }}
+                  >
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 14, color: "var(--text)" }}>{s.name}</div>
+                      <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 2 }}>{s.note}</div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                      <span style={{
+                        fontSize: 10, fontWeight: 700, padding: "2px 8px",
+                        background: "rgba(255,255,255,0.06)", color: "var(--text3)",
+                        borderRadius: "var(--r-pill)", border: "1px solid var(--border)",
+                      }}>
+                        {EQUIP_CHIP[s.equipment[0]]}
+                      </span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: dayColor, whiteSpace: "nowrap" }}>
+                        {s.sets} × {s.reps}
+                      </span>
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            )}
+
+            {suggestions.length === 0 && (
+              <div style={{ fontSize: 13, color: "var(--text3)", padding: "8px 0 4px" }}>
+                No matched substitutes for this one — enter your own below.
+              </div>
+            )}
+
+            {/* Custom exercise */}
+            <div style={{ marginTop: 16 }}>
+              {!customOpen ? (
+                <button className="btn-ghost" style={{ fontSize: 12, width: "100%" }} onClick={() => setCustomOpen(true)}>
+                  Or enter a custom exercise
+                </button>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text3)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Custom exercise
+                  </div>
+                  <input
+                    style={inputStyle}
+                    type="text"
+                    placeholder="Exercise name"
+                    maxLength={80}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <input style={inputStyle} type="text" placeholder="Sets (e.g. 3)" maxLength={20} value={sets} onChange={(e) => setSets(e.target.value)} />
+                    <input style={inputStyle} type="text" placeholder="Reps (e.g. 8-12)" maxLength={30} value={reps} onChange={(e) => setReps(e.target.value)} />
+                  </div>
+                  {err && (
+                    <div style={{ fontSize: 12, color: "#ff9a9a", display: "flex", gap: 6, alignItems: "center" }}>
+                      <AlertCircle size={12} /> {err}
+                    </div>
+                  )}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="btn"
+                    style={{ fontSize: 13, background: dayColor, color: "#000" }}
+                    onClick={saveCustom}
+                  >
+                    Swap in custom exercise
+                  </motion.button>
+                </div>
+              )}
+            </div>
+
+            <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 16 }}>
+              Your lift history for “{exercise.name}” stays saved under its name.
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 // ── Suggestion chip ───────────────────────────────────────────────────────────
 
 function SuggestionChip({ target, dayColor }: { target: LiftTarget; dayColor: string }) {
@@ -359,6 +540,11 @@ export default function TrainingPage() {
   const [historyFor,   setHistoryFor]   = useState<string | null>(null); // exercise name for history modal
   const [prFlash,      setPrFlash]      = useState<string | null>(null); // exercise name for PR flash
 
+  // Swap state
+  const [equipment,    setEquipment]    = useState<EquipmentTier>("none");
+  const [swapFor,      setSwapFor]      = useState<{ day: number; idx: number } | null>(null);
+  const [confirmRegen, setConfirmRegen] = useState(false);
+
   const fetchPlan = useCallback(async () => {
     setLoading(true);
     setPlanError(null);
@@ -366,6 +552,7 @@ export default function TrainingPage() {
       const res = await fetch("/api/plan", { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to load");
       const data = await res.json();
+      if (data.equipment) setEquipment(data.equipment as EquipmentTier);
       if (!data.plan) { setNoPlan(true); }
       else { setWorkoutPlan(data.plan.workoutPlan); }
     } catch {
@@ -421,6 +608,47 @@ export default function TrainingPage() {
     }
   }
 
+  // Optimistic swap: replace locally first, PATCH, roll back on failure.
+  async function applySwap(replacement: SwapReplacement) {
+    if (!swapFor || !workoutPlan) return;
+    const { day, idx } = swapFor;
+    const expectedName = workoutPlan[day]?.exercises?.[idx]?.name;
+    if (!expectedName) return;
+
+    const prevPlan = workoutPlan;
+    setWorkoutPlan(
+      workoutPlan.map((d, i) =>
+        i !== day
+          ? d
+          : { ...d, exercises: d.exercises.map((e, j) => (j !== idx ? e : { ...replacement, swapped: true })) }
+      )
+    );
+    setSwapFor(null);
+    setPlanError(null);
+
+    try {
+      const res = await fetch("/api/plan/exercise", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dayIndex: day, exerciseIndex: idx, expectedName, replacement }),
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setWorkoutPlan(prevPlan);
+        setPlanError(err.error || "Couldn't swap the exercise. Please try again.");
+        return;
+      }
+      // Exercise names changed — refresh today's progression targets.
+      if (day === todayPlanIndex()) fetchTargets();
+    } catch {
+      setWorkoutPlan(prevPlan);
+      setPlanError("Network error. Please try again.");
+    }
+  }
+
+  const hasCustomizations = workoutPlan?.some((d) => d.exercises.some((e) => e.swapped)) ?? false;
+
   // ── Loading / no-plan screens ──────────────────────────────────────────────
 
   if (loading) {
@@ -470,7 +698,7 @@ export default function TrainingPage() {
         <motion.button
           whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
           className="btn-ghost"
-          onClick={regenerate}
+          onClick={() => (hasCustomizations ? setConfirmRegen(true) : regenerate())}
           disabled={regenerating}
           style={{ fontSize: 13 }}
         >
@@ -559,6 +787,16 @@ export default function TrainingPage() {
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                                 <span style={{ fontWeight: 700, fontSize: 14, color: "var(--text)" }}>{ex.name}</span>
+                                {ex.swapped && (
+                                  <span style={{
+                                    fontSize: 9, fontWeight: 800, padding: "1px 7px",
+                                    background: "rgba(34,211,238,0.1)", color: "var(--neon-cyan)",
+                                    border: "1px solid rgba(34,211,238,0.3)",
+                                    borderRadius: "var(--r-pill)", textTransform: "uppercase", letterSpacing: "0.05em",
+                                  }}>
+                                    swapped
+                                  </span>
+                                )}
                                 {isPRing && (
                                   <motion.span
                                     initial={{ scale: 0.6, opacity: 0 }}
@@ -596,24 +834,33 @@ export default function TrainingPage() {
                               <div style={{ fontSize: 13, fontWeight: 700, color: dayColor, whiteSpace: "nowrap" }}>
                                 {ex.sets} × {ex.reps}
                               </div>
-                              {isToday && (
-                                <div style={{ display: "flex", gap: 6 }}>
-                                  <button
-                                    className="btn-ghost"
-                                    style={{ fontSize: 11, padding: "4px 10px", display: "flex", alignItems: "center", gap: 4 }}
-                                    onClick={() => setHistoryFor(ex.name)}
-                                  >
-                                    <History size={11} /> History
-                                  </button>
-                                  <button
-                                    className="btn"
-                                    style={{ fontSize: 11, padding: "4px 12px", background: isExpanded ? "var(--surface-2)" : dayColor, color: isExpanded ? "var(--text2)" : "#000", display: "flex", alignItems: "center", gap: 4 }}
-                                    onClick={() => setExpandedLog(isExpanded ? null : ex.name)}
-                                  >
-                                    {isExpanded ? <><ChevronUp size={11} /> Close</> : <><ChevronDown size={11} /> Log</>}
-                                  </button>
-                                </div>
-                              )}
+                              <div style={{ display: "flex", gap: 6 }}>
+                                <button
+                                  className="btn-ghost"
+                                  style={{ fontSize: 11, padding: "4px 10px", display: "flex", alignItems: "center", gap: 4 }}
+                                  onClick={() => setSwapFor({ day: activeDay, idx: j })}
+                                >
+                                  <ArrowLeftRight size={11} /> Swap
+                                </button>
+                                {isToday && (
+                                  <>
+                                    <button
+                                      className="btn-ghost"
+                                      style={{ fontSize: 11, padding: "4px 10px", display: "flex", alignItems: "center", gap: 4 }}
+                                      onClick={() => setHistoryFor(ex.name)}
+                                    >
+                                      <History size={11} /> History
+                                    </button>
+                                    <button
+                                      className="btn"
+                                      style={{ fontSize: 11, padding: "4px 12px", background: isExpanded ? "var(--surface-2)" : dayColor, color: isExpanded ? "var(--text2)" : "#000", display: "flex", alignItems: "center", gap: 4 }}
+                                      onClick={() => setExpandedLog(isExpanded ? null : ex.name)}
+                                    >
+                                      {isExpanded ? <><ChevronUp size={11} /> Close</> : <><ChevronDown size={11} /> Log</>}
+                                    </button>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           </div>
 
@@ -660,6 +907,38 @@ export default function TrainingPage() {
             dayColor={dayColor}
             onClose={() => setHistoryFor(null)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Swap modal */}
+      {swapFor && workoutPlan?.[swapFor.day]?.exercises?.[swapFor.idx] && (
+        <SwapModal
+          exercise={workoutPlan[swapFor.day].exercises[swapFor.idx]}
+          equipment={equipment}
+          excludeNames={workoutPlan[swapFor.day].exercises.map((e) => e.name)}
+          dayColor={dayColor}
+          onSwap={applySwap}
+          onClose={() => setSwapFor(null)}
+        />
+      )}
+
+      {/* Regenerate confirm (plan has swapped exercises) */}
+      <AnimatePresence>
+        {confirmRegen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="modal-overlay" onClick={() => setConfirmRegen(false)}>
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-title">Regenerate plan?</div>
+              <div className="modal-sub">
+                This rebuilds your plan from your profile and discards the exercises you swapped in.
+              </div>
+              <div className="modal-actions" style={{ display: "flex", gap: 10, marginTop: 8 }}>
+                <button className="btn-ghost" style={{ flex: 1 }} onClick={() => setConfirmRegen(false)}>Cancel</button>
+                <button className="btn" style={{ flex: 1 }} onClick={() => { setConfirmRegen(false); regenerate(); }}>
+                  <RefreshCw size={14} style={{ marginRight: 6 }} /> Regenerate
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
 
