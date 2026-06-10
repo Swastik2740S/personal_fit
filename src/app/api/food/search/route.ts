@@ -55,13 +55,18 @@ export async function GET(req: Request) {
       }))
       .slice(0, 10);
 
-    // 3. Upsert into cache (refreshes createdAt so the TTL window restarts)
+    // 3. Upsert into cache — best-effort; don't fail the request if the DB is
+    // still cold after the Edamam fetch. The user gets their results either way.
     const serialized = JSON.stringify(foods);
-    await db.foodCache.upsert({
-      where: { query },
-      update: { data: serialized, createdAt: new Date() },
-      create: { query, data: serialized },
-    });
+    try {
+      await db.foodCache.upsert({
+        where: { query },
+        update: { data: serialized, createdAt: new Date() },
+        create: { query, data: serialized },
+      });
+    } catch (cacheErr) {
+      console.warn("FoodCache upsert failed (non-fatal):", cacheErr);
+    }
 
     return NextResponse.json(foods, { headers: browserCache });
   } catch (error) {

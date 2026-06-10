@@ -38,7 +38,7 @@ function isRetryableConnectionError(e: unknown): boolean {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const MAX_ATTEMPTS = 4;
+const MAX_ATTEMPTS = 5;
 
 function createPrismaClient() {
   return new PrismaClient({ adapter }).$extends({
@@ -53,8 +53,8 @@ function createPrismaClient() {
             if (attempt === MAX_ATTEMPTS - 1 || !isRetryableConnectionError(e)) {
               throw e;
             }
-            // 150ms, 300ms, 600ms backoff — enough for Neon to wake.
-            await sleep(150 * 2 ** attempt);
+            // 300ms, 600ms, 1200ms, 2400ms — Neon cold starts can take up to 5s.
+            await sleep(300 * 2 ** attempt);
           }
         }
         throw lastErr;

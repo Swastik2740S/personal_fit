@@ -109,7 +109,10 @@ const Dashboard = () => {
 
   // One round trip for stats + goals + insights (was two separate calls).
   const url = user ? `/api/dashboard?localStart=${getLocalStartOfDay()}` : null;
-  const { data, mutate } = useSWR<DashboardData>(url, fetcher);
+  const { data, mutate } = useSWR<DashboardData>(url, fetcher, {
+    revalidateOnFocus: false,
+    dedupingInterval: 30_000,
+  });
 
   // Last good payload from localStorage: instant paint on revisit while SWR
   // revalidates (read in an effect to avoid SSR/hydration mismatch).
