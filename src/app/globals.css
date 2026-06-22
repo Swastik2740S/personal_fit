@@ -744,12 +744,44 @@ body {
    ThemeContext) because backdrop-filter: url(#svg) only renders there.
    ============================================================================ */
 [data-ui="liquid"] {
-  --lg-tint:     rgba(40, 42, 52, 0.42);   /* content/control glass */
-  --lg-tint-bar: rgba(26, 28, 36, 0.50);   /* navigation chrome (more see-through) */
-  --lg-rim:      rgba(255, 255, 255, 0.55); /* specular highlight (top-left) */
-  --lg-rim-soft: rgba(255, 255, 255, 0.10);
-  --lg-blur:     blur(28px) saturate(180%);
-  --lg-shadow:   0 10px 40px rgba(0, 0, 0, 0.50), 0 2px 10px rgba(0, 0, 0, 0.35);
+  /* Reactive light position (viewport %, written each frame by lib/glassLight.ts;
+     default = centered for SSR / before JS / reduced-motion). */
+  --lg-lx: 50%;
+  --lg-ly: 50%;
+
+  --lg-tint:        rgba(40, 42, 52, 0.42);   /* content/control glass */
+  --lg-tint-bar:    rgba(26, 28, 36, 0.50);   /* navigation chrome (more see-through) */
+  --lg-tint-nested: rgba(48, 50, 62, 0.46);   /* nested glassy bits (no own blur) */
+  --lg-rim:         rgba(255, 255, 255, 0.72); /* specular highlight where light hits */
+  --lg-rim-soft:    rgba(255, 255, 255, 0.10);
+  --lg-blur:        blur(28px) saturate(180%);
+
+  /* Depth — beveled glass "thickness": bright top-inner rim, dark bottom-inner,
+     plus soft inner volume top→bottom. Gives the surface real dimensionality. */
+  --lg-bevel:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.55),
+    inset 0 7px 16px rgba(255, 255, 255, 0.05),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.45),
+    inset 0 -10px 22px rgba(0, 0, 0, 0.22);
+  --lg-bevel-soft:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.30);
+  /* Float — ambient + a tight contact shadow so glass hovers above content. */
+  --lg-depth-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.30),
+    0 12px 30px rgba(0, 0, 0, 0.42),
+    0 30px 60px rgba(0, 0, 0, 0.28);
+
+  /* Mirror — a moving specular hotspot (tracks --lg-lx/ly) over a fixed top
+     gloss. Baked into `background` layers (NOT a pseudo) so it sits behind text
+     and never washes out content. `--lg-gloss-bg` is the static-only variant for
+     small nested bits, which skip the light var to avoid per-frame repaint. */
+  --lg-sheen-bg:
+    radial-gradient(75% 110% at var(--lg-lx) var(--lg-ly),
+      rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.05) 45%, transparent 72%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.10), transparent 34%);
+  --lg-gloss-bg:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.10), transparent 42%);
 }
 
 /* --- Navigation layer: floating glass bars --- */
@@ -757,16 +789,18 @@ body {
 [data-ui="liquid"] .app-topbar,
 [data-ui="liquid"] .drawer,
 [data-ui="liquid"] .mobile-nav {
-  background: var(--lg-tint-bar);
+  background: var(--lg-sheen-bg), var(--lg-tint-bar);
   backdrop-filter: var(--lg-blur);
   -webkit-backdrop-filter: var(--lg-blur);
   border-color: var(--lg-rim-soft);
-  box-shadow: var(--lg-shadow);
+  box-shadow: var(--lg-depth-shadow), var(--lg-bevel);
 }
 [data-ui="liquid"] .modal {
   position: relative;
-  background: var(--lg-tint-bar);
-  box-shadow: var(--lg-shadow), inset 0 1px 0 var(--lg-rim-soft);
+  background: var(--lg-sheen-bg), var(--lg-tint-bar);
+  backdrop-filter: var(--lg-blur);
+  -webkit-backdrop-filter: var(--lg-blur);
+  box-shadow: var(--lg-depth-shadow), var(--lg-bevel);
 }
 
 /* --- Specular rim: a 1px gradient border, bright at the top-left, fading out.
@@ -780,13 +814,22 @@ body {
 [data-ui="liquid"] .btn::before,
 [data-ui="liquid"] .btn-ghost::before,
 [data-ui="liquid"] .card::before,
-[data-ui="liquid"] .glass-panel::before {
+[data-ui="liquid"] .glass-panel::before,
+[data-ui="liquid"] .metric-card::before,
+[data-ui="liquid"] .chip::before,
+[data-ui="liquid"] .icon-tile::before,
+[data-ui="liquid"] .result-item::before,
+[data-ui="liquid"] .note-box::before {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, var(--lg-rim), transparent 38%, transparent 62%, var(--lg-rim-soft));
+  /* The bright part of the rim follows the light (radial at --lg-lx/ly), over a
+     faint static edge so the border still reads when the light is elsewhere. */
+  background:
+    radial-gradient(120% 120% at var(--lg-lx) var(--lg-ly), var(--lg-rim), transparent 42%),
+    linear-gradient(135deg, var(--lg-rim-soft), transparent 45%, transparent 55%, var(--lg-rim-soft));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
           mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -801,19 +844,26 @@ body {
 [data-ui="liquid"][data-refraction="on"] .app-topbar,
 [data-ui="liquid"][data-refraction="on"] .drawer,
 [data-ui="liquid"][data-refraction="on"] .mobile-nav,
-[data-ui="liquid"][data-refraction="on"] .modal {
-  backdrop-filter: url(#lg-refraction) var(--lg-blur);
-  -webkit-backdrop-filter: url(#lg-refraction) var(--lg-blur);
+[data-ui="liquid"][data-refraction="on"] .modal,
+[data-ui="liquid"][data-refraction="on"] .card,
+[data-ui="liquid"][data-refraction="on"] .glass-panel {
+  backdrop-filter: url(#lg-lens-card) var(--lg-blur);
+  -webkit-backdrop-filter: url(#lg-lens-card) var(--lg-blur);
+}
+[data-ui="liquid"][data-refraction="on"] .btn-ghost {
+  backdrop-filter: url(#lg-lens-pill) var(--lg-blur);
+  -webkit-backdrop-filter: url(#lg-lens-pill) var(--lg-blur);
 }
 
 /* --- Controls: glass + "energize" (scale + brighten) on press --- */
 [data-ui="liquid"] .btn,
 [data-ui="liquid"] .btn-ghost { position: relative; }
 [data-ui="liquid"] .btn-ghost {
-  background: var(--lg-tint);
+  background: var(--lg-sheen-bg), var(--lg-tint);
   backdrop-filter: var(--lg-blur);
   -webkit-backdrop-filter: var(--lg-blur);
   border-color: var(--lg-rim-soft);
+  box-shadow: var(--lg-bevel-soft);
 }
 [data-ui="liquid"] .btn:active,
 [data-ui="liquid"] .btn-ghost:active {
@@ -839,13 +889,51 @@ body {
 [data-ui="liquid"] .card,
 [data-ui="liquid"] .glass-panel {
   position: relative;
-  background: var(--lg-tint);
+  background: var(--lg-sheen-bg), var(--lg-tint);
+  backdrop-filter: var(--lg-blur);
+  -webkit-backdrop-filter: var(--lg-blur);
+  box-shadow: var(--lg-depth-shadow), var(--lg-bevel);
 }
 [data-ui="liquid"] .card::before,
-[data-ui="liquid"] .glass-panel::before { opacity: 0.6; }
+[data-ui="liquid"] .glass-panel::before { opacity: 0.85; }
+
+/* --- "Glass everywhere": nested bits get tint + bevel + sheen but deliberately
+   NO own backdrop-filter (stacked blurs are the documented mobile-GPU footgun —
+   PROJECT_CONTEXT §7). The prominent .metric-card tracks the moving light; the
+   smaller chips/tiles/inputs use the cheaper static gloss to avoid per-frame
+   repaint. <input> can't take pseudo-elements, so those rely on box-shadow. --- */
+[data-ui="liquid"] .metric-card {
+  position: relative;
+  background: var(--lg-sheen-bg), var(--lg-tint-nested);
+  border-color: var(--lg-rim-soft);
+  box-shadow: var(--lg-depth-shadow), var(--lg-bevel-soft);
+}
+[data-ui="liquid"] .result-item,
+[data-ui="liquid"] .note-box {
+  position: relative;
+  background: var(--lg-gloss-bg), var(--lg-tint-nested);
+  border-color: var(--lg-rim-soft);
+  box-shadow: var(--lg-bevel-soft);
+}
+[data-ui="liquid"] .chip,
+[data-ui="liquid"] .icon-tile,
+[data-ui="liquid"] .stat-row {
+  position: relative;
+  background: var(--lg-gloss-bg), var(--lg-tint-nested);
+  border-color: var(--lg-rim-soft);
+  box-shadow: var(--lg-bevel-soft);
+}
+[data-ui="liquid"] .search-input,
+[data-ui="liquid"] .qty-input {
+  background: var(--lg-gloss-bg), var(--lg-tint-nested);
+  border-color: var(--lg-rim-soft);
+  box-shadow: var(--lg-bevel-soft);
+}
 
 /* --- Accessibility fallbacks (scoped to liquid) --- */
 @media (prefers-reduced-transparency: reduce) {
+  /* Kill the moving sheen + light tracking so surfaces are flat and opaque. */
+  [data-ui="liquid"] { --lg-sheen-bg: none; --lg-gloss-bg: none; }
   [data-ui="liquid"] .sidebar,
   [data-ui="liquid"] .app-topbar,
   [data-ui="liquid"] .drawer,
@@ -858,6 +946,14 @@ body {
     -webkit-backdrop-filter: none;
     background: var(--surface-bar);
   }
+  [data-ui="liquid"] .metric-card,
+  [data-ui="liquid"] .result-item,
+  [data-ui="liquid"] .note-box,
+  [data-ui="liquid"] .chip,
+  [data-ui="liquid"] .icon-tile,
+  [data-ui="liquid"] .stat-row,
+  [data-ui="liquid"] .search-input,
+  [data-ui="liquid"] .qty-input { background: var(--surface-2); }
   [data-ui="liquid"] .sidebar::before,
   [data-ui="liquid"] .app-topbar::before,
   [data-ui="liquid"] .drawer::before,
@@ -866,15 +962,27 @@ body {
   [data-ui="liquid"] .btn::before,
   [data-ui="liquid"] .btn-ghost::before,
   [data-ui="liquid"] .card::before,
-  [data-ui="liquid"] .glass-panel::before { display: none; }
+  [data-ui="liquid"] .glass-panel::before,
+  [data-ui="liquid"] .metric-card::before,
+  [data-ui="liquid"] .chip::before,
+  [data-ui="liquid"] .icon-tile::before,
+  [data-ui="liquid"] .result-item::before,
+  [data-ui="liquid"] .note-box::before { display: none; }
 }
 @media (prefers-contrast: more) {
   [data-ui="liquid"] {
     --lg-tint: rgba(20, 22, 28, 0.88);
     --lg-tint-bar: rgba(16, 18, 24, 0.92);
+    --lg-tint-nested: rgba(22, 24, 30, 0.90);
+    /* Dim the sheen so it can't lift text contrast on busy surfaces. */
+    --lg-sheen-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 30%);
+    --lg-gloss-bg: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  /* Freeze the light at center (the JS engine already skips listeners here; this
+     is a CSS belt-and-suspenders so the sheen never animates). */
+  [data-ui="liquid"] { --lg-lx: 50%; --lg-ly: 50%; }
   [data-ui="liquid"] .btn:active,
   [data-ui="liquid"] .btn-ghost:active { transform: none; }
 }
@@ -886,5 +994,13 @@ body {
   [data-ui="liquid"] .modal { background: var(--bg); }
   [data-ui="liquid"] .card,
   [data-ui="liquid"] .glass-panel,
-  [data-ui="liquid"] .btn-ghost { background: var(--bg2); }
+  [data-ui="liquid"] .btn-ghost,
+  [data-ui="liquid"] .metric-card,
+  [data-ui="liquid"] .result-item,
+  [data-ui="liquid"] .note-box,
+  [data-ui="liquid"] .chip,
+  [data-ui="liquid"] .icon-tile,
+  [data-ui="liquid"] .stat-row,
+  [data-ui="liquid"] .search-input,
+  [data-ui="liquid"] .qty-input { background: var(--bg2); }
 }
