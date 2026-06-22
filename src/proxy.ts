@@ -1,7 +1,17 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-const isPublicRoute    = createRouteMatcher(["/", "/sign-in(.*)", "/sign-up(.*)", "/api/webhooks(.*)"]);
+const isPublicRoute    = createRouteMatcher([
+  "/",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/api/webhooks(.*)",
+  // PWA / TWA assets must be fetchable while signed out — notably so Google can
+  // verify Digital Asset Links for the Play Store wrapper. (.json files fall
+  // through the matcher below, so without this they'd redirect to /sign-in.)
+  "/manifest.json",
+  "/.well-known/(.*)",
+]);
 const isOnboardingRoute = createRouteMatcher(["/onboarding(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
