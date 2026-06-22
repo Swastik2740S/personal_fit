@@ -6,6 +6,7 @@ import MobileNav from "./MobileNav";
 import MobileHeader from "./MobileHeader";
 import DynamicMesh from "./DynamicMesh";
 import GlassFilters from "./GlassFilters";
+import GlassLight from "./providers/GlassLight";
 import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { pageVariants } from "@/lib/motion";
@@ -29,6 +30,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
           <MotionConfig reducedMotion="user">
             <DynamicMesh />
             <GlassFilters />
+            <GlassLight />
             <div className="shell">
             {showNav && <Sidebar />}
             {showNav && <MobileHeader />}
