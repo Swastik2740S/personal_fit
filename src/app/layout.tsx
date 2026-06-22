@@ -24,7 +24,7 @@ export default function RootLayout({
           <script
             dangerouslySetInnerHTML={{
               __html:
-                "try{var t=localStorage.getItem('sf:ui-theme');if(t==='liquid'||t==='classic')document.documentElement.dataset.ui=t;}catch(e){}",
+                "try{var t=localStorage.getItem('sf:ui-theme');document.documentElement.dataset.ui=(t==='glass'||t==='liquid')?'glass':'classic';}catch(e){}",
             }}
           />
           <link
