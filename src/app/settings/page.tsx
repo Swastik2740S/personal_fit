@@ -170,20 +170,20 @@ const Settings = () => {
         <div className="page-sub">Manage your profile and daily targets.</div>
       </div>
 
-      {/* Appearance — Classic ↔ iOS 26 Liquid Glass */}
+      {/* Appearance — Classic ↔ Glass (glassmorphism) */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card" style={{ maxWidth: 560, marginBottom: 24 }}>
         <div className="card-title">
           <Palette size={18} color="var(--neon-purple)" />
           Appearance
         </div>
         <p style={{ fontSize: 13, color: "var(--text3)", marginBottom: 16 }}>
-          Pick your interface style. <strong style={{ color: "var(--text2)" }}>Liquid Glass</strong> brings iOS&nbsp;26-style
-          frosted, refractive surfaces — the glass refraction renders best in Chrome &amp; Edge.
+          Pick your interface style. <strong style={{ color: "var(--text2)" }}>Glass</strong> gives surfaces a
+          frosted, layered depth over a soft colour wash.
         </p>
         <div style={{ display: "flex", gap: 10 }}>
           {([
             { id: "classic", label: "Classic", Icon: Square },
-            { id: "liquid", label: "Liquid Glass", Icon: Droplets },
+            { id: "glass", label: "Glass", Icon: Droplets },
           ] as const).map(({ id, label, Icon }) => {
             const active = theme === id;
             return (

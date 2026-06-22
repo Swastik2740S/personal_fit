@@ -42,8 +42,10 @@ export const goalsSchema = z
     fatGoal: goalField,
     stepGoal: goalField,
     weightGoal: z.number().finite().positive().max(1000),
-    // UI appearance preference (also patched here so it persists per-account)
-    uiTheme: z.enum(["classic", "liquid"]),
+    // UI appearance preference (also patched here so it persists per-account).
+    // Legacy "liquid" (the retired iOS-26 Liquid Glass theme) is coerced to the
+    // current "glass" (glassmorphism) so old clients/rows keep working.
+    uiTheme: z.enum(["classic", "glass", "liquid"]).transform((t) => (t === "liquid" ? "glass" : t)),
   })
   .partial();
 
